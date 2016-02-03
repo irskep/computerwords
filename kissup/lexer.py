@@ -5,10 +5,51 @@ from collections import namedtuple
 backslash_whitelist = {'[', ']'}
 
 
-END = namedtuple('END')
-BRACKET_LEFT = namedtuple('BRACKET_LEFT')
-BRACKET_RIGHT = namedtuple('BRACKET_RIGHT')
-TEXT = namedtuple('TEXT', ['value'])
+TokenSpec = namedtuple('Token', ['match_re', 'get_token'])
+
+
+class Token: pass
+class BracketLeftToken: pass
+class BracketRightToken: pass
+class BBWordToken: pass
+class EqualsToken: pass
+class EndToken: pass
+class TextToken:
+    def __init__(self, value):
+        super.__init__(self)
+        self.value = value
+
+
+TOKENS = [
+    # text
+    # NB: this does NOT correctly handle escape sequences!
+    # this should succeed: \[, \\\[
+    # this should fail: \\[, \\\\[
+    TokenSpec(
+        match_re=re.compile(r'^([^[]]|\\[[]|\\[]])+'),
+        get_token=lambda text: TextToken(text)),
+    # [
+    TokenSpec(
+        match_re=re.compile(r'^[[]'),
+        get_token=lambda text: BracketLeftToken()),
+    # ]
+    TokenSpec(
+        match_re=re.compile(r'^[\]]'),
+        get_token=lambda text: BracketRightToken()),
+    # BBWord
+    TokenSpec(
+        match_re=re.compile(r'^[^[\]\s=]+'),
+        get_token=lambda text: BBWordToken()),
+    # =
+    TokenSpec(
+        match_re=re.compile(r'^='),
+        get_token=lambda text: EqualsToken()),
+    # string literal that may contain escapes: "ab\"c\""
+    # NB: this is NOT a good string literal matching expression!
+    TokenSpec(
+        match_re=re.compile(r'^"([^"]|(\\"))*"'),
+        get_token=lambda text: TextToken(text[1:-1])),
+]
 
 
 class LexError(Exception):
