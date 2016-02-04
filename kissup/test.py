@@ -2,7 +2,9 @@ from lexer import lex_kissup
 
 nice_tests = [
   "[",
+  # should be TEXT
   "abc",
+  # should be TEXT BRACKET_LEFT WHITESPACE BRACKET_RIGHT
   "abc[ ]",
 ]
 
