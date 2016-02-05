@@ -15,7 +15,7 @@ TokenSpec = namedtuple('Token', ['match_re', 'get_token'])
 
 class Token:
     def __init__(self, line_num, pos, value):
-        super()
+        super().__init__()
         self.line_num = line_num
         self.pos = pos
         self.value = value
@@ -34,16 +34,30 @@ class Token:
 
 class BracketLeftToken(Token):
     name = "BRACKET_LEFT"
+    def __init__(self, line_num, pos, value='['):
+        super().__init__(line_num, pos, value)
+
 class BracketRightToken(Token):
     name = "BRACKET_RIGHT"
+    def __init__(self, line_num, pos, value=']'):
+        super().__init__(line_num, pos, value)
+
 class BBWordToken(Token):
     name = "BBWORD"
+
 class EqualsToken(Token):
     name = "EQUALS"
+    def __init__(self, line_num, pos, value='='):
+        super().__init__(line_num, pos, value)
+
 class EndToken(Token):
     name = "END"
+    def __init__(self, line_num, pos, value=''):
+        super().__init__(line_num, pos, value)
+
 class TextToken(Token):
     name = "TEXT"
+
 class SpaceToken(Token):
     name = "SPACE"
 
