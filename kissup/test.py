@@ -20,20 +20,17 @@ class TestLexer(unittest.TestCase):
 
 
     def test_text_escaping(self):
-        input_str = r'abcd\\ fooey'
-        expected_str = r'abcd\ fooey'
+        input_str = r'abcd\\ fooey \[ \]'
+        expected_output_str = r'abcd\ fooey [ ]'
         self.assertEqual(lex(input_str), [
-            lexer.TextToken(0, 0, expected_str),
+            lexer.TextToken(0, 0, expected_output_str),
             # End token comes at the end of the *input* string!
             lexer.EndToken(0, len(input_str))
         ])
 
     def test_stuff_that_fails_outside_brackets(self):
         with self.assertRaises(lexer.LexError):
-            self.assertEqual(lex(']'), [
-                lexer.BracketLeftToken(0, 0),
-                lexer.EndToken(0, 1)
-            ])
+            lex(']')
 
 
 if __name__ == '__main__':

@@ -69,13 +69,14 @@ def _match_text(s, i, num_brackets, line, pos):
         return None
 
     chars = []
+
     while True:
         next_char = None
         is_last_char = len(s) <= i + 1
         if not is_last_char:
-            next_char = s[i]
+            next_char = s[i + 1]
 
-        if s[i] == '[':
+        if i >= len(s) or s[i] == '[':
             if chars:
                 return (TextToken(line, pos, ''.join(chars)), i, num_brackets)
             else:
