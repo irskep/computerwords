@@ -22,14 +22,14 @@ class Token:
 
     def __eq__(self, other):
         return (
-            self.name == other.name and
+            type(self) is type(other) and
             self.value == other.value and
             self.line_num == other.line_num and
             self.pos == other.pos)
 
     def __repr__(self):
         return "{}(line_num={}, pos={}, value={!r})".format(
-            self.name, self.line_num, self.pos, self.value)
+            self.__class__.__name__, self.line_num, self.pos, self.value)
 
 
 class BracketLeftToken(Token):
@@ -48,8 +48,12 @@ class SpaceToken(Token):
     name = "SPACE"
 
 
-def _match_text(s, i, line, pos):
+def _match_text(s, i, num_brackets, line, pos):
     """Match text"""
+
+    if num_brackets > 0:
+        return None
+
     chars = []
     while True:
         next_char = None
@@ -59,7 +63,7 @@ def _match_text(s, i, line, pos):
 
         if s[i] == '[':
             if chars:
-                return (TextToken(line, pos, ''.join(chars)), i)
+                return (TextToken(line, pos, ''.join(chars)), i, num_brackets)
             else:
                 return None
         elif s[i] == ']':
@@ -75,12 +79,16 @@ def _match_text(s, i, line, pos):
         else:
             chars.append(s[i])
             if is_last_char:
-                return (TextToken(line, pos, ''.join(chars)), i + 1)
+                return (TextToken(line, pos, ''.join(chars)), i + 1, num_brackets)
         i += 1
 
 
-def _match_string_literal(s, i, line, pos):
+def _match_string_literal(s, i, num_brackets, line, pos):
     """Match string literal"""
+
+    if num_brackets != 1:
+        return None
+
     chars = []
     if s[i] != '"':
         return None
@@ -93,7 +101,7 @@ def _match_string_literal(s, i, line, pos):
             next_char = s[i]
 
         if s[i] == '"':
-            return (TextToken(line, pos, ''.join(chars)), i + 1)
+            return (TextToken(line, pos, ''.join(chars)), i + 1, num_brackets)
         elif s[i] == '\\':
             if next_char in STRING_LITERAL_BACKSLASH_CHARS:
                 chars.append(next_char)
@@ -105,27 +113,37 @@ def _match_string_literal(s, i, line, pos):
         else:
             chars.append(s[i])
             if is_last_char:
-                return (TextToken(line, pos, ''.join(chars)), i + 1)
+                return (TextToken(line, pos, ''.join(chars)), i + 1, num_brackets)
         i += 1
 
 
-def _make_const_matcher(char, Cls):
-    def match(s, i, line, pos):
-        if s[i] == char:
-            return (Cls(line, pos, s[i]), i + 1)
-        else:
-            return None
-    match.__doc__ = """Match const {!r}""".format(char)
-    return match
+def _match_left_bracket(s, i, num_brackets, line, pos):
+    if num_brackets > 0:
+        return None
+
+    if s[i] == '[':
+        return (BracketLeftToken(line, pos, s[i]), i + 1, num_brackets + 1)
+    else:
+        return None
 
 
-def _make_re_matcher(expr, Cls):
+def _match_right_bracket(s, i, num_brackets, line, pos):
+    if num_brackets < 1:
+        return None
+
+    if s[i] == ']':
+        return (BracketRightToken(line, pos, s[i]), i + 1, num_brackets - 1)
+    else:
+        return None
+
+
+def _make_re_matcher(expr, required_num_brackets, Cls):
     re_compiled = re.compile(expr)
-    def match(s, i, line, pos):
+    def match(s, i, num_brackets, line, pos):
         match = re_compiled.match(s, i)
-        if match:
+        if match and num_brackets == required_num_brackets:
             text = match.group(0)
-            return (Cls(line, pos, text), i + len(text))
+            return (Cls(line, pos, text), i + len(text), num_brackets)
         else:
             return None
     match.__doc__ = """Match re {!r}""".format(expr)
@@ -133,12 +151,12 @@ def _make_re_matcher(expr, Cls):
 
 
 TOKEN_FNS = [
-    _make_const_matcher('[', BracketLeftToken),
-    _make_re_matcher(r'[^[\]\s=]+', BBWordToken),
-    _make_re_matcher(r'\s+', SpaceToken),
-    _make_const_matcher('=', EqualsToken),
+    _match_left_bracket,
+    _make_re_matcher(r'[^[\]\s=]+', 1, BBWordToken),
+    _make_re_matcher(r'\s+', 1, SpaceToken),
+    _make_re_matcher(r'=', 1, EqualsToken),
     _match_string_literal,
-    _make_const_matcher(']', BracketRightToken),
+    _match_right_bracket,
     _match_text,
 ]
 
@@ -147,16 +165,21 @@ def lex_kissup(s):
     line_indexes = [0] + [m.start() for m in re.findall('\n', s)] + [len(s)]
     line = 0
     i = 0
+    num_brackets = 0
     while i < len(s):
         j = i
         while line_indexes[line] < - i:
             line += 1
         for token_fn in TOKEN_FNS:
-            result = token_fn(s, i, line, i - line_indexes[line])
+            result = token_fn(s, i, num_brackets, line, i - line_indexes[line])
             if result:
-                (token, i) = result
+                (token, i, num_brackets) = result
                 yield token
                 break
         if j == i:
             raise LexError("Could not match character {}".format(s[i]))
-    yield EndToken(line, 0, '')
+
+    while line_indexes[line] < - i:
+        line += 1
+
+    yield EndToken(line, i - line_indexes[line], '')

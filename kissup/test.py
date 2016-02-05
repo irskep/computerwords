@@ -1,14 +1,16 @@
-from lexer import lex_kissup
+import unittest
 
-nice_tests = [
-  "[",
-  # should be TEXT
-  "abc",
-  # should be TEXT BRACKET_LEFT WHITESPACE BRACKET_RIGHT
-  "abc[ ]",
-]
+from kissup import lexer
 
-for test in nice_tests:
-  print("TESTING: {}".format(test))
-  print("         {}".format(repr(list(lex_kissup(test)))))
 
+def lex(s):
+    return list(lexer.lex_kissup(s))
+
+
+class TestLexer(unittest.TestCase):
+    def test_singles(self):
+        self.assertEqual(lex('['), [lexer.BracketLeftToken(0, 0, '['), lexer.EndToken(line_num=0, pos=1, value='')])
+
+
+if __name__ == '__main__':
+    unittest.main()
