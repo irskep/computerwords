@@ -33,33 +33,38 @@ class Token:
 
 
 class BracketLeftToken(Token):
-    name = "BRACKET_LEFT"
+    name = "["
     def __init__(self, line_num, pos, value='['):
         super().__init__(line_num, pos, value)
 
 class BracketRightToken(Token):
-    name = "BRACKET_RIGHT"
+    name = "]"
     def __init__(self, line_num, pos, value=']'):
         super().__init__(line_num, pos, value)
 
 class BBWordToken(Token):
-    name = "BBWORD"
+    name = "bbword"
 
 class EqualsToken(Token):
-    name = "EQUALS"
+    name = "="
     def __init__(self, line_num, pos, value='='):
         super().__init__(line_num, pos, value)
 
+class SlashToken(Token):
+    name = "/"
+    def __init__(self, line_num, pos, value='/'):
+        super().__init__(line_num, pos, value)
+
 class EndToken(Token):
-    name = "END"
+    name = "ε"
     def __init__(self, line_num, pos, value=''):
         super().__init__(line_num, pos, value)
 
 class TextToken(Token):
-    name = "TEXT"
+    name = "text"
 
 class SpaceToken(Token):
-    name = "SPACE"
+    name = "space"
 
 
 def _match_text(s, i, num_brackets, line, pos):
@@ -167,10 +172,11 @@ def _make_re_matcher(expr, required_num_brackets, Cls):
 
 TOKEN_FNS = [
     _match_left_bracket,
-    _make_re_matcher(r'[^[\]\s=]+', 1, BBWordToken),
+    _make_re_matcher(r'[^[\]\s=/]+', 1, BBWordToken),
     _make_re_matcher(r'\s+', 1, SpaceToken),
     _make_re_matcher(r'=', 1, EqualsToken),
     _match_string_literal,
+    _make_re_matcher(r'/', 1, SlashToken),
     _match_right_bracket,
     _match_text,
 ]
