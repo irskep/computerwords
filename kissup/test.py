@@ -28,6 +28,12 @@ class TestLexer(unittest.TestCase):
             lexer.EndToken(0, len(input_str))
         ])
 
+    def test_bad_text_escapes(self):
+        with self.assertRaises(lexer.LexError):
+            lex(r'\z')
+        with self.assertRaises(lexer.LexError):
+            lex("\\")
+
     def test_stuff_that_fails_outside_brackets(self):
         with self.assertRaises(lexer.LexError):
             lex(']')
