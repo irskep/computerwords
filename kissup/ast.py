@@ -19,7 +19,7 @@ def create_ast_node(class_name, production_name, forms):
                 #     raise ValueError(
                 #         "AST doesn't match rule: {}.{} -> {}".format(
                 #             i, class_name, field, field_name))
-            return form
+            return Cls(children=form)
 
         def __eq__(self, other):
             return type(self) is type(other) and self.children == other.children
