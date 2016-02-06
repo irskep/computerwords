@@ -44,7 +44,7 @@ def create_token_parser(name):
             return (None, i)
     return parse_token
 
-for name in ('TEXT', '[', ']', '/', '=', 'BBWORD', 'STRING'):
+for name in ('TEXT', '[', ']', '/', '=', 'BBWORD', 'STRING', 'ε'):
     rule('token_' + name, create_token_parser(name))
 
 def create_empty_rule(Cls, form):
@@ -54,19 +54,10 @@ def create_empty_rule(Cls, form):
 
 #stmts -> stmt stmts
 #       | ε
-def parse_stmts(tokens, i):
-    empty_case = (StmtsNode(2), i)
-
-    if i >= len(tokens): return empty_case
-
-    form_1 = parse_stmts_1(tokens, i)
-    if form_1:
-        return form_1
-    else:
-        return empty_case
-
-parse_stmts_1 = sequence_rule(StmtsNode, 1, 'stmt', 'stmts')
-rule('stmts', parse_stmts)
+parse_stmts = rule('stmts', multi_rule(
+    sequence_rule(StmtsNode, 1, 'stmt', 'stmts'),
+    sequence_rule(StmtsNode, 2, 'token_ε')
+))
 
 #stmt -> TEXT
 #      | tag

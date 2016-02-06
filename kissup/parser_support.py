@@ -18,16 +18,18 @@ def multi_rule(*parse_fns):
     return parse
 
 def parse_sequence(tokens, i, *names):
-    log("Entering parse_sequence: {}".format(' '.join(names)))
+    sequence_str = ' '.join(names)
+    log("Entering parse_sequence: {}".format(sequence_str))
     j = i
     nodes = []
     for name in names:
         result = call_parse_function(name, tokens, i)
-        if result:
+        if result and result[0]:
             nodes.append(result[0])
             i = result[1]
         else:
             return (None, j)
+    print("Pass sequence " + sequence_str)
     return nodes, i
 
 def none_to_duple(result, default):

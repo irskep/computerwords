@@ -1,5 +1,9 @@
 from collections import namedtuple
 
+
+class InternalParseError(Exception): pass
+
+
 class KissUpASTNode:
     name = "???"
 
@@ -14,6 +18,10 @@ def create_ast_node(class_name, production_name, forms):
         def __init__(self, form_num, *args, **kwargs):
             super().__init__()
 
+            for arg in args:
+                if arg is None:
+                    raise InternalParseError("No None args allowed")
+
             form = self.form_classes[form_num - 1](*args, **kwargs)
             for field in form._fields:
                 field_value_name = getattr(form, field).name
@@ -24,7 +32,7 @@ def create_ast_node(class_name, production_name, forms):
                     'slash': '/',
                 }.get(field, field.lower())
                 if expected_field_value_name != field_value_name.lower():
-                    raise ValueError(
+                    raise InternalParseError(
                         "AST doesn't match rule: {}.{}.{} -> {}".format(
                             i, class_name, expected_field_value_name, field_value_name))
 
