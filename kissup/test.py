@@ -42,7 +42,7 @@ class TestLexer(unittest.TestCase):
         with self.assertRaises(lexer.LexError):
             lex(']')
 
-    def test_bbcode(self):
+    def test_bbcode_simple(self):
         tokens = lex("[aa  bb=cc]text[/aa]")
         self.assertEqual(tokens, [
             lexer.BracketLeftToken(0, 0),
@@ -58,6 +58,18 @@ class TestLexer(unittest.TestCase):
             lexer.BBWordToken(0, 17, 'aa'),
             lexer.BracketRightToken(0, 19),
             lexer.EndToken(0, 20)
+        ])
+
+    def test_bbcode_with_string_literals(self):
+        input_string = r'["escaped \"\\[] string" /]' 
+        tokens = lex(input_string)
+        self.assertEqual(tokens, [
+            lexer.BracketLeftToken(0, 0),
+            lexer.TextToken(0, 1, r'escaped "\[] string'),
+            lexer.SpaceToken(0, 24, ' '),
+            lexer.SlashToken(0, 25),
+            lexer.BracketRightToken(0, 26),
+            lexer.EndToken(0, 27)
         ])
 
 

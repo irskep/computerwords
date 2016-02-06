@@ -7,7 +7,8 @@ STRING_LITERAL_BACKSLASH_CHARS = {'"', '\\'}
 
 
 class LexError(Exception):
-    pass
+    def __init__(self, line, pos, msg):
+        super().__init__("Line {} col {}: {}".format(line, pos, msg))
 
 
 TokenSpec = namedtuple('Token', ['match_re', 'get_token'])
@@ -67,6 +68,23 @@ class SpaceToken(Token):
     name = "space"
 
 
+"""
+# Matching function signature:
+
+fn(string, index, num_brackets, line, col) -> None or (token, index, num_brackets)
+ARGS
+    string: the string
+    index: index of character to lex in the string
+    num_brackets: current bracket nesting depth
+    line: line number
+    col: column number within the line
+RETURN
+    token: a token object (whatever you want really)
+    index: index of the next character to lex
+    num_brackets: bracket nesting depth (may be the same or different)
+"""
+
+
 def _match_text(s, i, num_brackets, line, pos):
     """Match text"""
 
@@ -87,13 +105,13 @@ def _match_text(s, i, num_brackets, line, pos):
             else:
                 return None
         elif s[i] == ']':
-            raise LexError("The character ']' must be escaped when used in text")
+            raise LexError(line, pos, "The character ']' must be escaped when used in text")
         elif s[i] == '\\':
             if next_char in TEXT_BACKSLASH_CHARS:
                 chars.append(next_char)
                 i += 1
             else:
-                raise LexError(
+                raise LexError(line, pos,
                     "A backslash in text must be followed by one of: {}"
                         .format(TEXT_BACKSLASH_CHARS))
         else:
@@ -115,25 +133,26 @@ def _match_string_literal(s, i, num_brackets, line, pos):
     i += 1
 
     while True:
-        next_char = None
-        is_last_char = len(s) > i + 1
-        if not is_last_char:
-            next_char = s[i]
-
-        if s[i] == '"':
+        if i >= len(s):
+            return None
+        elif s[i] == '"':
             return (TextToken(line, pos, ''.join(chars)), i + 1, num_brackets)
         elif s[i] == '\\':
+            next_char = None
+            try:
+                next_char = s[i + 1]
+            except IndexError:
+                pass
+
             if next_char in STRING_LITERAL_BACKSLASH_CHARS:
                 chars.append(next_char)
                 i += 1
             else:
-                raise LexError(
+                raise LexError(line, pos,
                     "A backslash in a string literal must be followed by one of: {}"
                         .format(STRING_LITERAL_BACKSLASH_CHARS))
         else:
             chars.append(s[i])
-            if is_last_char:
-                return (TextToken(line, pos, ''.join(chars)), i + 1, num_brackets)
         i += 1
 
 
@@ -172,7 +191,7 @@ def _make_re_matcher(expr, required_num_brackets, Cls):
 
 TOKEN_FNS = [
     _match_left_bracket,
-    _make_re_matcher(r'[^[\]\s=/]+', 1, BBWordToken),
+    _make_re_matcher(r'[^[\]\s=/"]+', 1, BBWordToken),
     _make_re_matcher(r'\s+', 1, SpaceToken),
     _make_re_matcher(r'=', 1, EqualsToken),
     _match_string_literal,
@@ -191,14 +210,15 @@ def lex_kissup(s):
         j = i
         while line_indexes[line] < - i:
             line += 1
+        pos = i - line_indexes[line]
         for token_fn in TOKEN_FNS:
-            result = token_fn(s, i, num_brackets, line, i - line_indexes[line])
+            result = token_fn(s, i, num_brackets, line, pos)
             if result:
                 (token, i, num_brackets) = result
                 yield token
                 break
         if j == i:
-            raise LexError("Could not match character {}".format(s[i]))
+            raise LexError(line, pos, "Could not match character {}".format(s[i]))
 
     while line_indexes[line] < - i:
         line += 1
