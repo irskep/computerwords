@@ -1,6 +1,11 @@
 from collections import namedtuple
 
-class KissUpASTNode: name = "???"
+class KissUpASTNode:
+    name = "???"
+
+    def get_string_for_test_comparison(self, inner_indentation=0):
+        return self.name
+
 
 def create_ast_node(class_name, production_name, forms):
     class Cls(KissUpASTNode):
@@ -23,19 +28,37 @@ def create_ast_node(class_name, production_name, forms):
                         "AST doesn't match rule: {}.{}.{} -> {}".format(
                             i, class_name, expected_field_value_name, field_value_name))
 
-            self.children = form
+            self.form_num = form_num
+            self.attrs = form
+
+        def get_string_for_test_comparison(self, inner_indentation=2):
+            elements = [
+                "{}_{}".format(
+                    super().get_string_for_test_comparison(inner_indentation),
+                    self.form_num)
+            ]
+
+            for field in self.attrs._fields:
+                value = getattr(self.attrs, field)
+                elements.append("{}{}: {}".format(
+                    ' ' * inner_indentation,
+                    field,
+                    value.get_string_for_test_comparison(inner_indentation + 2)
+                    ))
+
+            return '\n'.join(elements)
 
         def __getattr__(self, attr):
             try:
                 return super().__getattr__(attr)
             except AttributeError:
-                return self.children.__getattr__(attr)
+                return self.attrs.__getattr__(attr)
 
         def __eq__(self, other):
-            return type(self) is type(other) and self.children == other.children
+            return type(self) is type(other) and self.attrs == other.attrs
 
         def __repr__(self):
-            return "{}(children={!r})".format(self.__class__.__name__, self.children)
+            return "{}(attrs={!r})".format(self.__class__.__name__, self.attrs)
 
     Cls.__name__ = class_name
     # print(Cls)
@@ -54,6 +77,11 @@ class TokenNode(KissUpASTNode):
         super().__init__()
         self.name = name
         self.token = token
+
+    def get_string_for_test_comparison(self, inner_indentation=0):
+        return "token_{}: {!r}".format(
+            super().get_string_for_test_comparison(inner_indentation),
+            self.token.value)
 
     def __eq__(self, other):
         return type(self) is type(other) and self.name == other.name and self.token == other.token

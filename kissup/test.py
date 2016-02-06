@@ -92,6 +92,7 @@ class TestParser(unittest.TestCase):
     def test_stmt(self):
         tokens = lex('text')
         (stmt_node, i) = parse_funcs['stmt'](tokens, 0)
+        print(stmt_node.get_string_for_test_comparison())
         self.assertEqual(i, 1)
         expected_token_node = ast.TokenNode('TEXT', t.TextToken(0, 0, 'text'))
         self.assertEqual(
