@@ -2,6 +2,12 @@ import unittest
 
 from kissup import lexer
 from kissup import tokens as t
+from kissup import ast
+from kissup import parser
+from kissup import parser_support
+
+
+parse_funcs = parser_support.PARSE_FUNC_REGISTRY
 
 
 def lex(s):
@@ -72,6 +78,30 @@ class TestLexer(unittest.TestCase):
             t.BracketRightToken(0, 26),
             t.EndToken(0, 27)
         ])
+
+
+class TestParser(unittest.TestCase):
+    @unittest.skip("blah")
+    def test_parse_token(self):
+        tokens = lex('text')
+        (text_node, i) = parse_funcs['token_TEXT'](tokens, 0)
+        self.assertEqual(i, 1)
+        self.assertEqual(
+            text_node,
+            ast.TokenNode('TEXT', t.TextToken(0, 0, 'text')))
+
+    def test_arg_value(self):
+        tokens = lex('text')
+        (stmt_node, i) = parse_funcs['stmt'](tokens, 0)
+        print(stmt_node)
+        self.assertEqual(i, 1)
+        token_node = ast.TokenNode('TEXT', t.TextToken(0, 0, 'text'))
+        self.assertEqual(
+            stmt_node,
+            ast.StmtNode(children=ast.StmtNode.form_classes[0](text=token_node)))
+        # self.assertEqual(
+        #     arg_value,
+        #     ast.TokenNode('TEXT', t.TextToken(0, 0, 'text')))
 
 
 if __name__ == '__main__':
