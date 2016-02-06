@@ -49,13 +49,13 @@ for name in ('TEXT', '[', ']', '/', '=', 'BBWORD', 'STRING'):
 
 def create_empty_rule(Cls, form):
     def parse_empty(token, i):
-        return (Cls.create_form(form), i)
+        return (Cls(form), i)
     return parse_empty
 
 #stmts -> stmt stmts
 #       | ε
 def parse_stmts(tokens, i):
-    empty_case = (StmtsNode.create_form(2), i)
+    empty_case = (StmtsNode(2), i)
 
     if i >= len(tokens): return empty_case
 

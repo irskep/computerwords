@@ -81,7 +81,6 @@ class TestLexer(unittest.TestCase):
 
 
 class TestParser(unittest.TestCase):
-    @unittest.skip("blah")
     def test_parse_token(self):
         tokens = lex('text')
         (text_node, i) = parse_funcs['token_TEXT'](tokens, 0)
@@ -90,18 +89,14 @@ class TestParser(unittest.TestCase):
             text_node,
             ast.TokenNode('TEXT', t.TextToken(0, 0, 'text')))
 
-    def test_arg_value(self):
+    def test_stmt(self):
         tokens = lex('text')
         (stmt_node, i) = parse_funcs['stmt'](tokens, 0)
-        print(stmt_node)
         self.assertEqual(i, 1)
-        token_node = ast.TokenNode('TEXT', t.TextToken(0, 0, 'text'))
+        expected_token_node = ast.TokenNode('TEXT', t.TextToken(0, 0, 'text'))
         self.assertEqual(
             stmt_node,
-            ast.StmtNode(children=ast.StmtNode.form_classes[0](text=token_node)))
-        # self.assertEqual(
-        #     arg_value,
-        #     ast.TokenNode('TEXT', t.TextToken(0, 0, 'text')))
+            ast.StmtNode(1, expected_token_node))
 
 
 if __name__ == '__main__':

@@ -40,7 +40,7 @@ def sequence_rule(Cls, form, *sequence):
     def sequence_parser(tokens, i):
         (nodes, i) = parse_sequence(tokens, i, *sequence)
         if nodes:
-            return (Cls.create_form(form, *nodes), i)
+            return (Cls(form, *nodes), i)
         else:
             return None
     return sequence_parser
