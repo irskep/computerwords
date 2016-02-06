@@ -142,9 +142,9 @@ class TestParser(unittest.TestCase):
 
     @unittest.skip("")
     def test_tag_args_a(self):
-        tokens = lex('[x=y]')
-        (stmt_node, i) = parse_funcs['tag_args'](tokens, 1)
-        self.assertEqual(i, 4)
+        tokens = lex('[ x=y]')
+        (stmt_node, i) = parse_funcs['tag_args'](tokens, 2)
+        self.assertEqual(i, 5)
         self.assertEqual(
             stmt_node.get_string_for_test_comparison(),
             dedent("""
@@ -155,6 +155,31 @@ class TestParser(unittest.TestCase):
                     arg_value: arg_value_1
                       bbword: token_BBWORD: 'y'
                   tag_args: tag_args_2
+            """)[1:-1])
+
+    @unittest.skip("")
+    def test_tag_args_b(self):
+        tokens = lex('[ a=b x=y]')
+        (stmt_node, i) = parse_funcs['tag_args'](tokens, 1)
+        self.assertEqual(i, 9)
+        self.assertEqual(
+            stmt_node.get_string_for_test_comparison(),
+            dedent("""
+                tag_args_1
+                  space: token_SPACE: ' '
+                  tag_arg: tag_arg_1
+                    bbword: token_BBWORD: 'a'
+                    equals: token_=: '='
+                    arg_value: arg_value_1
+                      bbword: token_BBWORD: 'b'
+                  tag_args: tag_args_1
+                    space: token_SPACE: ' '
+                    tag_arg: tag_arg_1
+                      bbword: token_BBWORD: 'x'
+                      equals: token_=: '='
+                      arg_value: arg_value_1
+                        bbword: token_BBWORD: 'y'
+                    tag_args: tag_args_2
             """)[1:-1])
 
 

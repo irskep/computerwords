@@ -25,7 +25,7 @@ tag_contents -> BBWORD tag_args
 tag_args -> tag_arg tag_args
           | ε
 
-tag_arg -> BBWORD = arg_value
+tag_arg -> SPACE BBWORD = arg_value
 
 arg_value -> BBWORD
            | STRING
@@ -44,7 +44,7 @@ def create_token_parser(name):
             return (None, i)
     return parse_token
 
-for name in ('TEXT', '[', ']', '/', '=', 'BBWORD', 'STRING', 'ε'):
+for name in ('TEXT', '[', ']', '/', '=', 'BBWORD', 'STRING', 'ε', 'SPACE'):
     rule('token_' + name, create_token_parser(name))
 
 def create_empty_rule(Cls, form):
@@ -89,10 +89,10 @@ rule('tag_contents', multi_rule(
     sequence_rule(TagContentsNode, 1, 'token_BBWORD', 'tag_args'),
     sequence_rule(TagContentsNode, 2, 'token_BBWORD')))
 
-#tag_args -> tag_arg tag_args
+#tag_args -> SPACE tag_arg tag_args
 #          | ε
 rule('tag_args', multi_rule(
-    sequence_rule(TagArgsNode, 1, 'tag_arg', 'tag_args'),
+    sequence_rule(TagArgsNode, 1, 'token_SPACE', 'tag_arg', 'tag_args'),
     create_empty_rule(TagArgsNode, 2)))
 
 #tag_arg -> BBWORD = arg_value

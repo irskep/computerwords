@@ -135,7 +135,7 @@ TagContentsNode = create_ast_node(
 
 TagArgsNode = create_ast_node(
     'TagArgsNode', 'tag_args',
-    [['tag_arg', 'tag_args'], []])
+    [['space', 'tag_arg', 'tag_args'], []])
 
 
 TagArgNode = create_ast_node(
