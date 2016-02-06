@@ -1,6 +1,7 @@
 import unittest
 
 from kissup import lexer
+from kissup import tokens as t
 
 
 def lex(s):
@@ -10,26 +11,26 @@ def lex(s):
 class TestLexer(unittest.TestCase):
     def test_simple(self):
         self.assertEqual(lex('['), [
-            lexer.BracketLeftToken(0, 0),
-            lexer.EndToken(0, 1)
+            t.BracketLeftToken(0, 0),
+            t.EndToken(0, 1)
         ])
         self.assertEqual(lex('a'), [
-            lexer.TextToken(0, 0, 'a'),
-            lexer.EndToken(0, 1)
+            t.TextToken(0, 0, 'a'),
+            t.EndToken(0, 1)
         ])
         self.assertEqual(lex('a['), [
-            lexer.TextToken(0, 0, 'a'),
-            lexer.BracketLeftToken(0, 1, '['),
-            lexer.EndToken(0, 2)
+            t.TextToken(0, 0, 'a'),
+            t.BracketLeftToken(0, 1, '['),
+            t.EndToken(0, 2)
         ])
 
     def test_text_good_escapes(self):
         input_str = r'abcd\\ fooey \[ \]'
         expected_output_str = r'abcd\ fooey [ ]'
         self.assertEqual(lex(input_str), [
-            lexer.TextToken(0, 0, expected_output_str),
+            t.TextToken(0, 0, expected_output_str),
             # End token comes at the end of the *input* string!
-            lexer.EndToken(0, len(input_str))
+            t.EndToken(0, len(input_str))
         ])
 
     def test_text_bad_escapes(self):
@@ -45,31 +46,31 @@ class TestLexer(unittest.TestCase):
     def test_bbcode_simple(self):
         tokens = lex("[aa  bb=cc]text[/aa]")
         self.assertEqual(tokens, [
-            lexer.BracketLeftToken(0, 0),
-            lexer.BBWordToken(0, 1, 'aa'),
-            lexer.SpaceToken(0, 3, '  '),
-            lexer.BBWordToken(0, 5, 'bb'),
-            lexer.EqualsToken(0, 7),
-            lexer.BBWordToken(0, 8, 'cc'),
-            lexer.BracketRightToken(0, 10),
-            lexer.TextToken(0, 11, 'text'),
-            lexer.BracketLeftToken(0, 15),
-            lexer.SlashToken(0, 16),
-            lexer.BBWordToken(0, 17, 'aa'),
-            lexer.BracketRightToken(0, 19),
-            lexer.EndToken(0, 20)
+            t.BracketLeftToken(0, 0),
+            t.BBWordToken(0, 1, 'aa'),
+            t.SpaceToken(0, 3, '  '),
+            t.BBWordToken(0, 5, 'bb'),
+            t.EqualsToken(0, 7),
+            t.BBWordToken(0, 8, 'cc'),
+            t.BracketRightToken(0, 10),
+            t.TextToken(0, 11, 'text'),
+            t.BracketLeftToken(0, 15),
+            t.SlashToken(0, 16),
+            t.BBWordToken(0, 17, 'aa'),
+            t.BracketRightToken(0, 19),
+            t.EndToken(0, 20)
         ])
 
     def test_bbcode_with_string_literals(self):
         input_string = r'["escaped \"\\[] string" /]' 
         tokens = lex(input_string)
         self.assertEqual(tokens, [
-            lexer.BracketLeftToken(0, 0),
-            lexer.TextToken(0, 1, r'escaped "\[] string'),
-            lexer.SpaceToken(0, 24, ' '),
-            lexer.SlashToken(0, 25),
-            lexer.BracketRightToken(0, 26),
-            lexer.EndToken(0, 27)
+            t.BracketLeftToken(0, 0),
+            t.TextToken(0, 1, r'escaped "\[] string'),
+            t.SpaceToken(0, 24, ' '),
+            t.SlashToken(0, 25),
+            t.BracketRightToken(0, 26),
+            t.EndToken(0, 27)
         ])
 
 

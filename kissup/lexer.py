@@ -1,5 +1,6 @@
 import re
-from collections import namedtuple
+
+from kissup import tokens
 
 
 TEXT_BACKSLASH_CHARS = {'[', ']', '\\'}
@@ -9,63 +10,6 @@ STRING_LITERAL_BACKSLASH_CHARS = {'"', '\\'}
 class LexError(Exception):
     def __init__(self, line, pos, msg):
         super().__init__("Line {} col {}: {}".format(line, pos, msg))
-
-
-TokenSpec = namedtuple('Token', ['match_re', 'get_token'])
-
-
-class Token:
-    def __init__(self, line_num, pos, value):
-        super().__init__()
-        self.line_num = line_num
-        self.pos = pos
-        self.value = value
-
-    def __eq__(self, other):
-        return (
-            type(self) is type(other) and
-            self.value == other.value and
-            self.line_num == other.line_num and
-            self.pos == other.pos)
-
-    def __repr__(self):
-        return "{}(line_num={}, pos={}, value={!r})".format(
-            self.__class__.__name__, self.line_num, self.pos, self.value)
-
-
-class BracketLeftToken(Token):
-    name = "["
-    def __init__(self, line_num, pos, value='['):
-        super().__init__(line_num, pos, value)
-
-class BracketRightToken(Token):
-    name = "]"
-    def __init__(self, line_num, pos, value=']'):
-        super().__init__(line_num, pos, value)
-
-class BBWordToken(Token):
-    name = "bbword"
-
-class EqualsToken(Token):
-    name = "="
-    def __init__(self, line_num, pos, value='='):
-        super().__init__(line_num, pos, value)
-
-class SlashToken(Token):
-    name = "/"
-    def __init__(self, line_num, pos, value='/'):
-        super().__init__(line_num, pos, value)
-
-class EndToken(Token):
-    name = "ε"
-    def __init__(self, line_num, pos, value=''):
-        super().__init__(line_num, pos, value)
-
-class TextToken(Token):
-    name = "text"
-
-class SpaceToken(Token):
-    name = "space"
 
 
 """
@@ -101,7 +45,7 @@ def _match_text(s, i, num_brackets, line, pos):
 
         if i >= len(s) or s[i] == '[':
             if chars:
-                return (TextToken(line, pos, ''.join(chars)), i, num_brackets)
+                return (tokens.TextToken(line, pos, ''.join(chars)), i, num_brackets)
             else:
                 return None
         elif s[i] == ']':
@@ -117,7 +61,7 @@ def _match_text(s, i, num_brackets, line, pos):
         else:
             chars.append(s[i])
             if is_last_char:
-                return (TextToken(line, pos, ''.join(chars)), i + 1, num_brackets)
+                return (tokens.TextToken(line, pos, ''.join(chars)), i + 1, num_brackets)
         i += 1
 
 
@@ -136,7 +80,7 @@ def _match_string_literal(s, i, num_brackets, line, pos):
         if i >= len(s):
             return None
         elif s[i] == '"':
-            return (TextToken(line, pos, ''.join(chars)), i + 1, num_brackets)
+            return (tokens.TextToken(line, pos, ''.join(chars)), i + 1, num_brackets)
         elif s[i] == '\\':
             next_char = None
             try:
@@ -161,7 +105,7 @@ def _match_left_bracket(s, i, num_brackets, line, pos):
         return None
 
     if s[i] == '[':
-        return (BracketLeftToken(line, pos, s[i]), i + 1, num_brackets + 1)
+        return (tokens.BracketLeftToken(line, pos, s[i]), i + 1, num_brackets + 1)
     else:
         return None
 
@@ -171,7 +115,7 @@ def _match_right_bracket(s, i, num_brackets, line, pos):
         return None
 
     if s[i] == ']':
-        return (BracketRightToken(line, pos, s[i]), i + 1, num_brackets - 1)
+        return (tokens.BracketRightToken(line, pos, s[i]), i + 1, num_brackets - 1)
     else:
         return None
 
@@ -191,11 +135,11 @@ def _make_re_matcher(expr, required_num_brackets, Cls):
 
 TOKEN_FNS = [
     _match_left_bracket,
-    _make_re_matcher(r'[^[\]\s=/"]+', 1, BBWordToken),
-    _make_re_matcher(r'\s+', 1, SpaceToken),
-    _make_re_matcher(r'=', 1, EqualsToken),
+    _make_re_matcher(r'[^[\]\s=/"]+', 1, tokens.BBWordToken),
+    _make_re_matcher(r'\s+', 1, tokens.SpaceToken),
+    _make_re_matcher(r'=', 1, tokens.EqualsToken),
     _match_string_literal,
-    _make_re_matcher(r'/', 1, SlashToken),
+    _make_re_matcher(r'/', 1, tokens.SlashToken),
     _match_right_bracket,
     _match_text,
 ]
@@ -223,4 +167,4 @@ def lex_kissup(s):
     while line_indexes[line] < - i:
         line += 1
 
-    yield EndToken(line, i - line_indexes[line], '')
+    yield tokens.EndToken(line, i - line_indexes[line], '')
