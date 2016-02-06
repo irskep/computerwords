@@ -80,7 +80,7 @@ def _match_string_literal(s, i, num_brackets, line, pos):
         if i >= len(s):
             return None
         elif s[i] == '"':
-            return (tokens.TextToken(line, pos, ''.join(chars)), i + 1, num_brackets)
+            return (tokens.StringToken(line, pos, ''.join(chars)), i + 1, num_brackets)
         elif s[i] == '\\':
             next_char = None
             try:

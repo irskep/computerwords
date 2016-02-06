@@ -28,7 +28,7 @@ class BracketRightToken(Token):
         super().__init__(line_num, pos, value)
 
 class BBWordToken(Token):
-    name = "bbword"
+    name = "BBWORD"
 
 class EqualsToken(Token):
     name = "="
@@ -46,7 +46,10 @@ class EndToken(Token):
         super().__init__(line_num, pos, value)
 
 class TextToken(Token):
-    name = "text"
+    name = "TEXT"
+
+class StringToken(Token):
+    name = "STRING"
 
 class SpaceToken(Token):
-    name = "space"
+    name = "SPACE"

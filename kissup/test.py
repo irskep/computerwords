@@ -66,7 +66,7 @@ class TestLexer(unittest.TestCase):
         tokens = lex(input_string)
         self.assertEqual(tokens, [
             t.BracketLeftToken(0, 0),
-            t.TextToken(0, 1, r'escaped "\[] string'),
+            t.StringToken(0, 1, r'escaped "\[] string'),
             t.SpaceToken(0, 24, ' '),
             t.SlashToken(0, 25),
             t.BracketRightToken(0, 26),
