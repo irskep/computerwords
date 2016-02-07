@@ -1,0 +1,115 @@
+
+## Basic String Concat Syntax
+
+!fn foo(a,b) {
+  `${a} and ${b}`
+}
+
+!fn ifa(a,b) {
+  if a == b {
+    `${a} == ${b}`
+  } else {
+    `${a} != ${b}`
+  }
+}
+
+wizard $foo(`asdf`,`asddf`) $ifa(`asdf`,`asddf`)
+
+/// the `` mean that it should be processed as markup
+/// If you use "" it will be processed as a string
+/// If you use '' it will be processed as a string
+
+---
+
+## AST Manipulation
+
+/// here are some alternative syntaxes for adding a bolded wizard to the passed
+/// in node
+
+!fn add_wizard(node) {
+  node.addkid((new B).addkid(`wizard`))
+}
+
+!fn add_wizard(node) {
+  node.addkid(B().addkid(`wizard`))
+}
+
+!fn add_wizard(node) {
+  node.addkid(Node('b').addkid(`wizard`))
+}
+
+/// Now lets do it with an attribute.
+
+!fn img(url) {
+  Node('img', src=url)
+}
+
+!fn img(url) {
+  Node('img', src: url)
+}
+
+!fn img(url) {
+  IMG(src=url)
+}
+
+!fn img(url) {
+  new IMG src=url
+}
+
+!fn img(url) {
+  new IMG src: url
+}
+
+!fn img(url) {
+  new IMG(src=url)
+}
+
+/// Now let's add a css class "red" to all `[li/]` elemements under node.
+
+!fn add_red_to_list_elems(node) {
+  for d in node.descendents('li') {
+    d.add_class('red')
+  }
+}
+
+/// Now let's find the css class "red" and add style bold.
+
+!fn make_red_bold(node) {
+  for d in node.descendents(classes=['red']) {
+    d.css.add_rule('font-weight: bold')
+  }
+}
+
+/// Now let's find the css class 'red' or the class 'blue' and style italic
+
+!fn red_blue_make_italic(node) {
+  for d in node.descendents(
+    where=fn(n){ n.has_class('blue') or n.has_class('red') }) {
+      d.css.add_rule('font-style: italic')
+  }
+}
+
+/// We can dream up more AST manipulation syntax later.
+
+## functions applied to markup
+
+!fn doc_function(py_func, description) {
+  n = Node('div', classes=['py_func']).
+        addkid(Node('div', class=['func_name']).addkid(py_func.name)).
+        addkid(Node('div', class=['args'])).
+        addkid(Node('div', class=['docs']).addkid(description))
+  for arg in py_func.args {
+    n.first_descendent(classes=['args']).addkid(
+      Node('div', class=['arg']).addkid(arg))
+  }
+  n
+}
+
+$doc_function(functions.flatten, `
+  Flattens a nested iterator expression. It works at **any** nesting depth but
+  ignores anything subclassing *$link_to(types.basestring)*.
+`)
+
+
+
+
