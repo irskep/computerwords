@@ -117,8 +117,4 @@ rule('arg_value',
 
 
 def parse_kissup(tokens):
-    (node, i) = call_parse_func('stmts_a', tokens, 0)
-    if i < len(tokens) - 1:
-        raise ParseError("Could not match {}".format(tokens[i]))
-    else:
-        return node
+    return call_parse_function('stmts_b', tokens, 0)[0]

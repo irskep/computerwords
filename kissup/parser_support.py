@@ -5,8 +5,22 @@ def log(text, *args, **kwargs):
 
 
 class ParseError(Exception):
-    def __init__(self, token, msg):
-        super().__init__("Line {} col {}: {}".format(token.line, token.pos, msg))
+    def __init__(self, token, msg=None):
+        if msg is None:
+            msg = "Unable to parse token {}".format(token.name)
+        self.token = token
+        self.msg = msg
+        super().__init__("Line {} col {}: {}".format(
+            token.line, token.pos, msg))
+
+    def __eq__(self, other):
+        return (
+            type(self) is type(other) and
+            self.token == other.token and
+            self.msg == other.msg)
+
+    def __hash__(self):
+        return hash(repr(self.token) + self.msg)
 
 
 def raise_parse_error(token):
@@ -64,6 +78,15 @@ def rule(name, *fns):
         fn = alternatives(*fns)
     else:
         fn = fns[0]
+    if name == 'stmts_b':  # LOLOL API
+        inner_fn = fn
+        def wrapper_fn(tokens, i):
+            result = inner_fn(tokens, i)
+            if result and result[0]:
+                return result
+            else:
+                raise ParseError(tokens[i])
+        fn = wrapper_fn
     PARSE_FUNC_REGISTRY[name] = fn
     fn.__name__ = 'parse_' + name
     return fn

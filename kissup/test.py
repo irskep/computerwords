@@ -401,6 +401,14 @@ class TestParser(unittest.TestCase):
                     stmts: stmts_2
             """))
 
+    # @unittest.skip("")
+    def test_stmts_incomplete(self):
+        tokens = lex('text[abc /][')
+        with self.assertRaisesRegex(
+                parser.ParseError,
+                r"Line 0 col 11: Unable to parse token \["):
+            parser.parse_kissup(tokens)
+
 
 if __name__ == '__main__':
     unittest.main()
