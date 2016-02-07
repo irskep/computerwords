@@ -86,6 +86,10 @@ class TestLexer(unittest.TestCase):
 
 
 class TestParser(unittest.TestCase):
+    def setUp(self):
+        self.maxDiff = None
+        super().setUp()
+
     # @unittest.skip("")
     def test_parse_token(self):
         tokens = lex('text')
@@ -109,7 +113,8 @@ class TestParser(unittest.TestCase):
         tokens = lex('text')
         (stmt_node, i) = parse_funcs['stmt'](tokens, 0)
         self.assertEqual(i, 1)
-        expected_token_node = ast.TokenNode('TEXT', t.TextToken(0, 0, 'text'))
+        expected_token_node = ast.TokenNode(
+            'TEXT', t.TextToken(0, 0, 'text'))
         self.assertEqual(
             stmt_node,
             ast.StmtNode(1, expected_token_node))
@@ -370,6 +375,30 @@ class TestParser(unittest.TestCase):
                         slash: token_/: '/'
                         bracket_right: token_]: ']'
                   stmts: stmts_2
+            """))
+
+    # @unittest.skip("")
+    def test_stmts_multiple(self):
+        tokens = lex('text[abc /]')
+        (stmt_node, i) = parse_funcs['stmts_b'](tokens, 0)
+        self.assertEqual(i, 7)
+        self.assertEqual(
+            stmt_node.get_string_for_test_comparison(),
+            strip("""
+                stmts_1
+                  stmt: stmt_1
+                    text: token_TEXT: 'text'
+                  stmts: stmts_1
+                    stmt: stmt_2
+                      tag: tag_2
+                        self_closing_tag: self_closing_tag_1
+                          bracket_left: token_[: '['
+                          tag_contents: tag_contents_1
+                            bbword: token_BBWORD: 'abc'
+                            tag_args: tag_args_2
+                          slash: token_/: '/'
+                          bracket_right: token_]: ']'
+                    stmts: stmts_2
             """))
 
 
