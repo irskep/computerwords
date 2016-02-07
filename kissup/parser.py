@@ -17,10 +17,12 @@ open_tag -> [ tag_contents ]
 
 close_tag -> [ / BBWORD ]
 
-self_closing_tag -> [ tag_contents / ]
+self_closing_tag -> [ tag_contents opt_whitespace / opt_whitespace ]
+
+opt_whitespace -> SPACE
+                | ε
 
 tag_contents -> BBWORD tag_args
-              | BBWORD
 
 tag_args -> tag_arg tag_args
           | ε
@@ -79,15 +81,20 @@ rule('open_tag', sequence_rule(
 rule('close_tag', sequence_rule(
     CloseTagNode, 1, 'token_[', 'token_/', 'token_BBWORD', 'token_]'))
 
-#self_closing_tag -> [ tag_contents / ]
-rule('self_closing_tag', sequence_rule(
-    SelfClosingTagNode, 1, 'token_[', 'tag_contents', 'token_/', 'token_]'))
+#self_closing_tag -> [ tag_contents opt_whitespace / opt_whitespace ]
+rule('self_closing_tag',
+    sequence_rule(SelfClosingTagNode, 1,
+        'token_[', 'tag_contents', 'opt_whitespace', 'token_/', 'opt_whitespace', 'token_]'))
+
+#opt_whitespace -> SPACE
+#                | ε
+rule('opt_whitespace', 
+    sequence_rule(OptWhitespaceNode, 1, 'token_SPACE'),
+    create_empty_rule(OptWhitespaceNode, 2))
 
 #tag_contents -> BBWORD tag_args
-#              | BBWORD
 rule('tag_contents',
-    sequence_rule(TagContentsNode, 1, 'token_BBWORD', 'tag_args'),
-    sequence_rule(TagContentsNode, 2, 'token_BBWORD'))
+    sequence_rule(TagContentsNode, 1, 'token_BBWORD', 'tag_args'))
 
 #tag_args -> SPACE tag_arg tag_args
 #          | ε
@@ -103,3 +110,11 @@ rule('tag_arg', sequence_rule(TagArgNode, 1, 'token_BBWORD', 'token_=', 'arg_val
 rule('arg_value', 
     sequence_rule(ArgValueNode, 1, 'token_BBWORD'),
     sequence_rule(ArgValueNode, 2, 'token_STRING'))
+
+
+def parse_kissup(tokens):
+    (node, i) = call_parse_func('stmts', tokens, 0)
+    if i < len(tokens) - 1:
+        raise ParseError("Could not match {}".format(tokens[i]))
+    else:
+        return node

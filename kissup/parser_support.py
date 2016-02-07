@@ -1,6 +1,6 @@
-def log(text):
+def log(text, *args, **kwargs):
     # TODO: use logging
-    print(text)
+    print(text.format(*args, **kwargs))
 
 
 class ParseError(Exception):
@@ -10,7 +10,7 @@ class ParseError(Exception):
 
 def alternatives(*parse_fns):
     def parse(tokens, i):
-        log("Entering {}".format(parse.__name__))
+        log("Entering {}", parse.__name__)
         for fn in parse_fns:
             result = fn(tokens, i)
             if result: return result
@@ -19,7 +19,7 @@ def alternatives(*parse_fns):
 
 def parse_sequence(tokens, i, *names):
     sequence_str = ' '.join(names)
-    log("Entering parse_sequence: {}".format(sequence_str))
+    log("Entering parse_sequence: {}", sequence_str)
     j = i
     nodes = []
     for name in names:
@@ -28,8 +28,9 @@ def parse_sequence(tokens, i, *names):
             nodes.append(result[0])
             i = result[1]
         else:
+            log("Fail {} with {}", name, tokens[i])
             return (None, j)
-    print("Pass sequence " + sequence_str)
+    log("Pass sequence {}", sequence_str)
     return nodes, i
 
 def none_to_duple(result, default):
@@ -59,5 +60,5 @@ def rule(name, *fns):
     return fn
 
 
-def call_parse_function(name, token, i):
+def call_parse_function(name, token, i):# 
     return PARSE_FUNC_REGISTRY[name](token, i)

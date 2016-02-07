@@ -22,6 +22,9 @@ def create_ast_node(class_name, production_name, forms):
                 if arg is None:
                     raise InternalParseError("No None args allowed")
 
+            # Yes, this is ugly magic cheating. Don't worry about it.
+            args = [arg for arg in args if not arg.name == 'opt_whitespace']
+
             form = self.form_classes[form_num - 1](*args, **kwargs)
             for field in form._fields:
                 field_value_name = getattr(form, field).name
@@ -146,3 +149,8 @@ TagArgNode = create_ast_node(
 ArgValueNode = create_ast_node(
     'ArgValueNode', 'arg_value',
     [['bbword'], ['string']])
+
+
+OptWhitespaceNode = create_ast_node(
+    'OptWhitespaceNode', 'opt_whitespace',
+    [['space'], []])
