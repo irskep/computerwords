@@ -1,12 +1,15 @@
 """
 
-stmts -> stmt stmts
-       | ε
+stmts_a -> stmt stmts_a
+         | ε
+
+stmts_b -> stmt stmts_b
+         | END
 
 stmt -> TEXT
       | tag
 
-tag -> open_tag stmts close_tag
+tag -> open_tag stmts_a close_tag
      | self_closing_tag
 
 open_tag -> [ tag_contents space? ]
@@ -35,7 +38,7 @@ from kissup.parser_support import *
 ### RULES ###
 
 def create_token_parser(name):
-    def parse_token(tokens, i):
+    def parse_token(tokens, i, is_special=False):
         if tokens[i].name == name:
             return (TokenNode(name, tokens[i]), i + 1)
         else:
@@ -50,12 +53,17 @@ def create_empty_rule(Cls, form):
         return (Cls(form), i)
     return parse_empty
 
-#stmts -> stmt stmts
-#       | ε
-parse_stmts = rule('stmts',
+#stmts_a -> stmt stmts_a
+#         | ε
+parse_stmts_a = rule('stmts_a',
+    sequence_rule(StmtsNode, 1, 'stmt', 'stmts_a'),
+    create_empty_rule(StmtsNode, 2))
+
+#stmts_b -> stmt stmts_b
+#         | END
+parse_stmts = rule('stmts_b',
     sequence_rule(StmtsNode, 1, 'stmt', 'stmts'),
-    sequence_rule(StmtsNode, 2, 'token_ε'),
-    error_if_no_match=True)
+    sequence_rule(StmtsNode, 2, 'token_ε'))
 
 #stmt -> TEXT
 #      | tag
@@ -109,7 +117,7 @@ rule('arg_value',
 
 
 def parse_kissup(tokens):
-    (node, i) = call_parse_func('stmts', tokens, 0)
+    (node, i) = call_parse_func('stmts_a', tokens, 0)
     if i < len(tokens) - 1:
         raise ParseError("Could not match {}".format(tokens[i]))
     else:

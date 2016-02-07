@@ -309,9 +309,9 @@ class TestParser(unittest.TestCase):
             """))
 
     # @unittest.skip("")
-    def test_stmts_2_empty_input(self):
+    def test_stmts_b_2_empty_input(self):
         tokens = lex('')
-        (stmt_node, i) = parse_funcs['stmts'](tokens, 0)
+        (stmt_node, i) = parse_funcs['stmts_b'](tokens, 0)
         self.assertEqual(i, 1)
         self.assertEqual(
             stmt_node.get_string_for_test_comparison(),

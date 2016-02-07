@@ -9,18 +9,17 @@ class ParseError(Exception):
         super().__init__("Line {} col {}: {}".format(token.line, token.pos, msg))
 
 
-def alternatives(*parse_fns, error_if_no_match=False):
-    def parse(tokens, i):
-        log("Entering {}", parse.__name__)
-        for fn in parse_fns:
-            result = fn(tokens, i)
-            if result: return result
-        if error_if_no_match:
-            raise ParseError("Could not parse statements at line {}, column {}".format(
-                tokens[i].line, tokens[i].pos))
-        else:
-            return (None, i)
-    return parse
+def raise_parse_error(token):
+    raise ParseError("Could not parse statements at line {}, column {}".format(
+        tokens[i].line, tokens[i].pos))
+
+
+def none_to_duple(result, default):
+    if result:
+        return result
+    else:
+        return (None, default)
+
 
 def parse_sequence(tokens, i, *names):
     sequence_str = ' '.join(names)
@@ -38,11 +37,16 @@ def parse_sequence(tokens, i, *names):
     log("Pass sequence {}", sequence_str)
     return nodes, i
 
-def none_to_duple(result, default):
-    if result:
-        return result
-    else:
-        return (None, default)
+
+def alternatives(*parse_fns):
+    def parse_alternatives(tokens, i):
+        log("Entering {}", parse_alternatives.__name__)
+        for fn in parse_fns:
+            result = fn(tokens, i)
+            if result: return result
+        return (None, i)
+    return parse_alternatives
+
 
 def sequence_rule(Cls, form, *sequence):
     def sequence_parser(tokens, i):
@@ -55,9 +59,9 @@ def sequence_rule(Cls, form, *sequence):
 
 
 PARSE_FUNC_REGISTRY = {}
-def rule(name, *fns, error_if_no_match=False):
+def rule(name, *fns):
     if len(fns) > 1:
-        fn = alternatives(*fns, error_if_no_match=error_if_no_match)
+        fn = alternatives(*fns)
     else:
         fn = fns[0]
     PARSE_FUNC_REGISTRY[name] = fn
@@ -65,5 +69,5 @@ def rule(name, *fns, error_if_no_match=False):
     return fn
 
 
-def call_parse_function(name, token, i):# 
+def call_parse_function(name, token, i): 
     return PARSE_FUNC_REGISTRY[name](token, i)
