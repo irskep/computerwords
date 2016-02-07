@@ -1,4 +1,5 @@
 def log(text, *args, **kwargs):
+    return
     # TODO: use logging
     print(text.format(*args, **kwargs))
 
@@ -8,13 +9,17 @@ class ParseError(Exception):
         super().__init__("Line {} col {}: {}".format(token.line, token.pos, msg))
 
 
-def alternatives(*parse_fns):
+def alternatives(*parse_fns, error_if_no_match=False):
     def parse(tokens, i):
         log("Entering {}", parse.__name__)
         for fn in parse_fns:
             result = fn(tokens, i)
             if result: return result
-        return (None, i)
+        if error_if_no_match:
+            raise ParseError("Could not parse statements at line {}, column {}".format(
+                tokens[i].line, tokens[i].pos))
+        else:
+            return (None, i)
     return parse
 
 def parse_sequence(tokens, i, *names):
@@ -50,9 +55,9 @@ def sequence_rule(Cls, form, *sequence):
 
 
 PARSE_FUNC_REGISTRY = {}
-def rule(name, *fns):
+def rule(name, *fns, error_if_no_match=False):
     if len(fns) > 1:
-        fn = alternatives(*fns)
+        fn = alternatives(*fns, error_if_no_match=error_if_no_match)
     else:
         fn = fns[0]
     PARSE_FUNC_REGISTRY[name] = fn

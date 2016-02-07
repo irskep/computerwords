@@ -11,7 +11,7 @@ tag -> open_tag stmts close_tag
 
 open_tag -> [ tag_contents space? ]
 
-close_tag -> [ / BBWORD ]
+close_tag -> [ space? / BBWORD ]
 
 self_closing_tag -> [ tag_contents / space? ]
 
@@ -54,8 +54,8 @@ def create_empty_rule(Cls, form):
 #       | ε
 parse_stmts = rule('stmts',
     sequence_rule(StmtsNode, 1, 'stmt', 'stmts'),
-    sequence_rule(StmtsNode, 2, 'token_ε')
-)
+    sequence_rule(StmtsNode, 2, 'token_ε'),
+    error_if_no_match=True)
 
 #stmt -> TEXT
 #      | tag
@@ -75,7 +75,7 @@ rule('open_tag', sequence_rule(
 
 #close_tag -> [ / BBWORD ]
 rule('close_tag', sequence_rule(
-    CloseTagNode, 1, 'token_[', 'token_/', 'token_BBWORD', 'token_]'))
+    CloseTagNode, 1, 'token_[', 'space?', 'token_/', 'token_BBWORD', 'token_]'))
 
 #self_closing_tag -> [ tag_contents space? / space? ]
 rule('self_closing_tag',
@@ -90,7 +90,7 @@ rule('space?',
 
 #tag_contents -> BBWORD tag_args
 rule('tag_contents',
-    sequence_rule(TagContentsNode, 1, 'token_BBWORD', 'tag_args'))
+    sequence_rule(TagContentsNode, 1, 'space?', 'token_BBWORD', 'tag_args'))
 
 #tag_args -> SPACE tag_arg tag_args
 #          | ε
