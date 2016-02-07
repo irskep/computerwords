@@ -74,7 +74,7 @@ rule('stmt',
 #tag -> open_tag stmts close_tag
 #     | self_closing_tag
 rule('tag',
-    sequence_rule(TagNode, 1, 'open_tag', 'stmts', 'close_tag'),
+    sequence_rule(TagNode, 1, 'open_tag', 'stmts_a', 'close_tag'),
     sequence_rule(TagNode, 2, 'self_closing_tag'))
 
 #open_tag -> [ tag_contents ]

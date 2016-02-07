@@ -90,7 +90,6 @@ class TestParser(unittest.TestCase):
         self.maxDiff = None
         super().setUp()
 
-    # @unittest.skip("")
     def test_parse_token(self):
         tokens = lex('text')
         (text_node, i) = parse_funcs['token_TEXT'](tokens, 0)
@@ -99,7 +98,6 @@ class TestParser(unittest.TestCase):
             text_node,
             ast.TokenNode('TEXT', t.TextToken(0, 0, 'text')))
 
-    # @unittest.skip("")
     def test_parse_end_token(self):
         tokens = lex('')
         (token_node, i) = parse_funcs['token_ε'](tokens, 0)
@@ -108,7 +106,6 @@ class TestParser(unittest.TestCase):
             token_node,
             ast.TokenNode('ε', t.EndToken(0, 0)))
 
-    # @unittest.skip("")
     def test_stmt_1(self):
         tokens = lex('text')
         (stmt_node, i) = parse_funcs['stmt'](tokens, 0)
@@ -119,7 +116,6 @@ class TestParser(unittest.TestCase):
             stmt_node,
             ast.StmtNode(1, expected_token_node))
 
-    # @unittest.skip("")
     def test_arg_value_1(self):
         tokens = lex('[a_bbword]')
         (stmt_node, i) = parse_funcs['arg_value'](tokens, 1)
@@ -131,7 +127,6 @@ class TestParser(unittest.TestCase):
                   bbword: token_BBWORD: 'a_bbword'
             """))
 
-    # @unittest.skip("")
     def test_arg_value_2(self):
         tokens = lex(r'["a \" string"]')
         (stmt_node, i) = parse_funcs['arg_value'](tokens, 1)
@@ -143,7 +138,6 @@ class TestParser(unittest.TestCase):
                   string: token_STRING: 'a \" string'
             """))
 
-    # @unittest.skip("")
     def test_tag_arg(self):
         tokens = lex('[x=y]')
         (stmt_node, i) = parse_funcs['tag_arg'](tokens, 1)
@@ -158,7 +152,6 @@ class TestParser(unittest.TestCase):
                     bbword: token_BBWORD: 'y'
             """))
 
-    # @unittest.skip("")
     def test_tag_args_a(self):
         tokens = lex('[ x=y]')
         (stmt_node, i) = parse_funcs['tag_args'](tokens, 1)
@@ -176,7 +169,6 @@ class TestParser(unittest.TestCase):
                   tag_args: tag_args_2
             """))
 
-    # @unittest.skip("")
     def test_tag_args_b(self):
         tokens = lex('[ a="b" x=y]')
         (stmt_node, i) = parse_funcs['tag_args'](tokens, 1)
@@ -201,7 +193,6 @@ class TestParser(unittest.TestCase):
                     tag_args: tag_args_2
             """))
 
-    # @unittest.skip("")
     def test_tag_contents_a(self):
         tokens = lex('[abc]')
         (stmt_node, i) = parse_funcs['tag_contents'](tokens, 1)
@@ -214,7 +205,6 @@ class TestParser(unittest.TestCase):
                   tag_args: tag_args_2
             """))
 
-    # @unittest.skip("")
     def test_tag_contents_b(self):
         tokens = lex('[abc x=y ]')  # include optional whitespace
         (stmt_node, i) = parse_funcs['tag_contents'](tokens, 1)
@@ -234,7 +224,6 @@ class TestParser(unittest.TestCase):
                     tag_args: tag_args_2
             """))
 
-    # @unittest.skip("")
     def test_self_closing_tag(self):
         tokens = lex('[abc /]')
         (stmt_node, i) = parse_funcs['self_closing_tag'](tokens, 0)
@@ -251,7 +240,6 @@ class TestParser(unittest.TestCase):
                   bracket_right: token_]: ']'
             """))
 
-    # @unittest.skip("")
     def test_open_tag(self):
         tokens = lex('[ abc]')  # include optional whitespace
         (stmt_node, i) = parse_funcs['open_tag'](tokens, 0)
@@ -267,7 +255,6 @@ class TestParser(unittest.TestCase):
                   bracket_right: token_]: ']'
             """))
 
-    # @unittest.skip("")
     def test_close_tag(self):
         tokens = lex('[ /abc]')  # include optional whitespace
         (stmt_node, i) = parse_funcs['close_tag'](tokens, 0)
@@ -282,7 +269,6 @@ class TestParser(unittest.TestCase):
                   bracket_right: token_]: ']'
             """))
 
-    # @unittest.skip("")
     def test_stmt_1_differently(self):
         tokens = lex('abc')  # include optional whitespace
         (stmt_node, i) = parse_funcs['stmt'](tokens, 0)
@@ -294,7 +280,6 @@ class TestParser(unittest.TestCase):
                   text: token_TEXT: 'abc'
             """))
 
-    # @unittest.skip("")
     def test_stmt_2(self):
         tokens = lex('[abc/]')
         (stmt_node, i) = parse_funcs['stmt'](tokens, 0)
@@ -313,7 +298,6 @@ class TestParser(unittest.TestCase):
                       bracket_right: token_]: ']'
             """))
 
-    # @unittest.skip("")
     def test_stmts_b_2_empty_input(self):
         tokens = lex('')
         (stmt_node, i) = parse_funcs['stmts_b'](tokens, 0)
@@ -324,7 +308,6 @@ class TestParser(unittest.TestCase):
                 stmts_2
             """))
 
-    # @unittest.skip("")
     def test_stmts_a_2_empty_input(self):
         tokens = lex('')
         (stmt_node, i) = parse_funcs['stmts_a'](tokens, 0)
@@ -335,7 +318,6 @@ class TestParser(unittest.TestCase):
                 stmts_2
             """))
 
-    # @unittest.skip("")
     def test_stmts_b_1_self_closing_tag(self):
         tokens = lex('[abc /]')
         (stmt_node, i) = parse_funcs['stmts_b'](tokens, 0)
@@ -356,7 +338,6 @@ class TestParser(unittest.TestCase):
                   stmts: stmts_2
             """))
 
-    # @unittest.skip("")
     def test_stmts_a_1_self_closing_tag(self):
         tokens = lex('[abc /]')
         (stmt_node, i) = parse_funcs['stmts_a'](tokens, 0)
@@ -377,7 +358,6 @@ class TestParser(unittest.TestCase):
                   stmts: stmts_2
             """))
 
-    # @unittest.skip("")
     def test_stmts_multiple(self):
         tokens = lex('text[abc /]')
         (stmt_node, i) = parse_funcs['stmts_b'](tokens, 0)
@@ -401,12 +381,18 @@ class TestParser(unittest.TestCase):
                     stmts: stmts_2
             """))
 
-    # @unittest.skip("")
-    def test_stmts_incomplete(self):
+class TestParseErrors(unittest.TestCase):
+
+    def test_trailing_garbage(self):
         tokens = lex('text[abc /][')
         with self.assertRaisesRegex(
                 parser.ParseError,
                 r"Line 0 col 11: Unable to parse token \["):
+            parser.parse_kissup(tokens)
+
+    def test_mismatched_tags(self):
+        tokens = lex('[abc]inner[/xyz]')
+        with self.assertRaises(parser.ParseError):
             parser.parse_kissup(tokens)
 
 
