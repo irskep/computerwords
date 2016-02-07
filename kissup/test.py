@@ -86,7 +86,7 @@ class TestLexer(unittest.TestCase):
 
 
 class TestParser(unittest.TestCase):
-    @unittest.skip("")
+    # @unittest.skip("")
     def test_parse_token(self):
         tokens = lex('text')
         (text_node, i) = parse_funcs['token_TEXT'](tokens, 0)
@@ -95,7 +95,7 @@ class TestParser(unittest.TestCase):
             text_node,
             ast.TokenNode('TEXT', t.TextToken(0, 0, 'text')))
 
-    @unittest.skip("")
+    # @unittest.skip("")
     def test_stmt(self):
         tokens = lex('text')
         (stmt_node, i) = parse_funcs['stmt'](tokens, 0)
@@ -105,7 +105,7 @@ class TestParser(unittest.TestCase):
             stmt_node,
             ast.StmtNode(1, expected_token_node))
 
-    @unittest.skip("")
+    # @unittest.skip("")
     def test_arg_value_1(self):
         tokens = lex('[a_bbword]')
         (stmt_node, i) = parse_funcs['arg_value'](tokens, 1)
@@ -117,7 +117,7 @@ class TestParser(unittest.TestCase):
                   bbword: token_BBWORD: 'a_bbword'
             """))
 
-    @unittest.skip("")
+    # @unittest.skip("")
     def test_arg_value_2(self):
         tokens = lex(r'["a \" string"]')
         (stmt_node, i) = parse_funcs['arg_value'](tokens, 1)
@@ -129,7 +129,7 @@ class TestParser(unittest.TestCase):
                   string: token_STRING: 'a \" string'
             """))
 
-    @unittest.skip("")
+    # @unittest.skip("")
     def test_tag_arg(self):
         tokens = lex('[x=y]')
         (stmt_node, i) = parse_funcs['tag_arg'](tokens, 1)
@@ -144,7 +144,7 @@ class TestParser(unittest.TestCase):
                     bbword: token_BBWORD: 'y'
             """))
 
-    @unittest.skip("")
+    # @unittest.skip("")
     def test_tag_args_a(self):
         tokens = lex('[ x=y]')
         (stmt_node, i) = parse_funcs['tag_args'](tokens, 1)
@@ -162,7 +162,7 @@ class TestParser(unittest.TestCase):
                   tag_args: tag_args_2
             """))
 
-    @unittest.skip("")
+    # @unittest.skip("")
     def test_tag_args_b(self):
         tokens = lex('[ a="b" x=y]')
         (stmt_node, i) = parse_funcs['tag_args'](tokens, 1)
@@ -187,7 +187,7 @@ class TestParser(unittest.TestCase):
                     tag_args: tag_args_2
             """))
 
-    @unittest.skip("")
+    # @unittest.skip("")
     def test_tag_contents_a(self):
         tokens = lex('[abc]')
         (stmt_node, i) = parse_funcs['tag_contents'](tokens, 1)
@@ -200,7 +200,7 @@ class TestParser(unittest.TestCase):
                   tag_args: tag_args_2
             """))
 
-    @unittest.skip("")
+    # @unittest.skip("")
     def test_tag_contents_b(self):
         tokens = lex('[abc x=y]')
         (stmt_node, i) = parse_funcs['tag_contents'](tokens, 1)
@@ -220,6 +220,7 @@ class TestParser(unittest.TestCase):
                     tag_args: tag_args_2
             """))
 
+    # @unittest.skip("")
     def test_self_closing_tag(self):
         tokens = lex('[abc /]')
         (stmt_node, i) = parse_funcs['self_closing_tag'](tokens, 0)

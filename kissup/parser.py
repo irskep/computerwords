@@ -1,8 +1,4 @@
 """
-// BBWORD: a valid tag name; essentially a string literal terminated by whitespace or a reserved character
-// TEXT: non-BBCode text (i.e. string literal)
-// BB_VAL: A string literal inside a BBCode tag
-// e.g. [img src="foo"] matches [BBWORD BBWORD=BB_VAL]
 
 stmts -> stmt stmts
        | ε
@@ -13,16 +9,13 @@ stmt -> TEXT
 tag -> open_tag stmts close_tag
      | self_closing_tag
 
-open_tag -> [ tag_contents ]
+open_tag -> [ tag_contents space? ]
 
 close_tag -> [ / BBWORD ]
 
-self_closing_tag -> [ tag_contents opt_whitespace / opt_whitespace ]
+self_closing_tag -> [ tag_contents / space? ]
 
-opt_whitespace -> SPACE
-                | ε
-
-tag_contents -> BBWORD tag_args
+tag_contents -> space? BBWORD tag_args space?
 
 tag_args -> tag_arg tag_args
           | ε
@@ -31,6 +24,9 @@ tag_arg -> SPACE BBWORD = arg_value
 
 arg_value -> BBWORD
            | STRING
+
+space? -> SPACE
+        | ε
 """
 
 from kissup.ast import *
@@ -81,14 +77,14 @@ rule('open_tag', sequence_rule(
 rule('close_tag', sequence_rule(
     CloseTagNode, 1, 'token_[', 'token_/', 'token_BBWORD', 'token_]'))
 
-#self_closing_tag -> [ tag_contents opt_whitespace / opt_whitespace ]
+#self_closing_tag -> [ tag_contents space? / space? ]
 rule('self_closing_tag',
     sequence_rule(SelfClosingTagNode, 1,
-        'token_[', 'tag_contents', 'opt_whitespace', 'token_/', 'opt_whitespace', 'token_]'))
+        'token_[', 'tag_contents', 'space?', 'token_/', 'space?', 'token_]'))
 
-#opt_whitespace -> SPACE
-#                | ε
-rule('opt_whitespace', 
+#space? -> SPACE
+#        | ε
+rule('space?', 
     sequence_rule(OptWhitespaceNode, 1, 'token_SPACE'),
     create_empty_rule(OptWhitespaceNode, 2))
 
