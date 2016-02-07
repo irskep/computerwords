@@ -62,7 +62,7 @@ parse_stmts_a = rule('stmts_a',
 #stmts_b -> stmt stmts_b
 #         | END
 parse_stmts = rule('stmts_b',
-    sequence_rule(StmtsNode, 1, 'stmt', 'stmts'),
+    sequence_rule(StmtsNode, 1, 'stmt', 'stmts_b'),
     sequence_rule(StmtsNode, 2, 'token_ε'))
 
 #stmt -> TEXT

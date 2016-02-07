@@ -312,11 +312,64 @@ class TestParser(unittest.TestCase):
     def test_stmts_b_2_empty_input(self):
         tokens = lex('')
         (stmt_node, i) = parse_funcs['stmts_b'](tokens, 0)
-        self.assertEqual(i, 1)
+        self.assertEqual(i, 1) # consumes end token
         self.assertEqual(
             stmt_node.get_string_for_test_comparison(),
             strip("""
                 stmts_2
+            """))
+
+    # @unittest.skip("")
+    def test_stmts_a_2_empty_input(self):
+        tokens = lex('')
+        (stmt_node, i) = parse_funcs['stmts_a'](tokens, 0)
+        self.assertEqual(i, 0)  # does NOT consume end token
+        self.assertEqual(
+            stmt_node.get_string_for_test_comparison(),
+            strip("""
+                stmts_2
+            """))
+
+    # @unittest.skip("")
+    def test_stmts_b_1_self_closing_tag(self):
+        tokens = lex('[abc /]')
+        (stmt_node, i) = parse_funcs['stmts_b'](tokens, 0)
+        self.assertEqual(i, 6)
+        self.assertEqual(
+            stmt_node.get_string_for_test_comparison(),
+            strip("""
+                stmts_1
+                  stmt: stmt_2
+                    tag: tag_2
+                      self_closing_tag: self_closing_tag_1
+                        bracket_left: token_[: '['
+                        tag_contents: tag_contents_1
+                          bbword: token_BBWORD: 'abc'
+                          tag_args: tag_args_2
+                        slash: token_/: '/'
+                        bracket_right: token_]: ']'
+                  stmts: stmts_2
+            """))
+
+    # @unittest.skip("")
+    def test_stmts_a_1_self_closing_tag(self):
+        tokens = lex('[abc /]')
+        (stmt_node, i) = parse_funcs['stmts_a'](tokens, 0)
+        self.assertEqual(i, 5)
+        self.assertEqual(
+            stmt_node.get_string_for_test_comparison(),
+            strip("""
+                stmts_1
+                  stmt: stmt_2
+                    tag: tag_2
+                      self_closing_tag: self_closing_tag_1
+                        bracket_left: token_[: '['
+                        tag_contents: tag_contents_1
+                          bbword: token_BBWORD: 'abc'
+                          tag_args: tag_args_2
+                        slash: token_/: '/'
+                        bracket_right: token_]: ']'
+                  stmts: stmts_2
             """))
 
 
