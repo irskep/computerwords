@@ -96,7 +96,16 @@ class TestParser(unittest.TestCase):
             ast.TokenNode('TEXT', t.TextToken(0, 0, 'text')))
 
     # @unittest.skip("")
-    def test_stmt(self):
+    def test_parse_end_token(self):
+        tokens = lex('')
+        (token_node, i) = parse_funcs['token_ε'](tokens, 0)
+        self.assertEqual(i, 1)
+        self.assertEqual(
+            token_node,
+            ast.TokenNode('ε', t.EndToken(0, 0)))
+
+    # @unittest.skip("")
+    def test_stmt_1(self):
         tokens = lex('text')
         (stmt_node, i) = parse_funcs['stmt'](tokens, 0)
         self.assertEqual(i, 1)
@@ -269,8 +278,20 @@ class TestParser(unittest.TestCase):
             """))
 
     # @unittest.skip("")
-    def test_stmt(self):
-        tokens = lex('[abc/]')  # include optional whitespace
+    def test_stmt_1_differently(self):
+        tokens = lex('abc')  # include optional whitespace
+        (stmt_node, i) = parse_funcs['stmt'](tokens, 0)
+        self.assertEqual(i, 1)
+        self.assertEqual(
+            stmt_node.get_string_for_test_comparison(),
+            strip("""
+                stmt_1
+                  text: token_TEXT: 'abc'
+            """))
+
+    # @unittest.skip("")
+    def test_stmt_2(self):
+        tokens = lex('[abc/]')
         (stmt_node, i) = parse_funcs['stmt'](tokens, 0)
         self.assertEqual(i, 4)
         self.assertEqual(
@@ -285,6 +306,17 @@ class TestParser(unittest.TestCase):
                         tag_args: tag_args_2
                       slash: token_/: '/'
                       bracket_right: token_]: ']'
+            """))
+
+    # @unittest.skip("")
+    def test_stmts_2_empty_input(self):
+        tokens = lex('')
+        (stmt_node, i) = parse_funcs['stmts'](tokens, 0)
+        self.assertEqual(i, 1)
+        self.assertEqual(
+            stmt_node.get_string_for_test_comparison(),
+            strip("""
+                stmts_2
             """))
 
 

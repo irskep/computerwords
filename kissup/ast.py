@@ -1,5 +1,5 @@
 from collections import namedtuple
-
+ 
 
 class InternalParseError(Exception): pass
 
@@ -23,9 +23,20 @@ def create_ast_node(class_name, production_name, forms):
                     raise InternalParseError("No None args allowed")
 
             # Yes, this is ugly magic cheating. Don't worry about it.
-            args = [arg for arg in args if not arg.name == 'opt_whitespace']
+            skips = {'opt_whitespace', 'ε'}
+            args = [arg for arg in args if not arg.name in skips]
 
-            form = self.form_classes[form_num - 1](*args, **kwargs)
+            form_index = form_num - 1
+
+            try:
+                form = self.form_classes[form_index](*args, **kwargs)
+            except TypeError:
+                raise InternalParseError(
+                    "Incorrectly calling {}({}) with args {}".format(
+                        self.form_classes[form_index].__name__,
+                        ', '.join(forms[form_index]),
+                        args))
+
             for field in form._fields:
                 field_value_name = getattr(form, field).name
                 expected_field_value_name = {
@@ -98,7 +109,7 @@ class TokenNode(KissUpASTNode):
         return type(self) is type(other) and self.name == other.name and self.token == other.token
 
     def __repr__(self):
-        return 'TokenNode(name={!r})'.format(self.name)
+        return 'TokenNode(name={!r}, token={!r})'.format(self.name, self.token)
 
 
 StmtsNode = create_ast_node(
