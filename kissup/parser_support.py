@@ -8,7 +8,7 @@ class ParseError(Exception):
         super().__init__("Line {} col {}: {}".format(token.line, token.pos, msg))
 
 
-def multi_rule(*parse_fns):
+def alternatives(*parse_fns):
     def parse(tokens, i):
         log("Entering {}".format(parse.__name__))
         for fn in parse_fns:
@@ -49,7 +49,11 @@ def sequence_rule(Cls, form, *sequence):
 
 
 PARSE_FUNC_REGISTRY = {}
-def rule(name, fn):
+def rule(name, *fns):
+    if len(fns) > 1:
+        fn = alternatives(*fns)
+    else:
+        fn = fns[0]
     PARSE_FUNC_REGISTRY[name] = fn
     fn.__name__ = 'parse_' + name
     return fn

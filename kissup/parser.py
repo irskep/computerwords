@@ -54,22 +54,22 @@ def create_empty_rule(Cls, form):
 
 #stmts -> stmt stmts
 #       | ε
-parse_stmts = rule('stmts', multi_rule(
+parse_stmts = rule('stmts',
     sequence_rule(StmtsNode, 1, 'stmt', 'stmts'),
     sequence_rule(StmtsNode, 2, 'token_ε')
-))
+)
 
 #stmt -> TEXT
 #      | tag
-rule('stmt', multi_rule(
+rule('stmt',
     sequence_rule(StmtNode, 1, 'token_TEXT'),
-    sequence_rule(StmtNode, 2, 'tag')))
+    sequence_rule(StmtNode, 2, 'tag'))
 
 #tag -> open_tag stmts close_tag
 #     | self_closing_tag
-rule('tag', multi_rule(
+rule('tag',
     sequence_rule(TagNode, 1, 'open_tag', 'stmts', 'close_tag'),
-    sequence_rule(TagNode, 2, 'self_closing_tag')))
+    sequence_rule(TagNode, 2, 'self_closing_tag'))
 
 #open_tag -> [ tag_contents ]
 rule('open_tag', sequence_rule(
@@ -85,21 +85,21 @@ rule('self_closing_tag', sequence_rule(
 
 #tag_contents -> BBWORD tag_args
 #              | BBWORD
-rule('tag_contents', multi_rule(
+rule('tag_contents',
     sequence_rule(TagContentsNode, 1, 'token_BBWORD', 'tag_args'),
-    sequence_rule(TagContentsNode, 2, 'token_BBWORD')))
+    sequence_rule(TagContentsNode, 2, 'token_BBWORD'))
 
 #tag_args -> SPACE tag_arg tag_args
 #          | ε
-rule('tag_args', multi_rule(
+rule('tag_args',
     sequence_rule(TagArgsNode, 1, 'token_SPACE', 'tag_arg', 'tag_args'),
-    create_empty_rule(TagArgsNode, 2)))
+    create_empty_rule(TagArgsNode, 2))
 
 #tag_arg -> BBWORD = arg_value
 rule('tag_arg', sequence_rule(TagArgNode, 1, 'token_BBWORD', 'token_=', 'arg_value'))
 
 #arg_value -> BBWORD
 #           | STRING
-rule('arg_value', multi_rule(
+rule('arg_value', 
     sequence_rule(ArgValueNode, 1, 'token_BBWORD'),
-    sequence_rule(ArgValueNode, 2, 'token_STRING')))
+    sequence_rule(ArgValueNode, 2, 'token_STRING'))
