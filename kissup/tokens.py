@@ -16,6 +16,9 @@ class Token:
         return "{}(line={}, pos={}, value={!r})".format(
             self.__class__.__name__, self.line, self.pos, self.value)
 
+    def __hash__(self):
+        return hash(repr(self))
+
 
 class BracketLeftToken(Token):
     name = "["

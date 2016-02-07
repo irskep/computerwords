@@ -53,17 +53,17 @@ def parse_sequence(tokens, i, config, *names):
 
 
 def alternatives(*parse_fns):
-    def parse_alternatives(tokens, i, config=None):
+    def parse_alternatives(tokens, i, config):
         log("Entering {}", parse_alternatives.__name__)
         for fn in parse_fns:
-            result = fn(tokens, i, config=None)
+            result = fn(tokens, i, config)
             if result: return result
         return (None, i)
     return parse_alternatives
 
 
 def sequence_rule(Cls, form, *sequence):
-    def sequence_parser(tokens, i, config=None):
+    def sequence_parser(tokens, i, config):
         (nodes, i) = parse_sequence(tokens, i, config, *sequence)
         if nodes:
             return (Cls(form, *nodes), i)
@@ -74,9 +74,9 @@ def sequence_rule(Cls, form, *sequence):
 
 def validate(validator, parse_fn):
     """validator may simply return False, or raise a ParseError"""
-    def wrapper_fn(tokens, i, config=None):
+    def wrapper_fn(tokens, i, config):
         (node, i) = none_to_duple(parse_fn(tokens, i, config), i)
-        if node and validator(node):
+        if node and validator(node, config):
             return (node, i)
         else:
             return None
@@ -91,7 +91,7 @@ def rule(name, *fns, error_if_not_success=False):
         fn = fns[0]
     if error_if_not_success:
         inner_fn = fn
-        def wrapper_fn(tokens, i, config=None):
+        def wrapper_fn(tokens, i, config):
             result = inner_fn(tokens, i, config)
             if result and result[0]:
                 return result
@@ -103,5 +103,5 @@ def rule(name, *fns, error_if_not_success=False):
     return fn
 
 
-def call_parse_function(name, tokens, i, config=None): 
+def call_parse_function(name, tokens, i, config): 
     return PARSE_FUNC_REGISTRY[name](tokens, i, config)

@@ -57,10 +57,17 @@ class TagMismatchError(ParseError):
         super().__init__(token1, msg)
 
 
+class UnknownTagError(ParseError):
+    def __init__(self, tag_name_token):
+        super().__init__(
+            tag_name_token,
+            "Unknown tag: {}".format(tag_name_token.value))
+
+
 ### RULES ###
 
 def token_rule(name):
-    def parse_token(tokens, i, config=None):
+    def parse_token(tokens, i, config):
         if tokens[i].name == name:
             return (TokenNode(name, tokens[i]), i + 1)
         else:
@@ -75,13 +82,22 @@ def empty_rule(Cls, form):
         return (Cls(form), i)
     return parse_empty
 
-def tags_should_match(tag_node):
+def tags_should_match(tag_node, config):
     open_tag_name_token = tag_node.open_tag.tag_contents.bbword.token
     open_tag_name = open_tag_name_token.value
     close_tag_name_token = tag_node.close_tag.bbword.token
     close_tag_name = close_tag_name_token.value
+    if open_tag_name not in config.allowed_tags:
+        raise UnknownTagError(open_tag_name_token)
     if open_tag_name != close_tag_name:
         raise TagMismatchError(open_tag_name_token, close_tag_name_token)
+    return True
+
+def self_closing_tag_should_be_allowed(tag_node, config):
+    tag_name_token = tag_node.tag_contents.bbword.token
+    if tag_name_token.value not in config.allowed_tags:
+        raise UnknownTagError(tag_name_token)
+    return True
 
 #stmts_a -> stmt stmts_a
 #         | ε
@@ -120,8 +136,9 @@ rule('close_tag', sequence_rule(
 
 #self_closing_tag -> [ tag_contents space? / space? ]
 rule('self_closing_tag',
-    sequence_rule(SelfClosingTagNode, 1,
-        'token_[', 'tag_contents', 'space?', 'token_/', 'space?', 'token_]'))
+    validate(self_closing_tag_should_be_allowed,
+        sequence_rule(SelfClosingTagNode, 1,
+            'token_[', 'tag_contents', 'space?', 'token_/', 'space?', 'token_]')))
 
 #space? -> SPACE
 #        | ε
@@ -153,5 +170,5 @@ rule('arg_value',
 def parse_kissup(tokens, allowed_tags=None):
     if allowed_tags is None:
         allowed_tags = set()
-    config = ParserConfig('allowed_tags')
+    config = ParserConfig(allowed_tags)
     return call_parse_function('stmts_b', tokens, 0, config)[0]

@@ -19,6 +19,10 @@ def strip(s):
     return dedent(s)[1:-1]
 
 
+def parse_production(name, tokens, i, config=parser.ParserConfig({'abc'})):
+    return parse_funcs[name](tokens, i, config)
+
+
 class TestParser(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
@@ -26,7 +30,7 @@ class TestParser(unittest.TestCase):
 
     def test_parse_token(self):
         tokens = lex('text')
-        (text_node, i) = parse_funcs['token_TEXT'](tokens, 0)
+        (text_node, i) = parse_production('token_TEXT', tokens, 0)
         self.assertEqual(i, 1)
         self.assertEqual(
             text_node,
@@ -34,7 +38,7 @@ class TestParser(unittest.TestCase):
 
     def test_parse_end_token(self):
         tokens = lex('')
-        (token_node, i) = parse_funcs['token_ε'](tokens, 0)
+        (token_node, i) = parse_production('token_ε', tokens, 0)
         self.assertEqual(i, 1)
         self.assertEqual(
             token_node,
@@ -42,7 +46,7 @@ class TestParser(unittest.TestCase):
 
     def test_stmt_1(self):
         tokens = lex('text')
-        (stmt_node, i) = parse_funcs['stmt'](tokens, 0)
+        (stmt_node, i) = parse_production('stmt', tokens, 0)
         self.assertEqual(i, 1)
         expected_token_node = ast.TokenNode(
             'TEXT', t.TextToken(0, 0, 'text'))
@@ -52,7 +56,7 @@ class TestParser(unittest.TestCase):
 
     def test_arg_value_1(self):
         tokens = lex('[a_bbword]')
-        (stmt_node, i) = parse_funcs['arg_value'](tokens, 1)
+        (stmt_node, i) = parse_production('arg_value', tokens, 1)
         self.assertEqual(i, 2)
         self.assertEqual(
             stmt_node.get_string_for_test_comparison(),
@@ -63,7 +67,7 @@ class TestParser(unittest.TestCase):
 
     def test_arg_value_2(self):
         tokens = lex(r'["a \" string"]')
-        (stmt_node, i) = parse_funcs['arg_value'](tokens, 1)
+        (stmt_node, i) = parse_production('arg_value', tokens, 1)
         self.assertEqual(i, 2)
         self.assertEqual(
             stmt_node.get_string_for_test_comparison(),
@@ -74,7 +78,7 @@ class TestParser(unittest.TestCase):
 
     def test_tag_arg(self):
         tokens = lex('[x=y]')
-        (stmt_node, i) = parse_funcs['tag_arg'](tokens, 1)
+        (stmt_node, i) = parse_production('tag_arg', tokens, 1)
         self.assertEqual(i, 4)
         self.assertEqual(
             stmt_node.get_string_for_test_comparison(),
@@ -88,7 +92,7 @@ class TestParser(unittest.TestCase):
 
     def test_tag_args_a(self):
         tokens = lex('[ x=y]')
-        (stmt_node, i) = parse_funcs['tag_args'](tokens, 1)
+        (stmt_node, i) = parse_production('tag_args', tokens, 1)
         self.assertEqual(i, 5)
         self.assertEqual(
             stmt_node.get_string_for_test_comparison(),
@@ -105,7 +109,7 @@ class TestParser(unittest.TestCase):
 
     def test_tag_args_b(self):
         tokens = lex('[ a="b" x=y]')
-        (stmt_node, i) = parse_funcs['tag_args'](tokens, 1)
+        (stmt_node, i) = parse_production('tag_args', tokens, 1)
         self.assertEqual(i, 9)
         self.assertEqual(
             stmt_node.get_string_for_test_comparison(),
@@ -129,7 +133,7 @@ class TestParser(unittest.TestCase):
 
     def test_tag_contents_a(self):
         tokens = lex('[abc]')
-        (stmt_node, i) = parse_funcs['tag_contents'](tokens, 1)
+        (stmt_node, i) = parse_production('tag_contents', tokens, 1)
         self.assertEqual(i, 2)
         self.assertEqual(
             stmt_node.get_string_for_test_comparison(),
@@ -141,7 +145,7 @@ class TestParser(unittest.TestCase):
 
     def test_tag_contents_b(self):
         tokens = lex('[abc x=y ]')  # include optional whitespace
-        (stmt_node, i) = parse_funcs['tag_contents'](tokens, 1)
+        (stmt_node, i) = parse_production('tag_contents', tokens, 1)
         self.assertEqual(i, 6)
         self.assertEqual(
             stmt_node.get_string_for_test_comparison(),
@@ -160,7 +164,7 @@ class TestParser(unittest.TestCase):
 
     def test_self_closing_tag(self):
         tokens = lex('[abc /]')
-        (stmt_node, i) = parse_funcs['self_closing_tag'](tokens, 0)
+        (stmt_node, i) = parse_production('self_closing_tag', tokens, 0)
         self.assertEqual(i, 5)
         self.assertEqual(
             stmt_node.get_string_for_test_comparison(),
@@ -176,7 +180,7 @@ class TestParser(unittest.TestCase):
 
     def test_open_tag(self):
         tokens = lex('[ abc]')  # include optional whitespace
-        (stmt_node, i) = parse_funcs['open_tag'](tokens, 0)
+        (stmt_node, i) = parse_production('open_tag', tokens, 0)
         self.assertEqual(i, 4)
         self.assertEqual(
             stmt_node.get_string_for_test_comparison(),
@@ -191,7 +195,7 @@ class TestParser(unittest.TestCase):
 
     def test_close_tag(self):
         tokens = lex('[ /abc]')  # include optional whitespace
-        (stmt_node, i) = parse_funcs['close_tag'](tokens, 0)
+        (stmt_node, i) = parse_production('close_tag', tokens, 0)
         self.assertEqual(i, 5)
         self.assertEqual(
             stmt_node.get_string_for_test_comparison(),
@@ -205,7 +209,7 @@ class TestParser(unittest.TestCase):
 
     def test_stmt_1_differently(self):
         tokens = lex('abc')  # include optional whitespace
-        (stmt_node, i) = parse_funcs['stmt'](tokens, 0)
+        (stmt_node, i) = parse_production('stmt', tokens, 0)
         self.assertEqual(i, 1)
         self.assertEqual(
             stmt_node.get_string_for_test_comparison(),
@@ -216,7 +220,7 @@ class TestParser(unittest.TestCase):
 
     def test_stmt_2(self):
         tokens = lex('[abc/]')
-        (stmt_node, i) = parse_funcs['stmt'](tokens, 0)
+        (stmt_node, i) = parse_production('stmt', tokens, 0)
         self.assertEqual(i, 4)
         self.assertEqual(
             stmt_node.get_string_for_test_comparison(),
@@ -234,7 +238,7 @@ class TestParser(unittest.TestCase):
 
     def test_stmts_b_2_empty_input(self):
         tokens = lex('')
-        (stmt_node, i) = parse_funcs['stmts_b'](tokens, 0)
+        (stmt_node, i) = parse_production('stmts_b', tokens, 0)
         self.assertEqual(i, 1) # consumes end token
         self.assertEqual(
             stmt_node.get_string_for_test_comparison(),
@@ -244,7 +248,7 @@ class TestParser(unittest.TestCase):
 
     def test_stmts_a_2_empty_input(self):
         tokens = lex('')
-        (stmt_node, i) = parse_funcs['stmts_a'](tokens, 0)
+        (stmt_node, i) = parse_production('stmts_a', tokens, 0)
         self.assertEqual(i, 0)  # does NOT consume end token
         self.assertEqual(
             stmt_node.get_string_for_test_comparison(),
@@ -254,7 +258,7 @@ class TestParser(unittest.TestCase):
 
     def test_stmts_b_1_self_closing_tag(self):
         tokens = lex('[abc /]')
-        (stmt_node, i) = parse_funcs['stmts_b'](tokens, 0)
+        (stmt_node, i) = parse_production('stmts_b', tokens, 0)
         self.assertEqual(i, 6)
         self.assertEqual(
             stmt_node.get_string_for_test_comparison(),
@@ -274,7 +278,7 @@ class TestParser(unittest.TestCase):
 
     def test_stmts_a_1_self_closing_tag(self):
         tokens = lex('[abc /]')
-        (stmt_node, i) = parse_funcs['stmts_a'](tokens, 0)
+        (stmt_node, i) = parse_production('stmts_a', tokens, 0)
         self.assertEqual(i, 5)
         self.assertEqual(
             stmt_node.get_string_for_test_comparison(),
@@ -294,7 +298,7 @@ class TestParser(unittest.TestCase):
 
     def test_stmts_multiple(self):
         tokens = lex('text[abc /]')
-        (stmt_node, i) = parse_funcs['stmts_b'](tokens, 0)
+        (stmt_node, i) = parse_production('stmts_b', tokens, 0)
         self.assertEqual(i, 7)
         self.assertEqual(
             stmt_node.get_string_for_test_comparison(),
