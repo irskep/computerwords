@@ -35,13 +35,13 @@ def none_to_duple(result, default):
         return (None, default)
 
 
-def parse_sequence(tokens, i, *names):
+def parse_sequence(tokens, i, config, *names):
     sequence_str = ' '.join(names)
     log("Entering parse_sequence: {}", sequence_str)
     j = i
     nodes = []
     for name in names:
-        result = call_parse_function(name, tokens, i)
+        result = call_parse_function(name, tokens, i, config)
         if result and result[0]:
             nodes.append(result[0])
             i = result[1]
@@ -53,18 +53,18 @@ def parse_sequence(tokens, i, *names):
 
 
 def alternatives(*parse_fns):
-    def parse_alternatives(tokens, i):
+    def parse_alternatives(tokens, i, config=None):
         log("Entering {}", parse_alternatives.__name__)
         for fn in parse_fns:
-            result = fn(tokens, i)
+            result = fn(tokens, i, config=None)
             if result: return result
         return (None, i)
     return parse_alternatives
 
 
 def sequence_rule(Cls, form, *sequence):
-    def sequence_parser(tokens, i):
-        (nodes, i) = parse_sequence(tokens, i, *sequence)
+    def sequence_parser(tokens, i, config=None):
+        (nodes, i) = parse_sequence(tokens, i, config, *sequence)
         if nodes:
             return (Cls(form, *nodes), i)
         else:
@@ -80,8 +80,8 @@ def rule(name, *fns):
         fn = fns[0]
     if name == 'stmts_b':  # LOLOL API
         inner_fn = fn
-        def wrapper_fn(tokens, i):
-            result = inner_fn(tokens, i)
+        def wrapper_fn(tokens, i, config=None):
+            result = inner_fn(tokens, i, config)
             if result and result[0]:
                 return result
             else:
@@ -92,5 +92,5 @@ def rule(name, *fns):
     return fn
 
 
-def call_parse_function(name, token, i): 
-    return PARSE_FUNC_REGISTRY[name](token, i)
+def call_parse_function(name, tokens, i, config=None): 
+    return PARSE_FUNC_REGISTRY[name](tokens, i, config)

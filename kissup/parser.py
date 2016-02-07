@@ -32,13 +32,16 @@ space? -> SPACE
         | ε
 """
 
+from collections import namedtuple
 from kissup.ast import *
 from kissup.parser_support import *
 
+ParserConfig = namedtuple('ParserConfig', ['allowed_tags'])
+
 ### RULES ###
 
-def create_token_parser(name):
-    def parse_token(tokens, i, is_special=False):
+def token_rule(name):
+    def parse_token(tokens, i, config=None):
         if tokens[i].name == name:
             return (TokenNode(name, tokens[i]), i + 1)
         else:
@@ -46,10 +49,10 @@ def create_token_parser(name):
     return parse_token
 
 for name in ('TEXT', '[', ']', '/', '=', 'BBWORD', 'STRING', 'ε', 'SPACE'):
-    rule('token_' + name, create_token_parser(name))
+    rule('token_' + name, token_rule(name))
 
-def create_empty_rule(Cls, form):
-    def parse_empty(token, i):
+def empty_rule(Cls, form):
+    def parse_empty(token, i, config):
         return (Cls(form), i)
     return parse_empty
 
@@ -57,7 +60,7 @@ def create_empty_rule(Cls, form):
 #         | ε
 parse_stmts_a = rule('stmts_a',
     sequence_rule(StmtsNode, 1, 'stmt', 'stmts_a'),
-    create_empty_rule(StmtsNode, 2))
+    empty_rule(StmtsNode, 2))
 
 #stmts_b -> stmt stmts_b
 #         | END
@@ -94,7 +97,7 @@ rule('self_closing_tag',
 #        | ε
 rule('space?', 
     sequence_rule(OptWhitespaceNode, 1, 'token_SPACE'),
-    create_empty_rule(OptWhitespaceNode, 2))
+    empty_rule(OptWhitespaceNode, 2))
 
 #tag_contents -> BBWORD tag_args
 rule('tag_contents',
@@ -104,7 +107,7 @@ rule('tag_contents',
 #          | ε
 rule('tag_args',
     sequence_rule(TagArgsNode, 1, 'token_SPACE', 'tag_arg', 'tag_args'),
-    create_empty_rule(TagArgsNode, 2))
+    empty_rule(TagArgsNode, 2))
 
 #tag_arg -> BBWORD = arg_value
 rule('tag_arg', sequence_rule(TagArgNode, 1, 'token_BBWORD', 'token_=', 'arg_value'))
@@ -116,5 +119,8 @@ rule('arg_value',
     sequence_rule(ArgValueNode, 2, 'token_STRING'))
 
 
-def parse_kissup(tokens):
-    return call_parse_function('stmts_b', tokens, 0)[0]
+def parse_kissup(tokens, allowed_tags=None):
+    if allowed_tags is None:
+        allowed_tags = set()
+    config = ParserConfig('allowed_tags')
+    return call_parse_function('stmts_b', tokens, 0, config)[0]
