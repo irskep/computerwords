@@ -71,10 +71,7 @@ def create_ast_node(class_name, production_name, forms):
             return '\n'.join(elements)
 
         def __getattr__(self, attr):
-            try:
-                return super().__getattr__(attr)
-            except AttributeError:
-                return self.attrs.__getattr__(attr)
+            return getattr(self.attrs, attr)
 
         def __eq__(self, other):
             return type(self) is type(other) and self.attrs == other.attrs

@@ -38,6 +38,25 @@ from kissup.parser_support import *
 
 ParserConfig = namedtuple('ParserConfig', ['allowed_tags'])
 
+
+class TagMismatchError(ParseError):
+    def __init__(self, token1, token2):
+        self.token2 = token2
+        msg_fmt = (
+            "Tag mismatch:" +
+            " {tag1} (line {line1}, col {col1}) and" +
+            " {tag2} (line {line2}, col {col2})." +
+            " Did you forget to close your [{tag1}] tag?")
+        msg = msg_fmt.format(
+            tag1 = token1.value,
+            tag2 = token2.value,
+            line1 = token1.line,
+            line2 = token2.line,
+            col1 = token1.pos,
+            col2 = token2.pos)
+        super().__init__(token1, msg)
+
+
 ### RULES ###
 
 def token_rule(name):
@@ -56,6 +75,14 @@ def empty_rule(Cls, form):
         return (Cls(form), i)
     return parse_empty
 
+def tags_should_match(tag_node):
+    open_tag_name_token = tag_node.open_tag.tag_contents.bbword.token
+    open_tag_name = open_tag_name_token.value
+    close_tag_name_token = tag_node.close_tag.bbword.token
+    close_tag_name = close_tag_name_token.value
+    if open_tag_name != close_tag_name:
+        raise TagMismatchError(open_tag_name_token, close_tag_name_token)
+
 #stmts_a -> stmt stmts_a
 #         | ε
 parse_stmts_a = rule('stmts_a',
@@ -66,7 +93,8 @@ parse_stmts_a = rule('stmts_a',
 #         | END
 parse_stmts = rule('stmts_b',
     sequence_rule(StmtsNode, 1, 'stmt', 'stmts_b'),
-    sequence_rule(StmtsNode, 2, 'token_ε'))
+    sequence_rule(StmtsNode, 2, 'token_ε'),
+    error_if_not_success=True)
 
 #stmt -> TEXT
 #      | tag
@@ -77,7 +105,9 @@ rule('stmt',
 #tag -> open_tag stmts close_tag
 #     | self_closing_tag
 rule('tag',
-    sequence_rule(TagNode, 1, 'open_tag', 'stmts_a', 'close_tag'),
+    validate(
+        tags_should_match,
+        sequence_rule(TagNode, 1, 'open_tag', 'stmts_a', 'close_tag')),
     sequence_rule(TagNode, 2, 'self_closing_tag'))
 
 #open_tag -> [ tag_contents ]
@@ -110,7 +140,8 @@ rule('tag_args',
     empty_rule(TagArgsNode, 2))
 
 #tag_arg -> BBWORD = arg_value
-rule('tag_arg', sequence_rule(TagArgNode, 1, 'token_BBWORD', 'token_=', 'arg_value'))
+rule('tag_arg',
+    sequence_rule(TagArgNode, 1, 'token_BBWORD', 'token_=', 'arg_value'))
 
 #arg_value -> BBWORD
 #           | STRING

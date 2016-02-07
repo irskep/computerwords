@@ -24,7 +24,9 @@ class TestParseErrors(unittest.TestCase):
 
     def test_mismatched_tags(self):
         tokens = lex('[abc]inner[/xyz]')
-        with self.assertRaises(parser.ParseError):
+        with self.assertRaisesRegex(
+            parser.TagMismatchError,
+            r"Line 0 col 1: Tag mismatch: abc \(line 0, col 1\) and xyz \(line 0, col 12\). Did you forget to close your \[abc\] tag\?"):
             parser.parse_kissup(tokens)
 
 

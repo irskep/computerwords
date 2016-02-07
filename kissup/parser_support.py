@@ -72,13 +72,24 @@ def sequence_rule(Cls, form, *sequence):
     return sequence_parser
 
 
+def validate(validator, parse_fn):
+    """validator may simply return False, or raise a ParseError"""
+    def wrapper_fn(tokens, i, config=None):
+        (node, i) = none_to_duple(parse_fn(tokens, i, config), i)
+        if node and validator(node):
+            return (node, i)
+        else:
+            return None
+    return wrapper_fn
+
+
 PARSE_FUNC_REGISTRY = {}
-def rule(name, *fns):
+def rule(name, *fns, error_if_not_success=False):
     if len(fns) > 1:
         fn = alternatives(*fns)
     else:
         fn = fns[0]
-    if name == 'stmts_b':  # LOLOL API
+    if error_if_not_success:
         inner_fn = fn
         def wrapper_fn(tokens, i, config=None):
             result = inner_fn(tokens, i, config)
