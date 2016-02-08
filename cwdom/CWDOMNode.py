@@ -40,7 +40,7 @@ class CWDOMTagNode(CWDOMNode):
         return '{}(kwargs={!r}, children={!r}'.format(
             self.name, self.kwargs, self.children)
 
-    def __eq__(self):
+    def __eq__(self, other):
         return super().__eq__(other) and self.kwargs == other.kwargs
 
     def get_arg(self, name):

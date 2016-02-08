@@ -1,15 +1,20 @@
 import unittest
 from kissup.parse_tree_to_cwdom import parse_tree_to_cwdom, DuplicateArgumentsError
 from kissup import lex_and_parse_kissup
+import cwdom as DOM
 
 
 class TestParseTreeToCWDOM(unittest.TestCase):
     def test_basic(self):
         parse_tree = lex_and_parse_kissup(
-            "outer text [abc x=y]inner text[/abc]", allowed_tags={'abc'}
-            )
+            "outer text [abc x=y]inner text[/abc]", allowed_tags={'abc'})
         dom = parse_tree_to_cwdom(parse_tree)
-        print(repr(dom))
+        self.assertEqual(dom, DOM.CWDOMRootNode([
+            DOM.CWDOMTextNode('outer text '),
+            DOM.CWDOMTagNode('abc', {'x': 'y'}, [
+                DOM.CWDOMTextNode('inner text'),
+            ])
+        ]))
 
     def test_duplicate_arg(self):
         with self.assertRaises(DuplicateArgumentsError):
