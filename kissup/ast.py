@@ -96,6 +96,7 @@ class TokenNode(KissUpASTNode):
         super().__init__()
         self.name = name
         self.token = token
+        self.value = token.value  # sugar
 
     def get_string_for_test_comparison(self, inner_indentation=0):
         return "token_{}: {!r}".format(

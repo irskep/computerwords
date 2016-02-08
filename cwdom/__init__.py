@@ -1,1 +1,1 @@
-from .CWDOMNode import CWDOMNode
+from .CWDOMNode import *
