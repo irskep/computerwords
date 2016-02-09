@@ -1,8 +1,8 @@
 import unittest
 from textwrap import dedent
 
-from kissup import lexer
-from kissup import parser
+from computerwords.kissup import lexer
+from computerwords.kissup import parser
 
 
 def lex(s):

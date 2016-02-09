@@ -1,6 +1,7 @@
-from kissup.ast import StmtsNode, TagArgsNode
-from kissup.parser import ParseError
-from cwdom import *
+from .ast import StmtsNode, TagArgsNode
+from .parser import ParseError
+from computerwords.cwdom.CWDOMNode import *
+from computerwords.cwdom.NodeStore import NodeStore
 
 
 class DuplicateArgumentsError(ParseError):
@@ -8,7 +9,7 @@ class DuplicateArgumentsError(ParseError):
 
 
 def parse_tree_to_cwdom(root):
-    return CWDOMRootNode(stmts_to_list(root))
+    return NodeStore(CWDOMRootNode(stmts_to_list(root)))
 
 
 def stmts_to_list(stmts):

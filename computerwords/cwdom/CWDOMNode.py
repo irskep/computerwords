@@ -1,12 +1,37 @@
+import weakref
+
+
 class CWDOMNode:
     def __init__(self, name, children=None):
+        super().__init__()
+
         if children is None:
             children = []
 
         self.name = name
         self.children = children
 
-        super().__init__()
+        self.parent_weakref = None
+        self.claim_children()
+
+    def claim_children(self):
+        for child in self.children:
+            child.set_parent(self)
+
+    def get_parent(self):
+        if self.parent_weakref is None:
+            return None
+        else:
+            return self.parent_weakref()
+
+    def set_parent(self, new_parent):
+        if new_parent is None:
+            self.parent_weakref = None
+        else:
+            self.parent_weakref = weakref.ref(new_parent)
+
+    def copy(self, name=None):
+        return CWDOMNode(name=name or self.name)
 
     def __repr__(self):
         return '{}({!r})'.format(self.name, self.children)
@@ -25,16 +50,27 @@ class CWDOMRootNode(CWDOMNode):
     def __init__(self, children):
         super().__init__('Root', children)
 
+    def copy(self, name=None):
+        return CWDOMRootNode()
+
 
 class CWDOMStatementsNode(CWDOMNode):
     def __init__(self, children):
         super().__init__('Statements', children)
 
+    def copy(self, name=None):
+        return CWDOMStatementsNode()
+
 
 class CWDOMTagNode(CWDOMNode):
     def __init__(self, name, kwargs, children):
-        self.kwargs = kwargs
         super().__init__(name, children)
+        self.kwargs = kwargs
+
+    def copy(self, name=None):
+        return CWDOMTagNode(
+            name=name or self.name,
+            kwargs=kwargs or self.kwargs)
 
     def __repr__(self):
         return '{}(kwargs={!r}, children={!r}'.format(
@@ -49,8 +85,11 @@ class CWDOMTagNode(CWDOMNode):
 
 class CWDOMTextNode(CWDOMNode):
     def __init__(self, text):
-        self.text = text
         super().__init__('Text', [])
+        self.text = text
+
+    def copy(self, name=None):
+        return CWDOMTextNode(text=text or self.text)
 
     def __repr__(self):
         return "{}(text={!r})".format(self.name, self.text)

@@ -33,8 +33,8 @@ space? -> SPACE
 """
 
 from collections import namedtuple
-from kissup.ast import *
-from kissup.parser_support import *
+from .ast import *
+from .parser_support import *
 
 ParserConfig = namedtuple('ParserConfig', ['allowed_tags'])
 

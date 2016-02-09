@@ -1,11 +1,11 @@
 import unittest
 from textwrap import dedent
 
-from kissup import lexer
-from kissup import tokens as t
-from kissup import ast
-from kissup import parser
-from kissup import parser_support
+from computerwords.kissup import lexer
+from computerwords.kissup import tokens as t
+from computerwords.kissup import ast
+from computerwords.kissup import parser
+from computerwords.kissup import parser_support
 
 
 parse_funcs = parser_support.PARSE_FUNC_REGISTRY

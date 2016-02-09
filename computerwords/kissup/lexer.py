@@ -1,6 +1,6 @@
 import re
 
-from kissup import tokens
+from . import tokens
 
 
 TEXT_BACKSLASH_CHARS = {'[', ']', '\\'}
