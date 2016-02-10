@@ -1,5 +1,5 @@
 from collections import namedtuple
-
+ 
 
 class InternalParseError(Exception): pass
 
@@ -22,7 +22,21 @@ def create_ast_node(class_name, production_name, forms):
                 if arg is None:
                     raise InternalParseError("No None args allowed")
 
-            form = self.form_classes[form_num - 1](*args, **kwargs)
+            # Yes, this is ugly magic cheating. Don't worry about it.
+            skips = {'opt_whitespace', 'ε'}
+            args = [arg for arg in args if not arg.name in skips]
+
+            form_index = form_num - 1
+
+            try:
+                form = self.form_classes[form_index](*args, **kwargs)
+            except TypeError:
+                raise InternalParseError(
+                    "Incorrectly calling {}({}) with args {}".format(
+                        self.form_classes[form_index].__name__,
+                        ', '.join(forms[form_index]),
+                        args))
+
             for field in form._fields:
                 field_value_name = getattr(form, field).name
                 expected_field_value_name = {
@@ -57,10 +71,7 @@ def create_ast_node(class_name, production_name, forms):
             return '\n'.join(elements)
 
         def __getattr__(self, attr):
-            try:
-                return super().__getattr__(attr)
-            except AttributeError:
-                return self.attrs.__getattr__(attr)
+            return getattr(self.attrs, attr)
 
         def __eq__(self, other):
             return type(self) is type(other) and self.attrs == other.attrs
@@ -85,6 +96,7 @@ class TokenNode(KissUpASTNode):
         super().__init__()
         self.name = name
         self.token = token
+        self.value = token.value  # sugar
 
     def get_string_for_test_comparison(self, inner_indentation=0):
         return "token_{}: {!r}".format(
@@ -95,7 +107,7 @@ class TokenNode(KissUpASTNode):
         return type(self) is type(other) and self.name == other.name and self.token == other.token
 
     def __repr__(self):
-        return 'TokenNode(name={!r})'.format(self.name)
+        return 'TokenNode(name={!r}, token={!r})'.format(self.name, self.token)
 
 
 StmtsNode = create_ast_node(
@@ -135,7 +147,7 @@ TagContentsNode = create_ast_node(
 
 TagArgsNode = create_ast_node(
     'TagArgsNode', 'tag_args',
-    [['tag_arg', 'tag_args'], []])
+    [['space', 'tag_arg', 'tag_args'], []])
 
 
 TagArgNode = create_ast_node(
@@ -146,3 +158,8 @@ TagArgNode = create_ast_node(
 ArgValueNode = create_ast_node(
     'ArgValueNode', 'arg_value',
     [['bbword'], ['string']])
+
+
+OptWhitespaceNode = create_ast_node(
+    'OptWhitespaceNode', 'opt_whitespace',
+    [['space'], []])

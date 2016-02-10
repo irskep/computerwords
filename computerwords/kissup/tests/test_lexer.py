@@ -1,11 +1,11 @@
 import unittest
 from textwrap import dedent
 
-from kissup import lexer
-from kissup import tokens as t
-from kissup import ast
-from kissup import parser
-from kissup import parser_support
+from computerwords.kissup import lexer
+from computerwords.kissup import tokens as t
+from computerwords.kissup import ast
+from computerwords.kissup import parser
+from computerwords.kissup import parser_support
 
 
 parse_funcs = parser_support.PARSE_FUNC_REGISTRY
@@ -13,6 +13,10 @@ parse_funcs = parser_support.PARSE_FUNC_REGISTRY
 
 def lex(s):
     return list(lexer.lex_kissup(s))
+
+
+def strip(s):
+    return dedent(s)[1:-1]
 
 
 class TestLexer(unittest.TestCase):
@@ -79,39 +83,3 @@ class TestLexer(unittest.TestCase):
             t.BracketRightToken(0, 26),
             t.EndToken(0, 27)
         ])
-
-
-class TestParser(unittest.TestCase):
-    @unittest.skip("whatever")
-    def test_parse_token(self):
-        tokens = lex('text')
-        (text_node, i) = parse_funcs['token_TEXT'](tokens, 0)
-        self.assertEqual(i, 1)
-        self.assertEqual(
-            text_node,
-            ast.TokenNode('TEXT', t.TextToken(0, 0, 'text')))
-
-    @unittest.skip("whatever")
-    def test_stmt(self):
-        tokens = lex('text')
-        (stmt_node, i) = parse_funcs['stmt'](tokens, 0)
-        self.assertEqual(i, 1)
-        expected_token_node = ast.TokenNode('TEXT', t.TextToken(0, 0, 'text'))
-        self.assertEqual(
-            stmt_node,
-            ast.StmtNode(1, expected_token_node))
-
-    def test_arg_value(self):
-        tokens = lex('[a_bbword]')
-        (stmt_node, i) = parse_funcs['arg_value'](tokens, 1)
-        self.assertEqual(i, 2)
-        self.assertEqual(
-            stmt_node.get_string_for_test_comparison(),
-            dedent("""
-                arg_value_1
-                  bbword: token_BBWORD: 'a_bbword'
-            """)[1:-1])
-
-
-if __name__ == '__main__':
-    unittest.main()
