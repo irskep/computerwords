@@ -99,6 +99,7 @@ def self_closing_tag_should_be_allowed(tag_node, config):
         raise UnknownTagError(tag_name_token)
     return True
 
+# TODO: don't use deep recursion
 #stmts_a -> stmt stmts_a
 #         | ε
 parse_stmts_a = rule('stmts_a',
@@ -150,6 +151,7 @@ rule('space?',
 rule('tag_contents',
     sequence_rule(TagContentsNode, 1, 'space?', 'token_BBWORD', 'tag_args'))
 
+# TODO: don't use deep recursion
 #tag_args -> SPACE tag_arg tag_args
 #          | ε
 rule('tag_args',
