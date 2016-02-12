@@ -47,7 +47,7 @@ class CWDOMNode:
 
 
 class CWDOMRootNode(CWDOMNode):
-    def __init__(self, children):
+    def __init__(self, children=None):
         super().__init__('Root', children)
 
     def copy(self, name=None):
@@ -55,7 +55,7 @@ class CWDOMRootNode(CWDOMNode):
 
 
 class CWDOMStatementsNode(CWDOMNode):
-    def __init__(self, children):
+    def __init__(self, children=None):
         super().__init__('Statements', children)
 
     def copy(self, name=None):
@@ -63,11 +63,11 @@ class CWDOMStatementsNode(CWDOMNode):
 
 
 class CWDOMTagNode(CWDOMNode):
-    def __init__(self, name, kwargs, children):
+    def __init__(self, name, kwargs, children=None):
         super().__init__(name, children)
         self.kwargs = kwargs
 
-    def copy(self, name=None):
+    def copy(self, name=None, kwargs=None):
         return CWDOMTagNode(
             name=name or self.name,
             kwargs=kwargs or self.kwargs)

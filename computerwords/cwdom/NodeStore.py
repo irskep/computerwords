@@ -9,13 +9,13 @@ class NodeStore:
     def __eq__(self, other):
         return type(self) is type(other) and self.root == other.root
 
-    # TODO: don't use deep recursion
     def iterate_preorder(self, node=None):
-        node = node or self.root
-        yield node
-        for child in node.children:
-            yield child
-            yield from self.iterate_preorder(child)
+        stack = [node or self.root]
+        while len(stack) > 0:
+            node = stack.pop()
+            yield node
+            for child in node.children:
+                stack.append(child)
 
     def visit_all(self, node_name_to_visitor, node=None):
         node = node or self.root

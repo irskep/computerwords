@@ -1,5 +1,4 @@
 from computerwords.cwdom.NodeStore import NodeStoreVisitor
-from computerwords.stdlib import HTML_TAGS
 
 
 class TagVisitor(NodeStoreVisitor):
@@ -25,10 +24,11 @@ class TextVisitor(NodeStoreVisitor):
         self.output_stream.write(node.text)
 
 
-def cwdom_to_html_string(node_store, output_stream):
+def cwdom_to_html_string(library, node_store, output_stream):
     tag_to_visitor = {
         tag: TagVisitor(output_stream, tag)
-        for tag in HTML_TAGS}
+        for tag in library.get_allowed_tags()
+    }
     tag_to_visitor['Root'] = NodeStoreVisitor()  # no-op
     tag_to_visitor['Text'] = TextVisitor(output_stream, 'Text')
     node_store.visit_all(tag_to_visitor)

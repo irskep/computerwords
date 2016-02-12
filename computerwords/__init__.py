@@ -1,8 +1,6 @@
-from . import kissup
-from . import cwdom
-from . import stdlib
 from . import cmd
-
-
-if __name__ == '__main__':
-    cmd.run()
+from . import cwdom
+from . import htmlwriter
+from . import kissup
+from . import library
+from . import stdlib
