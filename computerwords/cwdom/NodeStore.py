@@ -20,6 +20,10 @@ class NodeStore:
             for child in node.children:
                 stack.append(child)
 
+    def process_library(self, library):
+        for node in self.preorder_traversal():
+            library.process_node(self, node)
+
     def visit_all(self, node_name_to_visitor, node=None):
         node = node or self.root
         node_name_to_visitor[node.name].before_children(node)

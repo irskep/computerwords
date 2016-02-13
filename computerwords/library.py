@@ -38,9 +38,3 @@ class Library:
         for p in self.get_processors(node.name):
             # TODO: handle node_store mutations inside this loop
             p(node_store, node)
-
-    def process_node_store(self, node_store):
-        # THIS DOESN'T WORK IF YOU MUTATE THE STORE! FIX IT!
-        for node in node_store.preorder_traversal():
-            self.process_node(node_store, node)
-        return node_store
