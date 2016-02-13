@@ -109,3 +109,15 @@ class CWDOMTextNode(CWDOMNode):
 
     def __repr__(self):
         return "{}(text={!r})".format(self.name, self.text)
+
+
+class CWDOMAnchorNode(CWDOMNode):
+    def __init__(self, ref_id):
+        super().__init__('Anchor', [])
+        self.ref_id = ref_id
+
+    def copy(self, name=None):
+        return CWDOMAnchorNode(ref_id=ref_id or self.ref_id)
+
+    def __repr__(self):
+        return "{}(ref_id={!r})".format(self.name, self.ref_id)
