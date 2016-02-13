@@ -13,9 +13,11 @@ class TestParseTreeToCWDOM(unittest.TestCase):
             "outer text [abc x=y]inner text[/abc]", allowed_tags={'abc'})
         dom = parse_tree_to_cwdom(parse_tree)
         self.assertEqual(dom, DOM.NodeStore(DOM.CWDOMRootNode([
-            DOM.CWDOMTextNode('outer text '),
-            DOM.CWDOMTagNode('abc', {'x': 'y'}, [
-                DOM.CWDOMTextNode('inner text'),
+            DOM.CWDOMDocumentNode('stdin.bb', [
+                DOM.CWDOMTextNode('outer text '),
+                DOM.CWDOMTagNode('abc', {'x': 'y'}, [
+                    DOM.CWDOMTextNode('inner text'),
+                ])
             ])
         ])))
 
