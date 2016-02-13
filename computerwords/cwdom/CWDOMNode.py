@@ -46,12 +46,28 @@ class CWDOMNode:
         return hash(repr(self))
 
 
+# generally you'll just need a type(x) == CWDOMEndOfInputNode check rather than
+# having to actually do anything with this object.
+class CWDOMEndOfInputNode(CWDOMNode):
+    NAME = "END OF ALL INPUT"
+    def __init__(self):
+        super().__init__(CWDOMEndOfInputNode.NAME)
+
+
 class CWDOMRootNode(CWDOMNode):
     def __init__(self, children=None):
         super().__init__('Root', children)
 
     def copy(self, name=None):
         return CWDOMRootNode()
+
+
+class CWDOMDocumentNode(CWDOMNode):
+    def __init__(self, path, children=None):
+        super().__init__('Document', children)
+
+    def copy(self, name=None):
+        return CWDOMDocumentNode(path)
 
 
 class CWDOMStatementsNode(CWDOMNode):

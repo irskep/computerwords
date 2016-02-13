@@ -3,13 +3,16 @@ class NodeStore:
         super().__init__()
         self.root = root
 
+        # The library is free to add and use data it wants here.
+        self.library_data = {}
+
     def __repr__(self):
         return 'NodeStore(root={!r})'.format(self.root)
 
     def __eq__(self, other):
         return type(self) is type(other) and self.root == other.root
 
-    def iterate_preorder(self, node=None):
+    def preorder_traversal(self, node=None):
         stack = [node or self.root]
         while len(stack) > 0:
             node = stack.pop()

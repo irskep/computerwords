@@ -146,7 +146,7 @@ TOKEN_FNS = [
 
 
 def lex_kissup(s):
-    line_indexes = [0] + [m.start() for m in re.findall('\n', s)] + [len(s)]
+    line_indexes = [0] + [m.start() for m in re.finditer('\n', s)] + [len(s)]
     line = 0
     i = 0
     num_brackets = 0

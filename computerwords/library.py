@@ -1,3 +1,6 @@
+from computerwords.cwdom.CWDOMNode import CWDOMEndOfInputNode
+
+
 class Library:
     def __init__(self):
         super().__init__()
@@ -18,6 +21,9 @@ class Library:
             self._set_processor(tag_name, p)
             return p
 
+    # declare a function to run at the end of all input
+    def end_processor(self, tag_name, p=None):
+        return self.processor(CWDOMEndOfInputNode.NAME, p)
 
     def get_processors(self, tag_name, strict=True):
         if strict:
@@ -35,6 +41,6 @@ class Library:
 
     def process_node_store(self, node_store):
         # THIS DOESN'T WORK IF YOU MUTATE THE STORE! FIX IT!
-        for node in node_store.iterate_preorder():
+        for node in node_store.preorder_traversal():
             self.process_node(node_store, node)
         return node_store

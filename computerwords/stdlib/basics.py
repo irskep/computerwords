@@ -1,4 +1,5 @@
 def add_basics(library):
-    passthrough = lambda *args, **kwargs: None
-    library.processor('Root', passthrough)
-    library.processor('Text', passthrough)
+    noop = lambda *args, **kwargs: None
+    library.processor('Root', noop)
+    library.processor('Text', noop)
+    library.processor('Document', noop)
