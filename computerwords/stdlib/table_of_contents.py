@@ -25,6 +25,10 @@ again.
 """
 
 
+# TODO: store traversal key along with entry in case another processor adds
+# headers behind the cursor
+
+
 HEADER_TAG_NAMES = {'h' + str(i) for i in range(1, 7)}
 TOC_TAG_NAME = 'table_of_contents'
 TOCEntry = namedtuple('TOCEntry', ['level', 'text', 'ref_id'])
@@ -36,6 +40,9 @@ def tree_to_text(node_store, node):
         if n.name == 'Text':
             segments.append(n.text)
     return ''.join(segments)
+
+
+### helpers ###
 
 
 def _add_toc_data_if_not_exists(node_store):
@@ -81,8 +88,10 @@ def _store_entry_to_sequence(nested_list, entry_to_sequence, sequence_so_far):
         _store_entry_to_sequence(grandchildren, entry_to_sequence, sequence)
 
 
-# [(TOCEntry, [children]), ...]
+# [(TOCEntry, [children]), ...] -> DOM
 def _nested_list_to_nodes(entry_children_pairs):
+    # TODO: use a deep copy of the entry's original children instead of
+    # just the text
     return [
         CWDOMTagNode('li', [
             CWDOMLinkNode(entry.ref_id, [
@@ -104,13 +113,43 @@ def _get_are_all_headers_valid(node_store):
 
 
 def add_table_of_contents(library):
+    """
+    Collects all `h1`, `h2`, etc. tags in a tree, which
+    you can display with `[table_of_contents /]`.
+
+    Currently they are displayed in alphabetical order. In the future, you
+    might be able to do this:
+
+    ```
+    [table_of_contents]
+        doc_1.txt
+        doc_2.txt
+    [/table_of_contents]
+    ```
+
+    The original header tags will be modified to include anchors (to which
+    the TOC table will link) and heading numbers.
+
+    # How it works
+
+    On the first pass, the headings are simply collected in a list.
+
+    At the end of all input in the first pass, the `table_of_contents` tag is
+    replaced with a nested `ol` list of the entries. Then all header tags are
+    invalidated.
+
+    On the second pass (triggered by invalidating the headers), each header
+    is wrapped in an anchor node, and a new text node containing the heading
+    number is prepended to the node's list of children. (e.g. "1.1 Quickstart")
+    """
+
     @library.end_processor
     def process_end(node_store, end_node):
         _add_toc_data_if_not_exists(node_store)
         if node_store.library_data['toc_entries_is_complete']:
             log.debug('End node: doing nothing')
         elif _get_are_all_headers_valid(node_store):
-            log.debug('End node: mark entries-complete; invalidate')
+            log.debug('End node: mark entries-complete; invalidate TOC node')
             node_store.library_data['toc_entries_is_complete'] = True
 
             # now go back and fix all the [table_of_contents /] nodes
@@ -137,15 +176,21 @@ def add_table_of_contents(library):
     @library.processor('h6')
     def process_heading(node_store, node):
         _add_toc_data_if_not_exists(node_store)
+
         text = tree_to_text(node)
         ref_id = node_store.get_ref_id(text)  # might be identical
         entry = TOCEntry(name_to_level[node.name], text, ref_id)
-        if node_store.library_data['toc_entry_to_sequence']:
+
+        entry_to_sequence = node_store.library_data['toc_entry_to_sequence']
+        if entry_to_sequence:
             log.debug('Header node: add number and anchor')
-            number = '.'.join(node_store.library_data['toc_entry_to_sequence'][entry])
-            _prepend_text_to_node_children(node_store, node, str(number) + ' ')
-            anchor = CWDOMAnchorNode(entry.ref_id)
-            node_store.wrap_node(node, )
+            if entry in node_store.library_data['toc_entry_to_sequence']:
+                prefix = '.'.join(entry_to_sequence[entry]) + ' '
+                _prepend_text_to_node_children(node_store, node, prefix)
+                anchor = CWDOMAnchorNode(entry.ref_id)
+                node_store.wrap_node(node, anchor)
+            else:
+                log.debug("Never mind, it doesn't have a heading number...")
         else:
             log.debug('Header node: add TOC entry')
             node_store.library_data['toc_entries'].append(entry)
