@@ -18,6 +18,10 @@ class CWDOMNode:
         for child in self.children:
             child.set_parent(self)
 
+    def set_children(self, children):
+        self.children = children
+        self.claim_children()
+
     def get_parent(self):
         if self.parent_weakref is None:
             return None

@@ -17,6 +17,6 @@ def run():
 
     node_store = string_to_cwdom(input_str, stdlib.get_allowed_tags())
 
-    node_store.process_library(stdlib)
+    node_store.apply_library(stdlib)
 
     cwdom_to_html_string(stdlib, node_store, sys.stdout)

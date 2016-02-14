@@ -46,9 +46,9 @@ def tree_to_text(node_store, node):
 
 
 def _add_toc_data_if_not_exists(node_store):
-    node_store.library_data.setdefault('toc_entries_is_complete', False)
-    node_store.library_data.setdefault('toc_entries', [])
-    node_store.library_data.setdefault('toc_entry_to_sequence', None)
+    node_store.processor_data.setdefault('toc_entries_is_complete', False)
+    node_store.processor_data.setdefault('toc_entries', [])
+    node_store.processor_data.setdefault('toc_entry_to_sequence', None)
 
 
 def _entries_to_nested_list(entries):
@@ -83,7 +83,7 @@ def _entries_to_nested_list(entries):
 
 def _store_entry_to_sequence(nested_list, entry_to_sequence, sequence_so_far):
     for i, (child, grandchildren) in enumerate(nested_list):
-        sequence = sequence_so_far + [i + 1]
+        sequence = sequence_so_far + (i + 1,)
         entry_to_sequence[child] = sequence
         _store_entry_to_sequence(grandchildren, entry_to_sequence, sequence)
 
@@ -107,7 +107,7 @@ def _nested_list_to_nodes(entry_children_pairs):
 def _get_are_all_headers_valid(node_store):
     for name in HEADER_TAG_NAMES:
         for node in node_store.get_nodes(name):
-            if not node_store.get_is_valid(node):
+            if node_store.get_is_node_invalid(node):
                 return False
     return True
 
@@ -117,8 +117,14 @@ def add_table_of_contents(library):
     Collects all `h1`, `h2`, etc. tags in a tree, which
     you can display with `[table_of_contents /]`.
 
-    Currently they are displayed in alphabetical order. In the future, you
-    might be able to do this:
+    Currently they are displayed in alphabetical order. 
+
+    The original header tags will be modified to include anchors (to which
+    the TOC table will link) and heading numbers.
+
+    # Planned features
+
+    ## Explicit ordering of documents
 
     ```
     [table_of_contents]
@@ -127,8 +133,12 @@ def add_table_of_contents(library):
     [/table_of_contents]
     ```
 
-    The original header tags will be modified to include anchors (to which
-    the TOC table will link) and heading numbers.
+    ## Scoped TOC instances (for sidebars)
+
+    ```
+    [# only show entries under doc_1.txt #]
+    [table_of_contents scope="doc_1.txt" /]
+    ```
 
     # How it works
 
@@ -146,11 +156,11 @@ def add_table_of_contents(library):
     @library.end_processor
     def process_end(node_store, end_node):
         _add_toc_data_if_not_exists(node_store)
-        if node_store.library_data['toc_entries_is_complete']:
+        if node_store.processor_data['toc_entries_is_complete']:
             log.debug('End node: doing nothing')
         elif _get_are_all_headers_valid(node_store):
             log.debug('End node: mark entries-complete; invalidate TOC node')
-            node_store.library_data['toc_entries_is_complete'] = True
+            node_store.processor_data['toc_entries_is_complete'] = True
 
             # now go back and fix all the [table_of_contents /] nodes
             for node in node_store.get_nodes(TOC_TAG_NAME):
@@ -165,7 +175,7 @@ def add_table_of_contents(library):
     def process_document(node_store, node):
         _add_toc_data_if_not_exists(node_store)
         log.debug('Document node: add TOC entry')
-        node_store.library_data['toc_entries'].append(TOCEntry(0, node.path))
+        node_store.processor_data['toc_entries'].append(TOCEntry(0, node.path))
 
     name_to_level = {'h' + str(i): i for i in range(1, 7)}
     @library.processor('h1')
@@ -178,13 +188,13 @@ def add_table_of_contents(library):
         _add_toc_data_if_not_exists(node_store)
 
         text = tree_to_text(node)
-        ref_id = node_store.get_ref_id(text)  # might be identical
+        ref_id = node_store.text_to_ref_id(text)  # might be identical
         entry = TOCEntry(name_to_level[node.name], text, ref_id)
 
-        entry_to_sequence = node_store.library_data['toc_entry_to_sequence']
+        entry_to_sequence = node_store.processor_data['toc_entry_to_sequence']
         if entry_to_sequence:
             log.debug('Header node: add number and anchor')
-            if entry in node_store.library_data['toc_entry_to_sequence']:
+            if entry in node_store.processor_data['toc_entry_to_sequence']:
                 prefix = '.'.join(entry_to_sequence[entry]) + ' '
                 _prepend_text_to_node_children(node_store, node, prefix)
                 anchor = CWDOMAnchorNode(entry.ref_id)
@@ -193,17 +203,17 @@ def add_table_of_contents(library):
                 log.debug("Never mind, it doesn't have a heading number...")
         else:
             log.debug('Header node: add TOC entry')
-            node_store.library_data['toc_entries'].append(entry)
+            node_store.processor_data['toc_entries'].append(entry)
 
     @library.processor(TOC_TAG_NAME)
     def process_toc(node_store, node):
         _add_toc_data_if_not_exists(node_store)
 
-        if not node_store.library_data['toc_entries_is_complete']:
+        if not node_store.processor_data['toc_entries_is_complete']:
             return
 
         anchor = CWDOMAnchorNode('table-of-contents')
-        node_store.replace(node, anchor)
+        node_store.replace_node(node, anchor)
 
         ul = CWDOMTagNode('ul', kwargs={'class': 'table-of-contents'})
         # don't add ul to node_store until it has all its children, to cut
@@ -213,7 +223,7 @@ def add_table_of_contents(library):
 
         k = None
         entries_by_document = {}
-        for entry in node_store.library_data['toc_entries']:
+        for entry in node_store.processor_data['toc_entries']:
             if entry.level == 0:
                 k = entry.path
                 entries_by_document[k] = []
@@ -221,11 +231,13 @@ def add_table_of_contents(library):
                 entries_by_document[k].append(entry)
 
         output_order = sorted(entries_by_document.keys())
-        node_store.library_data['toc_entry_to_number'] = {}
+        node_store.processor_data['toc_entry_to_number'] = {}
         for i, k in output_order:
             nested_list = _entries_to_nested_list(entries_by_document[k])
             _store_entry_to_sequence(
-                nested_list, node_store.library_data['toc_entry_to_sequence'], [i])
+                nested_list,
+                node_store.processor_data['toc_entry_to_sequence'],
+                (i,))
             ul.children = _nested_list_to_nodes(nested_list)
 
         node_store.add_child(anchor, ul)
