@@ -43,24 +43,42 @@ class TestLibrary(Library):
         self.processor('d', record)
         self.processor('e', record)
         self.processor('a_child', record)
+        self.processor('wrapper', record)
+        self.processor('replacement', record)
 
+        self.processor('invalidate_a', record)
+        @self.processor('invalidate_a')
         def invalidate_a(node_store, node):
             for a in node_store.get_nodes('a'):
                 node_store.invalidate(a)
-        self.processor('invalidate_a', record)
-        self.processor('invalidate_a', invalidate_a)
 
+        self.processor('add_own_child', record)
+        @self.processor('add_own_child')
         def add_own_child(node_store, node):
             node_store.add_node(node, CWDOMNode('a_child'))
-        self.processor('add_own_child', record)
-        self.processor('add_own_child', add_own_child)
 
+        self.processor('add_child_to_a', record)
+        @self.processor('add_child_to_a')
         def add_child_to_a(node_store, node):
             i = node.data.get('i', None)
             for a in node_store.get_nodes('a'):
                 node_store.add_node(a, CWDOMNode('a_child'), i)
-        self.processor('add_child_to_a', record)
-        self.processor('add_child_to_a', add_child_to_a)
+
+        self.processor('wrap_self', record)
+        @self.processor('wrap_self')
+        def wrap_self(node_store, node):
+            node_store.wrap_node(node, CWDOMNode('wrapper'))
+
+        self.processor('replace_self', record)
+        @self.processor('replace_self')
+        def replace_self(node_store, node):
+            node_store.replace_node(node, CWDOMNode('replacement'))
+
+        self.processor('replace_a', record)
+        @self.processor('replace_a')
+        def replace_a(node_store, node):
+            for a in node_store.get_nodes('a'):
+                node_store.replace_node(a, CWDOMNode('replacement'))
 
         self.end_processor(record)
 
@@ -76,6 +94,11 @@ class TestNodeStore(unittest.TestCase):
         self.assertEqual(
             list(ns.preorder_traversal(ns.root)),
             [pair[1] for pair in sorted(pairs)])
+
+    def assertTreeIsConsistent(self, node):
+        for child in node.children:
+            self.assertEqual(child.get_parent(), node)
+            self.assertTreeIsConsistent(child)
 
     def test_simple(self):
         # most tests won't need to build the tree this tedious way. this
@@ -242,6 +265,69 @@ class TestNodeStore(unittest.TestCase):
                   a_child()
                   c()
                 add_child_to_a()
+              CWEnd()
+        """))
+        self.assertTraversalKeysAreConsistent(ns)
+
+    def test_replace_self(self):
+        ns = NodeStore(CWDOMRootNode([
+            CWDOMDocumentNode('doc', [
+                CWDOMNode('replace_self'),
+            ])
+        ]))
+        library = TestLibrary()
+        ns.apply_library(library)
+        self.assertEqual(library.visit_history, [
+            'Root', 'Document', 'replace_self', END, 'replacement'
+        ])
+        self.assertEqual(ns.root.get_string_for_test_comparison(), strip("""
+            Root()
+              Document()
+                replacement()
+              CWEnd()
+        """))
+        self.assertTraversalKeysAreConsistent(ns)
+
+    def test_replace_ahead(self):
+        ns = NodeStore(CWDOMRootNode([
+            CWDOMDocumentNode('doc', [
+                CWDOMNode('replace_a'),
+                CWDOMNode('a'),
+            ])
+        ]))
+        library = TestLibrary()
+        logging.basicConfig(level=logging.DEBUG)
+        ns.apply_library(library)
+        self.assertEqual(library.visit_history, [
+            'Root', 'Document', 'replace_a', END, 'replacement'
+        ])
+        self.assertEqual(ns.root.get_string_for_test_comparison(), strip("""
+            Root()
+              Document()
+                replace_a()
+                replacement()
+              CWEnd()
+        """))
+        self.assertTraversalKeysAreConsistent(ns)
+        log.debug("-----")
+
+    def test_replace_behind(self):
+        ns = NodeStore(CWDOMRootNode([
+            CWDOMDocumentNode('doc', [
+                CWDOMNode('a'),
+                CWDOMNode('replace_a'),
+            ])
+        ]))
+        library = TestLibrary()
+        ns.apply_library(library)
+        self.assertEqual(library.visit_history, [
+            'Root', 'Document', 'a', 'replace_a', END, 'replacement'
+        ])
+        self.assertEqual(ns.root.get_string_for_test_comparison(), strip("""
+            Root()
+              Document()
+                replacement()
+                replace_a()
               CWEnd()
         """))
         self.assertTraversalKeysAreConsistent(ns)

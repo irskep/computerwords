@@ -43,17 +43,19 @@ class Library:
     def run_processors(self, node_store, node):
         for p in self.get_processors(node.name):
             if node_store.get_is_node_invalid(node):
-                raise UnhandledEdgeCaseError(
-                    "Node has multiple processors, but an earlier processor"
-                    " invalidated it before the later one could run."
+                raise UnhandledEdgeCaseError((
+                    "Node {!r} has multiple processors, but an earlier"
+                    " processor invalidated it before the later one could run."
                     " I haven't decided if this is a problem or not, so for"
-                    " now this edge case simply throws an error.")
+                    " now this edge case simply throws an error.").format(
+                        node.name))
             if not node_store.get_is_node_still_in_tree(node):
-                raise UnhandledEdgeCaseError(
-                    "Node has multiple processors, but an earlier processor"
-                    " removed it before the later one could run."
+                raise UnhandledEdgeCaseError((
+                    "Node {!r} has multiple processors, but an earlier"
+                    " processor removed it before the later one could run."
                     " I haven't decided if this is a problem or not, so for"
-                    " now this edge case simply throws an error.")
+                    " now this edge case simply throws an error.").format(
+                        node.name))
             p(node_store, node)
 
     ### convenience methods for end node ###

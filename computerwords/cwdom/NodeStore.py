@@ -97,6 +97,7 @@ class NodeStore:
         self._nodes_invalidated_this_pass = set()
         for node_and_traversal_key in nodes_and_traversal_keys:
             node = node_and_traversal_key.node
+            log.debug('process {!r}'.format(node.name))
             self._add_node_to_lists(node)
             self._set_traversal_key(node, node_and_traversal_key.traversal_key)
             # TODO: re-run processors if the node replaces itself?
@@ -125,7 +126,8 @@ class NodeStore:
 
     def _set_traversal_key(self, node, key):
         if key is None:
-            del self._node_to_traversal_key[node]
+            if node in self._node_to_traversal_key:
+                del self._node_to_traversal_key[node]
             return
 
         if node in self._node_to_traversal_key:
@@ -193,10 +195,14 @@ class NodeStore:
         Replace node A in the tree with new node B. Node A's children become
         node B's children.
         """
-        traversal_key = self.get_traversal_key(from_node)
+        if self.get_has_node_been_traversed_yet(from_node):
+            traversal_key = self.get_traversal_key(from_node)
+        else:
+            traversal_key = None
         children = from_node.children
         parent = from_node.get_parent()
         parent_children_ix = parent.children.index(from_node)
+        log.debug(parent_children_ix)
 
         if parent is None:
             raise NodeStoreConsistencyError(
@@ -204,12 +210,12 @@ class NodeStore:
 
         self._remove_node(from_node)
 
-        self._set_traversal_key(to_node, traversal_key)
+        if traversal_key is not None:
+            self._set_traversal_key(to_node, traversal_key)
+            self._invalidate_node(to_node)
         to_node.set_children(children)
         parent.children[parent_children_ix] = to_node
         to_node.set_parent(parent)
-
-        self._invalidate_node(to_node)
 
     def add_node(self, parent, node, i=None):
         """Recursively add node and all its children"""
@@ -271,7 +277,7 @@ class NodeStore:
         self._invalidate_node(outer_node)
 
     def get_nodes(self, name):
-        return self._node_name_to_nodes.get(name, set())
+        return frozenset(self._node_name_to_nodes.get(name, set()))
 
     def get_is_node_invalid(self, node):
         return (
