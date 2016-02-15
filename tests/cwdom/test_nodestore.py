@@ -2,7 +2,7 @@ import logging
 import unittest
 from textwrap import dedent
 
-from computerwords.cwdom.NodeStore import NodeStore
+from computerwords.cwdom.NodeStore import NodeStore, NodeStoreConsistencyError
 from computerwords.cwdom.CWDOMNode import *
 from computerwords.library import Library
 
@@ -28,7 +28,7 @@ def log_tree(ns):
     log.debug('\n' + ns.root.get_string_for_test_comparison())
 
 
-class TestLibrary(Library):
+class LibraryForTesting(Library):
     def __init__(self):
         super().__init__()
         self.visit_history = []
@@ -124,7 +124,7 @@ class TestNodeStore(unittest.TestCase):
         flat_nodes = [a, c, b, doc, root]
 
         ns = NodeStore(root)
-        library = TestLibrary()
+        library = LibraryForTesting()
         ns.apply_library(library)
         self.assertEqual(library.visit_history, [
             'Root', 'Document', 'a', 'b', 'c', END
@@ -147,7 +147,7 @@ class TestNodeStore(unittest.TestCase):
                 CWDOMNode('invalidate_a')
             ])
         ]))
-        library = TestLibrary()
+        library = LibraryForTesting()
         ns.apply_library(library)
         self.assertEqual(library.visit_history, [
             'Root', 'Document', 'a', 'b', 'invalidate_a',
@@ -163,14 +163,14 @@ class TestNodeStore(unittest.TestCase):
                 TestNode('add_own_child')
             ])
         ]))
-        library = TestLibrary()
+        library = LibraryForTesting()
         ns.apply_library(library)
         self.assertEqual(library.visit_history, [
             'Root', 'Document', 'a', 'b', 'add_own_child', 'a_child',
             END,
         ])
 
-    def test_forward_child(self):
+    def test_add_forward(self):
         ns = NodeStore(CWDOMRootNode([
             CWDOMDocumentNode('doc', [
                 TestNode('add_child_to_a'),
@@ -178,14 +178,14 @@ class TestNodeStore(unittest.TestCase):
                 CWDOMNode('a'),
             ])
         ]))
-        library = TestLibrary()
+        library = LibraryForTesting()
         ns.apply_library(library)
         self.assertEqual(library.visit_history, [
             'Root', 'Document', 'add_child_to_a', 'b', 'a', 'a_child',
             END,
         ])
 
-    def test_backward_child(self):
+    def test_add_backward(self):
         ns = NodeStore(CWDOMRootNode([
             CWDOMDocumentNode('doc', [
                 CWDOMNode('a'),
@@ -193,7 +193,7 @@ class TestNodeStore(unittest.TestCase):
                 TestNode('add_child_to_a'),
             ])
         ]))
-        library = TestLibrary()
+        library = LibraryForTesting()
         ns.apply_library(library)
         self.assertEqual(library.visit_history, [
             'Root', 'Document', 'a', 'b', 'add_child_to_a', END, 'a_child'
@@ -209,7 +209,7 @@ class TestNodeStore(unittest.TestCase):
                 TestNode('add_child_to_a'),
             ])
         ]))
-        library = TestLibrary()
+        library = LibraryForTesting()
         ns.apply_library(library)
         self.assertEqual(library.visit_history, [
             'Root', 'Document', 'a', 'b', 'c', 'add_child_to_a', END, 'a_child'
@@ -236,7 +236,7 @@ class TestNodeStore(unittest.TestCase):
                 TestNode('add_child_to_a', i=0),
             ])
         ]))
-        library = TestLibrary()
+        library = LibraryForTesting()
         ns.apply_library(library)
         self.assertEqual(library.visit_history, [
             'Root', 'Document', 'a', 'b', 'c', 'add_child_to_a', END, 'a_child'
@@ -263,7 +263,7 @@ class TestNodeStore(unittest.TestCase):
                 TestNode('add_child_to_a', i=1),
             ])
         ]))
-        library = TestLibrary()
+        library = LibraryForTesting()
         ns.apply_library(library)
         self.assertEqual(library.visit_history, [
             'Root', 'Document', 'a', 'b', 'c', 'add_child_to_a', END, 'a_child'
@@ -286,7 +286,7 @@ class TestNodeStore(unittest.TestCase):
                 CWDOMNode('replace_self'),
             ])
         ]))
-        library = TestLibrary()
+        library = LibraryForTesting()
         ns.apply_library(library)
         self.assertEqual(library.visit_history, [
             'Root', 'Document', 'replace_self', END, 'replacement'
@@ -303,19 +303,22 @@ class TestNodeStore(unittest.TestCase):
         ns = NodeStore(CWDOMRootNode([
             CWDOMDocumentNode('doc', [
                 CWDOMNode('replace_a'),
-                CWDOMNode('a'),
+                CWDOMNode('b', [
+                    CWDOMNode('a'),
+                ]),
             ])
         ]))
-        library = TestLibrary()
+        library = LibraryForTesting()
         ns.apply_library(library)
         self.assertEqual(library.visit_history, [
-            'Root', 'Document', 'replace_a', END, 'replacement'
+            'Root', 'Document', 'replace_a', 'b', 'replacement', END,
         ])
         self.assertEqual(ns.root.get_string_for_test_comparison(), strip("""
             Root()
               Document()
                 replace_a()
-                replacement()
+                b()
+                  replacement()
               CWEnd()
         """))
         self.assertTraversalKeysAreConsistent(ns)
@@ -323,19 +326,22 @@ class TestNodeStore(unittest.TestCase):
     def test_replace_behind(self):
         ns = NodeStore(CWDOMRootNode([
             CWDOMDocumentNode('doc', [
-                CWDOMNode('a'),
+                CWDOMNode('b', [
+                    CWDOMNode('a'),
+                ]),
                 CWDOMNode('replace_a'),
             ])
         ]))
-        library = TestLibrary()
+        library = LibraryForTesting()
         ns.apply_library(library)
         self.assertEqual(library.visit_history, [
-            'Root', 'Document', 'a', 'replace_a', END, 'replacement'
+            'Root', 'Document', 'b', 'a', 'replace_a', END, 'replacement'
         ])
         self.assertEqual(ns.root.get_string_for_test_comparison(), strip("""
             Root()
               Document()
-                replacement()
+                b()
+                  replacement()
                 replace_a()
               CWEnd()
         """))
@@ -347,7 +353,7 @@ class TestNodeStore(unittest.TestCase):
                 CWDOMNode('remove_self'),
             ])
         ]))
-        library = TestLibrary()
+        library = LibraryForTesting()
         ns.apply_library(library)
         self.assertEqual(library.visit_history, [
             'Root', 'Document', 'remove_self', END,
@@ -363,21 +369,80 @@ class TestNodeStore(unittest.TestCase):
         ns = NodeStore(CWDOMRootNode([
             CWDOMDocumentNode('doc', [
                 CWDOMNode('remove_a'),
-                CWDOMNode('a'),
+                CWDOMNode('b', [
+                    CWDOMNode('a'),
+                ]),
             ])
         ]))
-        library = TestLibrary()
+        library = LibraryForTesting()
         ns.apply_library(library)
         self.assertEqual(library.visit_history, [
-            'Root', 'Document', 'remove_a', END,
+            'Root', 'Document', 'remove_a', 'b', END,
         ])
         self.assertEqual(ns.root.get_string_for_test_comparison(), strip("""
             Root()
               Document()
                 remove_a()
+                b()
               CWEnd()
         """))
         self.assertTraversalKeysAreConsistent(ns)
+
+    def test_remove_behind(self):
+        ns = NodeStore(CWDOMRootNode([
+            CWDOMDocumentNode('doc', [
+                CWDOMNode('b', [
+                    CWDOMNode('a'),
+                ]),
+                CWDOMNode('remove_a'),
+            ])
+        ]))
+        library = LibraryForTesting()
+        ns.apply_library(library)
+        self.assertEqual(library.visit_history, [
+            'Root', 'Document', 'b', 'a', 'remove_a', END,
+        ])
+        self.assertEqual(ns.root.get_string_for_test_comparison(), strip("""
+            Root()
+              Document()
+                b()
+                remove_a()
+              CWEnd()
+        """))
+        self.assertTraversalKeysAreConsistent(ns)
+
+
+class TestNodeStoreSiblingMutationErrors(unittest.TestCase):
+
+    def test_replace_ahead(self):
+        ns = NodeStore(CWDOMRootNode([
+            CWDOMDocumentNode('doc', [
+                CWDOMNode('replace_a'),
+                CWDOMNode('a'),
+            ])
+        ]))
+        with self.assertRaises(NodeStoreConsistencyError):
+            ns.apply_library(LibraryForTesting())
+
+    def test_replace_behind(self):
+        ns = NodeStore(CWDOMRootNode([
+            CWDOMDocumentNode('doc', [
+                CWDOMNode('a'),
+                CWDOMNode('replace_a'),
+            ])
+        ]))
+        with self.assertRaises(NodeStoreConsistencyError):
+            ns.apply_library(LibraryForTesting())
+
+    def test_remove_ahead(self):
+        ns = NodeStore(CWDOMRootNode([
+            CWDOMDocumentNode('doc', [
+                CWDOMNode('remove_a'),
+                CWDOMNode('a'),
+            ])
+        ]))
+        with self.assertRaises(NodeStoreConsistencyError):
+            ns.apply_library(LibraryForTesting())
 
     def test_remove_behind(self):
         ns = NodeStore(CWDOMRootNode([
@@ -386,15 +451,5 @@ class TestNodeStore(unittest.TestCase):
                 CWDOMNode('remove_a'),
             ])
         ]))
-        library = TestLibrary()
-        ns.apply_library(library)
-        self.assertEqual(library.visit_history, [
-            'Root', 'Document', 'a', 'remove_a', END,
-        ])
-        self.assertEqual(ns.root.get_string_for_test_comparison(), strip("""
-            Root()
-              Document()
-                remove_a()
-              CWEnd()
-        """))
-        self.assertTraversalKeysAreConsistent(ns)
+        with self.assertRaises(NodeStoreConsistencyError):
+            ns.apply_library(LibraryForTesting())

@@ -51,7 +51,10 @@ class NodeStore:
     ### general utilities ###
 
     def preorder_traversal(self, node=None):
-        """Yields every node in the tree in pre-order"""
+        """
+        Yields every node in the tree in pre-order. If you mutate the tree
+        during the traversal, behavior is undefined.
+        """
         stack = [node or self.root]
         while len(stack) > 0:
             node = stack.pop()
@@ -76,6 +79,10 @@ class NodeStore:
         This should make it easy to implement simple child-replacement
         processors.
         [/note]
+
+        [warning]
+        **However**, you may not mutate a node's **siblings**.
+        [/warning]
         """
         node = node or self.root
         stack = [NodeAndTraversalKey(node, ())]
@@ -104,8 +111,11 @@ class NodeStore:
         nodes: a list of nodes sorted by their preorder traversal order
         """
         self._nodes_invalidated_this_pass = set()
+        self._locked_parent = None
         for node_and_traversal_key in nodes_and_traversal_keys:
             node = node_and_traversal_key.node
+            self._locked_parent = node.get_parent()
+            self._node_being_processed = node
             self._add_node_to_lists(node)
             self._set_traversal_key(node, node_and_traversal_key.traversal_key)
             # TODO: re-run processors if the node replaces itself?
@@ -118,6 +128,22 @@ class NodeStore:
             if node in self._nodes_invalidated_this_pass:
                 self._nodes_invalidated_this_pass.remove(node)
             library.run_processors(self, node)
+
+    def _guard_locked_parent(self, parent, child):
+        """
+        @param parent: Parent of the node currently being processed[/arg]
+        @param child: Node that caller wants to mutate, if relevant
+        """
+        is_disallowed = (
+            parent is self._locked_parent and
+            child is not self._node_being_processed)
+        if is_disallowed:
+            raise NodeStoreConsistencyError((
+                "I'm sorry, but you aren't allowed to mutate a node's"
+                " siblings in a processor. This is because the traversal"
+                " algorithm doesn't yet know how to handle various edge"
+                " cases."
+            ))
 
     def _add_node_to_lists(self, node):
         self._node_name_to_nodes.setdefault(node.name, set())
@@ -203,6 +229,7 @@ class NodeStore:
         Replace node A in the tree with new node B. Node A's children become
         node B's children.
         """
+        self._guard_locked_parent(from_node.get_parent(), from_node)
         if self.get_has_node_been_traversed_yet(from_node):
             traversal_key = self.get_traversal_key(from_node)
         else:
@@ -226,6 +253,7 @@ class NodeStore:
 
     def add_node(self, parent, node, i=None):
         """Recursively add node and all its children"""
+        self._guard_locked_parent(parent, None)
         if i is None:
             i = len(parent.children)
 
@@ -256,6 +284,7 @@ class NodeStore:
 
     def remove_node(self, node):
         """Recursively remove node and all its children"""
+        self._guard_locked_parent(node.get_parent(), node)
         children = node.children
         self._remove_node(node)
         node.get_parent().children.remove(node)
@@ -267,6 +296,7 @@ class NodeStore:
         inner_node's parent becomes outer-node's parent; inner_node becomes
         outer_node's only child. Only outer_node ends up invalidated.
         """
+        self._guard_locked_parent(inner_node.get_parent(), inner_node)
         # replace inner_node's children entry for outer_node with inner_node
         # claim inner_node as child of outer_node
         # recompute traversal keys (blargh)
