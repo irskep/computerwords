@@ -54,5 +54,5 @@ class Library:
     # to remember)
 
     # declare a function to run at the end of all input
-    def end_processor(self, tag_name, p=None):
+    def end_processor(self, p=None):
         return self.processor(CWDOMEndOfInputNode.NAME, p)

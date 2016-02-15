@@ -1,4 +1,21 @@
+import logging
 import weakref
+
+
+log = logging.getLogger(__name__)
+
+
+class IDGenerator:
+    def __init__(self):
+        self.next_id = 1
+
+    def get_id(self):
+        i = self.next_id
+        self.next_id += 1
+        return i
+
+
+id_generator = IDGenerator()
 
 
 class CWDOMNode:
@@ -13,6 +30,8 @@ class CWDOMNode:
 
         self.parent_weakref = None
         self.claim_children()
+
+        self.id = name + ':' + str(id_generator.get_id())
 
     def claim_children(self):
         for child in self.children:
@@ -37,6 +56,18 @@ class CWDOMNode:
     def copy(self, name=None):
         return CWDOMNode(name=name or self.name)
 
+    def get_string_for_test_comparison(self, inner_indentation=2):
+        elements = [
+            "{}()".format(self.id)
+        ]
+
+        for child in self.children:
+            inner_str = child.get_string_for_test_comparison(
+                inner_indentation + 2)
+            elements.append(' ' * inner_indentation + inner_str)
+
+        return '\n'.join(elements)
+
     def __repr__(self):
         return '{}({!r})'.format(self.name, self.children)
 
@@ -46,14 +77,14 @@ class CWDOMNode:
             self.name == other.name and
             self.children == other.children)
 
-    def __hash__(self, other):
-        return hash(repr(self))
+    def __hash__(self):
+        return hash(self.id)
 
 
 # generally you'll just need a type(x) == CWDOMEndOfInputNode check rather than
 # having to actually do anything with this object.
 class CWDOMEndOfInputNode(CWDOMNode):
-    NAME = "END OF ALL INPUT"
+    NAME = "CWEnd"
     def __init__(self):
         super().__init__(CWDOMEndOfInputNode.NAME)
 
@@ -98,6 +129,9 @@ class CWDOMTagNode(CWDOMNode):
 
     def __eq__(self, other):
         return super().__eq__(other) and self.kwargs == other.kwargs
+
+    def __hash__(self):
+        return hash(self.id)
 
     def get_arg(self, name):
         return self.kwargs[name]

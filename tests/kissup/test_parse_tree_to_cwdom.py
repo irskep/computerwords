@@ -4,7 +4,8 @@ from computerwords.kissup.parse_tree_to_cwdom import (
     DuplicateArgumentsError,
 )
 from computerwords.kissup import lex_and_parse_kissup
-import computerwords.cwdom as DOM
+import computerwords.cwdom.CWDOMNode as DOM
+from computerwords.cwdom.NodeStore import NodeStore
 
 
 class TestParseTreeToCWDOM(unittest.TestCase):
@@ -12,7 +13,7 @@ class TestParseTreeToCWDOM(unittest.TestCase):
         parse_tree = lex_and_parse_kissup(
             "outer text [abc x=y]inner text[/abc]", allowed_tags={'abc'})
         dom = parse_tree_to_cwdom(parse_tree)
-        self.assertEqual(dom, DOM.NodeStore(DOM.CWDOMRootNode([
+        self.assertEqual(dom, NodeStore(DOM.CWDOMRootNode([
             DOM.CWDOMDocumentNode('stdin.bb', [
                 DOM.CWDOMTextNode('outer text '),
                 DOM.CWDOMTagNode('abc', {'x': 'y'}, [

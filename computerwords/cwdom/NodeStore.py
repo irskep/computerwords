@@ -1,7 +1,12 @@
+import logging
 import re
 
 from collections import namedtuple
-from cwdom import CWDOMEndOfInputNode
+
+from computerwords.cwdom.CWDOMNode import CWDOMEndOfInputNode
+
+
+log = logging.getLogger(__name__)
 
 
 NodeAndTraversalKey = namedtuple(
@@ -78,17 +83,21 @@ class NodeStore:
             node_and_traversal_key = stack.pop()
             yield node_and_traversal_key
             (node, traversal_key) = node_and_traversal_key
+            new_stack_items = []
             for i, child in enumerate(node.children):
-                stack.append(NodeAndTraversalKey(child, traversal_key + (i,)))
+                new_stack_items.append(
+                    NodeAndTraversalKey(child, traversal_key + (i,)))
+            for item in reversed(new_stack_items):
+                stack.append(item)
 
     def _process_nodes(self, library, nodes_and_traversal_keys):
         """
         nodes: a list of nodes sorted by their preorder traversal order
         """
         self._nodes_invalidated_this_pass = set()
-        for node_and_traversal_key in nodes:
+        for node_and_traversal_key in nodes_and_traversal_keys:
             node = node_and_traversal_key.node
-            self._add_node_to_lists(node)
+            self._add_node_to_lists(node, node_and_traversal_key.traversal_key)
             # TODO: re-run processors if the node replaces itself?
             # Won't significantly improve runtime upper bound, but might save
             # a lot of allocations.
@@ -103,10 +112,11 @@ class NodeStore:
     def _add_node_to_lists(self, node, traversal_key):
         self._node_name_to_nodes.setdefault(node.name, set())
         self._node_name_to_nodes[node.name].add(node)
+        self._set_traversal_key(node, traversal_key)
 
     def _remove_node(self, node):
         """DOES NOT UNSET PARENT OR REMOVE ITSELF FROM PARENT'S CHILDREN"""
-        self._nodes_removed.add(node)
+        self._removed_nodes.add(node)
         self._node_name_to_nodes[node.name].remove(node)
         self._set_traversal_key(node, None)
         if node in self._nodes_invalidated_this_pass:
@@ -116,10 +126,14 @@ class NodeStore:
     def _set_traversal_key(self, node, key):
         if key is None:
             del self._node_to_traversal_key[node]
-        else:
-            if node in self._node_to_traversal_key:
+            return
+
+        if node in self._node_to_traversal_key:
+            existing_key = self._node_to_traversal_key[node]
+            if key != existing_key:
                 raise NodeStoreConsistencyError(
-                    "Node already has a traversal key")
+                    "Node already has a different traversal key")
+        else:
             self._node_to_traversal_key[node] = key
 
     def _replace_traversal_key(self, node, key, ignore_missing=True):
@@ -138,16 +152,13 @@ class NodeStore:
         for i, child in enumerate(node.children):
             self._replace_traversal_key(node, key + (i,))
 
-    def _get_traversal_key(self, node):
-        return self._node_to_traversal_key[node]
-
     def _invalidate_node(self, node):
         self._nodes_invalidated_this_pass.add(to_node)
 
     ### processing API ###
 
     def apply_library(self, library, initial_data=None):
-        self._nodes_removed = set()
+        self._removed_nodes = set()
         self._node_name_to_nodes = {}
         self._node_to_traversal_key = {}
         self._known_ref_ids = set()
@@ -155,20 +166,26 @@ class NodeStore:
         if type(self.root.children[-1]) is not CWDOMEndOfInputNode:
             self.root.children.append(CWDOMEndOfInputNode())
         self.processor_data = initial_data or {}
+        log.debug(list(t.node.id for t in self._preorder_traversal_with_keys()))
         self._process_nodes(library, self._preorder_traversal_with_keys())
+
         while self._nodes_invalidated_this_pass:
+            raise ValueError("Haven't tested this path yet")
             self._process_nodes(
                 library,
                 sorted(
-                    (node, self._get_traversal_key(node))
+                    (node, self.get_traversal_key(node))
                     for node in self._nodes_invalidated_this_pass))
+
+    def get_traversal_key(self, node):
+        return self._node_to_traversal_key[node]
 
     def replace_node(self, from_node, to_node):
         """
         Replace node A in the tree with new node B. Node A's children become
         node B's children.
         """
-        traversal_key = self._get_traversal_key(from_node)
+        traversal_key = self.get_traversal_key(from_node)
         children = from_node.children
         parent = from_node.get_parent()
         parent_children_ix = parent.children.index(from_node)
@@ -190,22 +207,21 @@ class NodeStore:
         """Recursively add node and all its children"""
         if i is None:
             i = len(parent.children)
-        traversal_key = self._get_traversal_key(parent) + (0,)
+        traversal_key = self.get_traversal_key(parent) + (0,)
         if parent.children:
             if i == 0:
                 # if first, use existing first child's traversal key minus one
                 # in the last component
-                old_key = self._get_traversal_key(parent.children[0])
+                old_key = self.get_traversal_key(parent.children[0])
                 traversal_key = old_key[:-1] + [old_key[-1] - 1]
             else:
                 # sort just after the previous child
                 traversal_key = (
-                    self._get_traversal_key(parent.children[i]) + (0,))
+                    self.get_traversal_key(parent.children[i]) + (0,))
         parent.children.insert(i, node)
         node.set_parent(parent)
 
-        self._add_node_to_lists(node)
-        self._set_traversal_key(node, traversal_key)
+        self._add_node_to_lists(node, traversal_key)
         self._invalidate_node(node)
         for child in node.children:
             self.add_node(node)
@@ -232,11 +248,10 @@ class NodeStore:
         outer_node.set_parent(parent)
         outer_node.set_children(inner_node)
 
-        traversal_key = self._get_traversal_key(inner_node)
+        traversal_key = self.get_traversal_key(inner_node)
 
-        self._set_traversal_key(outer_node, traversal_key)
         self._recompute_traversal_keys(inner_node, traversal_key + (0,))
-        self._add_node_to_lists(outer_node)
+        self._add_node_to_lists(outer_node, traversal_key)
         self._invalidate_node(outer_node)
 
     def get_nodes(self, name):
@@ -245,7 +260,7 @@ class NodeStore:
     def get_is_node_invalid(self, node):
         return (
             node in self._nodes_invalidated_this_pass and
-            node not in self._nodes_removed)
+            node not in self._removed_nodes)
 
     def invalidate(self, node):
         self._nodes_invalidated_this_pass.add(node)
@@ -263,6 +278,9 @@ class NodeStore:
         ref_id = ref_id_base + '-' + str(i)
         self._known_ref_ids.add(ref_id)
         return ref_id
+
+    def get_is_node_still_in_tree(self, node):
+        return node not in self._removed_nodes
 
     ### Methods used primarily by output step ###
 
