@@ -2,6 +2,7 @@ from computerwords.cwdom.CWDOMNode import CWDOMEndOfInputNode
 
 
 class UnhandledEdgeCaseError(Exception): pass
+class UnknownNodeNameError(Exception): pass
 
 
 class Library:
@@ -26,7 +27,13 @@ class Library:
 
     def get_processors(self, tag_name, strict=True):
         if strict:
-            return self.tag_name_to_processors[tag_name]
+            try:
+                return self.tag_name_to_processors[tag_name]
+            except KeyError:
+                msg = (
+                    "No processors are defined for nodes with name {!r}."
+                ).format(tag_name)
+                raise UnknownNodeNameError(msg)
         else:
             return self.tag_name_to_processors.get(tag_name, [])
 

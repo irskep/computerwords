@@ -56,7 +56,7 @@ class NodeStore:
         while len(stack) > 0:
             node = stack.pop()
             yield node
-            for child in node.children:
+            for child in reversed(node.children):
                 stack.append(child)
 
     ### processing implementation details ###
@@ -96,9 +96,9 @@ class NodeStore:
         """
         self._nodes_invalidated_this_pass = set()
         for node_and_traversal_key in nodes_and_traversal_keys:
-            log.debug(node_and_traversal_key)
             node = node_and_traversal_key.node
-            self._add_node_to_lists(node, node_and_traversal_key.traversal_key)
+            self._add_node_to_lists(node)
+            self._set_traversal_key(node, node_and_traversal_key.traversal_key)
             # TODO: re-run processors if the node replaces itself?
             # Won't significantly improve runtime upper bound, but might save
             # a lot of allocations.
@@ -110,10 +110,9 @@ class NodeStore:
                 self._nodes_invalidated_this_pass.remove(node)
             library.run_processors(self, node)
 
-    def _add_node_to_lists(self, node, traversal_key):
+    def _add_node_to_lists(self, node):
         self._node_name_to_nodes.setdefault(node.name, set())
         self._node_name_to_nodes[node.name].add(node)
-        self._set_traversal_key(node, traversal_key)
 
     def _remove_node(self, node):
         """DOES NOT UNSET PARENT OR REMOVE ITSELF FROM PARENT'S CHILDREN"""
@@ -154,7 +153,7 @@ class NodeStore:
             self._replace_traversal_key(node, key + (i,))
 
     def _invalidate_node(self, node):
-        self._nodes_invalidated_this_pass.add(to_node)
+        self._nodes_invalidated_this_pass.add(node)
 
     ### processing API ###
 
@@ -167,7 +166,13 @@ class NodeStore:
         if type(self.root.children[-1]) is not CWDOMEndOfInputNode:
             self.root.children.append(CWDOMEndOfInputNode())
         self.processor_data = initial_data or {}
-        log.debug(list(t.node.id for t in self._preorder_traversal_with_keys()))
+
+        # look forward to all nodes so that processors can look them up
+        # before we've properly reached them
+        for node in self.preorder_traversal(self.root):
+            self._node_name_to_nodes.setdefault(node.name, set())
+            self._node_name_to_nodes[node.name].add(node)
+
         self._process_nodes(library, self._preorder_traversal_with_keys())
 
         while self._nodes_invalidated_this_pass:
@@ -179,6 +184,9 @@ class NodeStore:
 
     def get_traversal_key(self, node):
         return self._node_to_traversal_key[node]
+
+    def get_has_node_been_traversed_yet(self, node):
+        return node in self._node_to_traversal_key
 
     def replace_node(self, from_node, to_node):
         """
@@ -207,21 +215,28 @@ class NodeStore:
         """Recursively add node and all its children"""
         if i is None:
             i = len(parent.children)
-        traversal_key = self.get_traversal_key(parent) + (0,)
-        if parent.children:
-            if i == 0:
-                # if first, use existing first child's traversal key minus one
-                # in the last component
-                old_key = self.get_traversal_key(parent.children[0])
-                traversal_key = old_key[:-1] + [old_key[-1] - 1]
-            else:
-                # sort just after the previous child
-                traversal_key = (
-                    self.get_traversal_key(parent.children[i]) + (0,))
+
+        if self.get_has_node_been_traversed_yet(parent):
+            traversal_key = self.get_traversal_key(parent) + (0,)
+            if parent.children:
+                if i == 0:
+                    # if first, use existing first child's traversal key minus one
+                    # in the last component
+                    old_key = self.get_traversal_key(parent.children[0])
+                    traversal_key = old_key[:-1] + (old_key[-1] - 1,)
+                elif i == len(parent.children):
+                    old_key = self.get_traversal_key(parent.children[-1])
+                    traversal_key = old_key[:-1] + (old_key[-1] + 1,)
+                else:
+                    # sort just after the previous child
+                    traversal_key = (
+                        self.get_traversal_key(parent.children[i - 1]) + (0,))
+            self._set_traversal_key(node, traversal_key)
+
         parent.children.insert(i, node)
         node.set_parent(parent)
 
-        self._add_node_to_lists(node, traversal_key)
+        self._add_node_to_lists(node)
         self._invalidate_node(node)
         for child in node.children:
             self.add_node(node)
@@ -251,7 +266,8 @@ class NodeStore:
         traversal_key = self.get_traversal_key(inner_node)
 
         self._recompute_traversal_keys(inner_node, traversal_key + (0,))
-        self._add_node_to_lists(outer_node, traversal_key)
+        self._add_node_to_lists(outer_node)
+        self._set_traversal_key(node, traversal_key)
         self._invalidate_node(outer_node)
 
     def get_nodes(self, name):

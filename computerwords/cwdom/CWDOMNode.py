@@ -58,7 +58,7 @@ class CWDOMNode:
 
     def get_string_for_test_comparison(self, inner_indentation=2):
         elements = [
-            "{}()".format(self.id)
+            "{}()".format(self.name)
         ]
 
         for child in self.children:
