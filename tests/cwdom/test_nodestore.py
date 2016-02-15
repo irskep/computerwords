@@ -74,11 +74,22 @@ class TestLibrary(Library):
         def replace_self(node_store, node):
             node_store.replace_node(node, CWDOMNode('replacement'))
 
+        self.processor('remove_self', record)
+        @self.processor('remove_self')
+        def replace_self(node_store, node):
+            node_store.remove_node(node)
+
         self.processor('replace_a', record)
         @self.processor('replace_a')
         def replace_a(node_store, node):
             for a in node_store.get_nodes('a'):
                 node_store.replace_node(a, CWDOMNode('replacement'))
+
+        self.processor('remove_a', record)
+        @self.processor('remove_a')
+        def replace_a(node_store, node):
+            for a in node_store.get_nodes('a'):
+                node_store.remove_node(a)
 
         self.end_processor(record)
 
@@ -296,7 +307,6 @@ class TestNodeStore(unittest.TestCase):
             ])
         ]))
         library = TestLibrary()
-        logging.basicConfig(level=logging.DEBUG)
         ns.apply_library(library)
         self.assertEqual(library.visit_history, [
             'Root', 'Document', 'replace_a', END, 'replacement'
@@ -309,7 +319,6 @@ class TestNodeStore(unittest.TestCase):
               CWEnd()
         """))
         self.assertTraversalKeysAreConsistent(ns)
-        log.debug("-----")
 
     def test_replace_behind(self):
         ns = NodeStore(CWDOMRootNode([
@@ -328,6 +337,64 @@ class TestNodeStore(unittest.TestCase):
               Document()
                 replacement()
                 replace_a()
+              CWEnd()
+        """))
+        self.assertTraversalKeysAreConsistent(ns)
+
+    def test_remove_self(self):
+        ns = NodeStore(CWDOMRootNode([
+            CWDOMDocumentNode('doc', [
+                CWDOMNode('remove_self'),
+            ])
+        ]))
+        library = TestLibrary()
+        ns.apply_library(library)
+        self.assertEqual(library.visit_history, [
+            'Root', 'Document', 'remove_self', END,
+        ])
+        self.assertEqual(ns.root.get_string_for_test_comparison(), strip("""
+            Root()
+              Document()
+              CWEnd()
+        """))
+        self.assertTraversalKeysAreConsistent(ns)
+
+    def test_remove_ahead(self):
+        ns = NodeStore(CWDOMRootNode([
+            CWDOMDocumentNode('doc', [
+                CWDOMNode('remove_a'),
+                CWDOMNode('a'),
+            ])
+        ]))
+        library = TestLibrary()
+        ns.apply_library(library)
+        self.assertEqual(library.visit_history, [
+            'Root', 'Document', 'remove_a', END,
+        ])
+        self.assertEqual(ns.root.get_string_for_test_comparison(), strip("""
+            Root()
+              Document()
+                remove_a()
+              CWEnd()
+        """))
+        self.assertTraversalKeysAreConsistent(ns)
+
+    def test_remove_behind(self):
+        ns = NodeStore(CWDOMRootNode([
+            CWDOMDocumentNode('doc', [
+                CWDOMNode('a'),
+                CWDOMNode('remove_a'),
+            ])
+        ]))
+        library = TestLibrary()
+        ns.apply_library(library)
+        self.assertEqual(library.visit_history, [
+            'Root', 'Document', 'a', 'remove_a', END,
+        ])
+        self.assertEqual(ns.root.get_string_for_test_comparison(), strip("""
+            Root()
+              Document()
+                remove_a()
               CWEnd()
         """))
         self.assertTraversalKeysAreConsistent(ns)

@@ -84,9 +84,18 @@ class NodeStore:
             yield node_and_traversal_key
             (node, traversal_key) = node_and_traversal_key
             new_stack_items = []
-            for i, child in enumerate(node.children):
+
+            # PROBLEM: we add all children to the stack before any of them are
+            # processed. This means that if a processor changes or removes
+            # a child, that change will be ignored.
+            # SOLUTION: children needs to be a collection that can be iterated
+            # over while being mutated.
+            i = 0
+            while i < len(node.children):
+                child = node.children[i]
                 new_stack_items.append(
                     NodeAndTraversalKey(child, traversal_key + (i,)))
+                i += 1
             for item in reversed(new_stack_items):
                 stack.append(item)
 
@@ -97,7 +106,6 @@ class NodeStore:
         self._nodes_invalidated_this_pass = set()
         for node_and_traversal_key in nodes_and_traversal_keys:
             node = node_and_traversal_key.node
-            log.debug('process {!r}'.format(node.name))
             self._add_node_to_lists(node)
             self._set_traversal_key(node, node_and_traversal_key.traversal_key)
             # TODO: re-run processors if the node replaces itself?
@@ -202,7 +210,6 @@ class NodeStore:
         children = from_node.children
         parent = from_node.get_parent()
         parent_children_ix = parent.children.index(from_node)
-        log.debug(parent_children_ix)
 
         if parent is None:
             raise NodeStoreConsistencyError(
