@@ -96,6 +96,7 @@ class NodeStore:
         """
         self._nodes_invalidated_this_pass = set()
         for node_and_traversal_key in nodes_and_traversal_keys:
+            log.debug(node_and_traversal_key)
             node = node_and_traversal_key.node
             self._add_node_to_lists(node, node_and_traversal_key.traversal_key)
             # TODO: re-run processors if the node replaces itself?
@@ -170,11 +171,10 @@ class NodeStore:
         self._process_nodes(library, self._preorder_traversal_with_keys())
 
         while self._nodes_invalidated_this_pass:
-            raise ValueError("Haven't tested this path yet")
             self._process_nodes(
                 library,
                 sorted(
-                    (node, self.get_traversal_key(node))
+                    NodeAndTraversalKey(node, self.get_traversal_key(node))
                     for node in self._nodes_invalidated_this_pass))
 
     def get_traversal_key(self, node):
