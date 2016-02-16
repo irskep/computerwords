@@ -1,7 +1,11 @@
 import logging
-from collections import OrderedDict, namedtuple, deque
-from computerwords.cwdom import (
-    CWDDOMEndOfInputNode,
+from collections import (
+    OrderedDict,
+    namedtuple,
+    deque,
+)
+from computerwords.cwdom.CWDOMNode import (
+    CWDOMEndOfInputNode,
     CWDOMTagNode,
 )
 
@@ -48,44 +52,27 @@ def tree_to_text(node_store, node):
 def _add_toc_data_if_not_exists(node_store):
     node_store.processor_data.setdefault('toc_entries_is_complete', False)
     node_store.processor_data.setdefault('toc_entries', [])
-    node_store.processor_data.setdefault('toc_entry_to_sequence', None)
+    node_store.processor_data.setdefault('toc_entry_to_number', None)
 
 
 def _entries_to_nested_list(entries):
-    # 0 MyDoc.bb mydoc
-    # 1 "A header" a-header
-    # 2 "subsection" subsection
-    # 1 "Another header"
-    # 3 "subsubsection" subsubsection
-    # 0 AnotherDoc.bb
-    # 3 "asdf" asdf
-    # [
-    #   ("MyDoc.bb", [
-    #       ("A header", [
-    #           ("subsection", [])
-    #       ]),
-    #       ("Another header", [
-    #           ("subsubsection", [])
-    #       ]),
-    #   ]),
-    #   ("AnotherDoc.bb", [("asdf", [])]),
-    # ]
     top_level_list = []
-    stack = deque((TOCEntry(-1, None, None), top_level_list))
+    stack = deque([(TOCEntry(-1, None, None), top_level_list)])
     for entry in entries:
-        parent_entry, list_to_add_to = level_stack[-1]
+        parent_entry, list_to_add_to = stack[-1]
         while entry.level <= parent_entry.level:
-            parent_entry, list_to_add_to = level_stack.pop()
-        list_to_add_to.append(entry)
-        stack.append((entry, []))
+            parent_entry, list_to_add_to = stack.pop()
+        pair = (entry, [])
+        list_to_add_to.append(pair)
+        stack.append(pair)
     return top_level_list
 
 
-def _store_entry_to_sequence(nested_list, entry_to_sequence, sequence_so_far):
+def _store_entry_to_sequence(nested_list, entry_to_number, sequence_so_far):
     for i, (child, grandchildren) in enumerate(nested_list):
         sequence = sequence_so_far + (i + 1,)
-        entry_to_sequence[child] = sequence
-        _store_entry_to_sequence(grandchildren, entry_to_sequence, sequence)
+        entry_to_number[child] = sequence
+        _store_entry_to_sequence(grandchildren, entry_to_number, sequence)
 
 
 # [(TOCEntry, [children]), ...] -> DOM
@@ -166,7 +153,8 @@ def add_table_of_contents(library):
             for node in node_store.get_nodes(TOC_TAG_NAME):
                 node_store.invalidate(node)
         else:
-            log.debug("End node: headers aren't ready, invalidate for another pass")
+            log.debug(
+                "End node: headers aren't ready, invalidate for another pass")
             # node_store should have validated this node already; invalidating
             # it will add it to the next pass.
             node_store.invalidate(end_node)
@@ -175,7 +163,8 @@ def add_table_of_contents(library):
     def process_document(node_store, node):
         _add_toc_data_if_not_exists(node_store)
         log.debug('Document node: add TOC entry')
-        node_store.processor_data['toc_entries'].append(TOCEntry(0, node.path))
+        node_store.processor_data['toc_entries'].append(
+            TOCEntry(0, node.path, node.path))
 
     name_to_level = {'h' + str(i): i for i in range(1, 7)}
     @library.processor('h1')
@@ -187,15 +176,15 @@ def add_table_of_contents(library):
     def process_heading(node_store, node):
         _add_toc_data_if_not_exists(node_store)
 
-        text = tree_to_text(node)
+        text = tree_to_text(node_store, node)
         ref_id = node_store.text_to_ref_id(text)  # might be identical
         entry = TOCEntry(name_to_level[node.name], text, ref_id)
 
-        entry_to_sequence = node_store.processor_data['toc_entry_to_sequence']
-        if entry_to_sequence:
+        entry_to_number = node_store.processor_data['toc_entry_to_number']
+        if entry_to_number:
             log.debug('Header node: add number and anchor')
-            if entry in node_store.processor_data['toc_entry_to_sequence']:
-                prefix = '.'.join(entry_to_sequence[entry]) + ' '
+            if entry in node_store.processor_data['toc_entry_to_number']:
+                prefix = '.'.join(entry_to_number[entry]) + ' '
                 _prepend_text_to_node_children(node_store, node, prefix)
                 anchor = CWDOMAnchorNode(entry.ref_id)
                 node_store.wrap_node(node, anchor)
@@ -236,7 +225,7 @@ def add_table_of_contents(library):
             nested_list = _entries_to_nested_list(entries_by_document[k])
             _store_entry_to_sequence(
                 nested_list,
-                node_store.processor_data['toc_entry_to_sequence'],
+                node_store.processor_data['toc_entry_to_number'],
                 (i,))
             ul.children = _nested_list_to_nodes(nested_list)
 

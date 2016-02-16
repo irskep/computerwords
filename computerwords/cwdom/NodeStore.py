@@ -327,7 +327,7 @@ class NodeStore:
     def text_to_ref_id(self, text):
         """Returns a ref_id that is unique against all other ref_ids returned
         by this function"""
-        ref_id_base = re.replace(r'\w+', '-', text)
+        ref_id_base = re.sub(r'\W+', '-', text)
         if ref_id_base not in self._known_ref_ids:
             self._known_ref_ids.add(ref_id_base)
             return ref_id_base

@@ -58,7 +58,7 @@ class CWDOMNode:
 
     def get_string_for_test_comparison(self, inner_indentation=2):
         elements = [
-            "{}()".format(self.name)
+            "{}({})".format(self.name, self.get_args_for_test_comparison())
         ]
 
         for child in self.children:
@@ -67,6 +67,9 @@ class CWDOMNode:
             elements.append(' ' * inner_indentation + inner_str)
 
         return '\n'.join(elements)
+
+    def get_args_for_test_comparison(self):
+        return ''
 
     def __repr__(self):
         return '{}({!r})'.format(self.name, self.children)
@@ -100,6 +103,7 @@ class CWDOMRootNode(CWDOMNode):
 class CWDOMDocumentNode(CWDOMNode):
     def __init__(self, path, children=None):
         super().__init__('Document', children)
+        self.path = path
 
     def copy(self, name=None):
         return CWDOMDocumentNode(path)
@@ -116,12 +120,16 @@ class CWDOMStatementsNode(CWDOMNode):
 class CWDOMTagNode(CWDOMNode):
     def __init__(self, name, kwargs, children=None):
         super().__init__(name, children)
+        assert isinstance(kwargs, dict)
         self.kwargs = kwargs
 
     def copy(self, name=None, kwargs=None):
         return CWDOMTagNode(
             name=name or self.name,
             kwargs=kwargs or self.kwargs)
+
+    def get_args_for_test_comparison(self):
+        return repr(self.kwargs)
 
     def __repr__(self):
         return '{}(kwargs={!r}, children={!r}'.format(
@@ -144,6 +152,9 @@ class CWDOMTextNode(CWDOMNode):
 
     def copy(self, name=None):
         return CWDOMTextNode(text=text or self.text)
+
+    def get_args_for_test_comparison(self):
+        return repr(self.text)
 
     def __repr__(self):
         return "{}(text={!r})".format(self.name, self.text)
