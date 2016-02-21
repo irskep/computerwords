@@ -59,7 +59,8 @@ class CWDOMNode:
 
     def get_string_for_test_comparison(self, inner_indentation=2):
         elements = [
-            "{}()".format(self.name)
+            "{}({})".format(
+                self.name, self.get_args_string_for_test_comparison())
         ]
 
         for child in self.children:
@@ -69,25 +70,17 @@ class CWDOMNode:
 
         return '\n'.join(elements)
 
+    def get_args_string_for_test_comparison(self):
+        return ""
+
     def __repr__(self):
         return '{}({!r})'.format(self.name, self.children)
 
     def __eq__(self, other):
-        return (
-            type(self) is type(other) and
-            self.name == other.name and
-            self.children == other.children)
+        return (type(self) is type(other) and self.id == other.id)
 
     def __hash__(self):
         return hash(self.id)
-
-
-# generally you'll just need a type(x) == CWDOMEndOfInputNode check rather than
-# having to actually do anything with this object.
-class CWDOMEndOfInputNode(CWDOMNode):
-    NAME = "CWEnd"
-    def __init__(self):
-        super().__init__(CWDOMEndOfInputNode.NAME)
 
 
 class CWDOMRootNode(CWDOMNode):
@@ -102,6 +95,13 @@ class CWDOMDocumentNode(CWDOMNode):
     def __init__(self, path, children=None):
         super().__init__('Document', children)
         self.path = path
+
+    def get_args_string_for_test_comparison(self):
+        return 'path={!r}'.format(self.path)
+
+    def __repr__(self):
+        return '{}(path={!r}, children={!r})'.format(
+            self.name, self.path, self.children)
 
     def copy(self):
         return CWDOMDocumentNode(self.path)
@@ -125,6 +125,9 @@ class CWDOMTagNode(CWDOMNode):
             name=name or self.name,
             kwargs=kwargs or self.kwargs)
 
+    def get_args_string_for_test_comparison(self):
+        return 'kwargs={!r}'.format(self.kwargs)
+
     def __repr__(self):
         return '{}(kwargs={!r}, children={!r}'.format(
             self.name, self.kwargs, self.children)
@@ -144,6 +147,9 @@ class CWDOMTextNode(CWDOMNode):
         super().__init__('Text', [])
         self.text = text
 
+    def get_string_for_test_comparison(self, inner_indentation=2):
+        return repr(self.text)
+
     def copy(self):
         return CWDOMTextNode(text=text or self.text)
 
@@ -152,8 +158,8 @@ class CWDOMTextNode(CWDOMNode):
 
 
 class CWDOMAnchorNode(CWDOMNode):
-    def __init__(self, ref_id):
-        super().__init__('Anchor', [])
+    def __init__(self, ref_id, children=None):
+        super().__init__('Anchor', children)
         self.ref_id = ref_id
 
     def copy(self):

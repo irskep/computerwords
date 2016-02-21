@@ -1,4 +1,5 @@
 import unittest
+from tests.CWTestCase import CWTestCase
 from computerwords.kissup.parse_tree_to_cwdom import (
     parse_tree_to_cwdom,
     DuplicateArgumentsError,
@@ -8,19 +9,19 @@ import computerwords.cwdom.CWDOMNode as DOM
 from computerwords.cwdom.NodeStore import NodeStore
 
 
-class TestParseTreeToCWDOM(unittest.TestCase):
+class TestParseTreeToCWDOM(CWTestCase):
     def test_basic(self):
         parse_tree = lex_and_parse_kissup(
             "outer text [abc x=y]inner text[/abc]", allowed_tags={'abc'})
-        dom = parse_tree_to_cwdom(parse_tree)
-        self.assertEqual(dom, NodeStore(DOM.CWDOMRootNode([
-            DOM.CWDOMDocumentNode('stdin.bb', [
-                DOM.CWDOMTextNode('outer text '),
-                DOM.CWDOMTagNode('abc', {'x': 'y'}, [
-                    DOM.CWDOMTextNode('inner text'),
-                ])
-            ])
-        ])))
+        ns = parse_tree_to_cwdom(parse_tree)
+
+        self.assertEqual(ns.root.get_string_for_test_comparison(), self.strip("""
+            Root()
+              Document(path='stdin.bb')
+                'outer text '
+                abc(kwargs={'x': 'y'})
+                  'inner text'
+        """))
 
     def test_duplicate_arg(self):
         with self.assertRaises(DuplicateArgumentsError):

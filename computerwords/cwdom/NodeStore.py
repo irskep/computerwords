@@ -3,8 +3,6 @@ import re
 
 from collections import deque, namedtuple
 
-from computerwords.cwdom.CWDOMNode import CWDOMEndOfInputNode
-
 
 log = logging.getLogger(__name__)
 
@@ -84,6 +82,7 @@ class NodeStore:
         self.processor_data = initial_data or {}
         self._dirty_nodes = set()
         self._removed_nodes = set()
+        self._known_ref_ids = set()
         for node in self.postorder_traversal_allowing_ancestor_mutations():
             self._active_node = node
             if self._active_node in self._removed_nodes:
@@ -123,12 +122,18 @@ class NodeStore:
         outer_node.children = [inner_node]
         outer_node.set_parent(parent)
         inner_node.set_parent(outer_node)
+        if parent.name == 'Anchor':
+            raise ValueError()
 
     def _wrap_descendant_of_active_node(self, inner_node, outer_node):
         self._simple_wrap(inner_node, outer_node)
         self.mark_node_dirty(outer_node)
 
     def wrap_node(self, inner_node, outer_node):
+        if outer_node.children:
+            raise NodeStoreConsistencyError(
+                "When wrapping a node, outer node must have no existing"
+                " children")
         if self.get_is_descendant(inner_node, self._active_node):
             self._wrap_descendant_of_active_node(inner_node, outer_node)
         else:
@@ -176,7 +181,7 @@ class NodeStore:
     def text_to_ref_id(self, text):
         """Returns a ref_id that is unique against all other ref_ids returned
         by this function"""
-        ref_id_base = re.replace(r'\w+', '-', text)
+        ref_id_base = re.sub(r'\W+', '-', text)
         if ref_id_base not in self._known_ref_ids:
             self._known_ref_ids.add(ref_id_base)
             return ref_id_base

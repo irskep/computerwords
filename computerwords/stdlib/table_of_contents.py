@@ -1,7 +1,7 @@
 import logging
 from collections import OrderedDict, namedtuple, deque
-from computerwords.cwdom import (
-    CWDDOMEndOfInputNode,
+from computerwords.cwdom.CWDOMNode import (
+    CWDOMAnchorNode,
     CWDOMTagNode,
 )
 
@@ -14,6 +14,7 @@ log = logging.getLogger(__name__)
 
 
 HEADER_TAG_NAMES = {'h' + str(i) for i in range(1, 7)}
+NAME_TO_LEVEL = {'h' + str(i): i for i in range(1, 7)}
 TOC_TAG_NAME = 'table_of_contents'
 TOCEntry = namedtuple('TOCEntry', ['level', 'text', 'ref_id'])
 
@@ -35,15 +36,15 @@ def _add_toc_data_if_not_exists(node_store):
 
 
 def _node_to_toc_entry(node_store, node):
-    text = tree_to_text(node)
+    text = tree_to_text(node_store, node)
     ref_id = node_store.text_to_ref_id(text)  # might be identical
-    entry = TOCEntry(name_to_level[node.name], text, ref_id)
+    return TOCEntry(NAME_TO_LEVEL[node.name], text, ref_id)
 
 
 def _get_toc_subtree(toc_node, whole_toc, entry_to_number):
     return CWDOMTagNode(
         'ul',
-        kwargs={'class': 'table-of-contents'},
+        {'class': 'table-of-contents'},
         [
             CWDOMTagNode('li', [
                 CWDOMTextNode(path),
@@ -71,32 +72,15 @@ def _nested_list_to_nodes(entry_to_number, entry_children_pairs):
 
 
 def _entries_to_nested_list(entries):
-    # 0 MyDoc.bb mydoc
-    # 1 "A header" a-header
-    # 2 "subsection" subsection
-    # 1 "Another header"
-    # 3 "subsubsection" subsubsection
-    # 0 AnotherDoc.bb
-    # 3 "asdf" asdf
-    # [
-    #   ("MyDoc.bb", [
-    #       ("A header", [
-    #           ("subsection", [])
-    #       ]),
-    #       ("Another header", [
-    #           ("subsubsection", [])
-    #       ]),
-    #   ]),
-    #   ("AnotherDoc.bb", [("asdf", [])]),
-    # ]
     top_level_list = []
-    stack = deque((TOCEntry(-1, None, None), top_level_list))
+    stack = deque([(TOCEntry(-1, None, None), top_level_list)])
     for entry in entries:
-        parent_entry, list_to_add_to = level_stack[-1]
+        parent_entry, list_to_add_to = stack[-1]
         while entry.level <= parent_entry.level:
-            parent_entry, list_to_add_to = level_stack.pop()
-        list_to_add_to.append(entry)
-        stack.append((entry, []))
+            parent_entry, list_to_add_to = stack.pop()
+        pair = (entry, [])
+        list_to_add_to.append(pair)
+        stack.append(pair)
     return top_level_list
 
 
@@ -144,7 +128,7 @@ def add_table_of_contents(library):
     @library.processor('h6')
     def process_header(node_store, node):
         entry = _node_to_toc_entry(node_store, node)
-        anchor = CWDOMAnchorNode(entry.ref_id, [node])
+        anchor = CWDOMAnchorNode(entry.ref_id)
         anchor.data['toc_entry'] = entry
         node_store.wrap_node(node, anchor)
 
@@ -176,8 +160,8 @@ def add_table_of_contents(library):
         output_order = sorted(doc_to_entries.keys())
         entry_to_number = {}
         whole_toc = []
-        for i, k in output_order:
-            nested_list = _entries_to_nested_list(entries_by_document[k])
+        for i, k in enumerate(output_order):
+            nested_list = _entries_to_nested_list(doc_to_entries[k])
             _store_entry_to_sequence(nested_list, entry_to_number, (i,))
             whole_toc.append((k, nested_list))
 

@@ -1,8 +1,8 @@
 import logging
 import unittest
 from collections import defaultdict
-from textwrap import dedent
 
+from tests.CWTestCase import CWTestCase
 from computerwords.cwdom.NodeStore import NodeStore, NodeStoreConsistencyError
 from computerwords.cwdom.CWDOMNode import *
 from computerwords.library import Library
@@ -11,22 +11,10 @@ from computerwords.library import Library
 log = logging.getLogger(__name__)
 
 
-END = CWDOMEndOfInputNode.NAME
-
-
-def strip(s):
-    return dedent(s)[1:-1]
-
-
 class TestNode(CWDOMNode):
     def __init__(self, name, **data):
         super().__init__(name)
         self.data = data
-
-
-def log_tree(ns):
-    logging.basicConfig(level=logging.DEBUG)
-    log.debug('\n' + ns.root.get_string_for_test_comparison())
 
 
 class TestLibrary(Library):
@@ -74,10 +62,8 @@ class TestLibrary(Library):
         def replace_own_contents(node_store, node):
             node_store.replace_subtree(node.children[0], CWDOMNode('contents'))
 
-        self.end_processor(record)
 
-
-class TestNodeStoreTraversals(unittest.TestCase):
+class TestNodeStoreTraversals(CWTestCase):
     def test_postorder(self):
         ns = NodeStore(CWDOMRootNode([
             CWDOMDocumentNode('doc', [
@@ -97,6 +83,22 @@ class TestNodeStoreTraversals(unittest.TestCase):
              ns.postorder_traversal_allowing_ancestor_mutations()],
             ['a', 'x', 'y', 'b', 'c', 'Document', 'Root'])
 
+    def test_postorder_2(self):
+        header1 = CWDOMTagNode('h1', {}, [
+            CWDOMTextNode('Header 1 text')
+        ])
+        header2 = CWDOMTagNode('h1', {}, [
+            CWDOMTextNode('Header 2 text')
+        ])
+        ns = NodeStore(CWDOMRootNode([
+            CWDOMDocumentNode('doc 1', [header1]),
+            CWDOMDocumentNode('doc 2', [header2]),
+        ]))
+        self.assertEqual(
+            [node.name for node in
+             ns.postorder_traversal_allowing_ancestor_mutations()],
+            ['Text', 'h1', 'Document', 'Text', 'h1', 'Document', 'Root'])
+
     def test_preorder(self):
         ns = NodeStore(CWDOMRootNode([
             CWDOMDocumentNode('doc', [
@@ -113,7 +115,7 @@ class TestNodeStoreTraversals(unittest.TestCase):
             ['Root', 'Document', 'a', 'b', 'x', 'y', 'c'])
 
 
-class TestNodeStore(unittest.TestCase):
+class TestNodeStore(CWTestCase):
     def assertTreeIsConsistent(self, node):
         for child in node.children:
             self.assertEqual(child.get_parent(), node)
@@ -155,9 +157,9 @@ class TestNodeStore(unittest.TestCase):
         self.assertTreeIsConsistent(ns.root)
         self.assertEqual(library.visit_history, [
             'a', 'b', 'add_own_child', 'Document', 'Root', 'a_child'])
-        self.assertEqual(ns.root.get_string_for_test_comparison(), strip("""
+        self.assertEqual(ns.root.get_string_for_test_comparison(), self.strip("""
             Root()
-              Document()
+              Document(path='doc')
                 a()
                 b()
                 add_own_child()
@@ -207,9 +209,9 @@ class TestNodeStore(unittest.TestCase):
         ns.apply_library(library)
         self.assertEqual(library.visit_history, [
             'a', 'b', 'wrap_self', 'wrapper', 'Document', 'Root'])
-        self.assertEqual(ns.root.get_string_for_test_comparison(), strip("""
+        self.assertEqual(ns.root.get_string_for_test_comparison(), self.strip("""
             Root()
-              Document()
+              Document(path='doc')
                 a()
                 b()
                 wrapper()
@@ -229,9 +231,9 @@ class TestNodeStore(unittest.TestCase):
         ns.apply_library(library)
         self.assertEqual(library.visit_history, [
             'b', 'a', 'wrap_a', 'Document', 'Root', 'wrapper'])
-        self.assertEqual(ns.root.get_string_for_test_comparison(), strip("""
+        self.assertEqual(ns.root.get_string_for_test_comparison(), self.strip("""
             Root()
-              Document()
+              Document(path='doc')
                 b()
                 wrap_a()
                   wrapper()
@@ -250,9 +252,9 @@ class TestNodeStore(unittest.TestCase):
         ns.apply_library(library)
         self.assertEqual(library.visit_history, [
             'a', 'replace_own_contents', 'Document', 'Root', 'contents'])
-        self.assertEqual(ns.root.get_string_for_test_comparison(), strip("""
+        self.assertEqual(ns.root.get_string_for_test_comparison(), self.strip("""
             Root()
-              Document()
+              Document(path='doc')
                 replace_own_contents()
                   contents()
         """))

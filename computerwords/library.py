@@ -1,6 +1,3 @@
-from computerwords.cwdom.CWDOMNode import CWDOMEndOfInputNode
-
-
 class UnhandledEdgeCaseError(Exception): pass
 class UnknownNodeNameError(Exception): pass
 
@@ -57,11 +54,3 @@ class Library:
                     " now this edge case simply throws an error.").format(
                         node.name))
             p(node_store, node)
-
-    ### convenience methods for end node ###
-    # (same as using CWDOMEndOfInputNode.NAME, but that's not very easy
-    # to remember)
-
-    # declare a function to run at the end of all input
-    def end_processor(self, p=None):
-        return self.processor(CWDOMEndOfInputNode.NAME, p)
