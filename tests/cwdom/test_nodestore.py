@@ -45,6 +45,7 @@ class TestLibrary(Library):
         self.processor('b', record)
         self.processor('a_child', record)
         self.processor('wrapper', record)
+        self.processor('contents', record)
 
         self.processor('dirty_a', record)
         @self.processor('dirty_a')
@@ -67,6 +68,11 @@ class TestLibrary(Library):
         def wrap_self(node_store, node):
             for a in self.name_to_nodes['a']:
                 node_store.wrap_node(a, CWDOMNode('wrapper'))
+
+        self.processor('replace_own_contents', record)
+        @self.processor('replace_own_contents')
+        def replace_own_contents(node_store, node):
+            node_store.replace_subtree(node.children[0], CWDOMNode('contents'))
 
         self.end_processor(record)
 
@@ -227,4 +233,23 @@ class TestNodeStore(unittest.TestCase):
                 wrap_a()
                   wrapper()
                     a()
+        """))
+
+    def test_replace_own_contents(self):
+        ns = NodeStore(CWDOMRootNode([
+            CWDOMDocumentNode('doc', [
+                CWDOMNode('replace_own_contents', [
+                    CWDOMNode('a')
+                ])
+            ])
+        ]))
+        library = TestLibrary()
+        ns.apply_library(library)
+        self.assertEqual(library.visit_history, [
+            'a', 'replace_own_contents', 'Document', 'Root', 'contents'])
+        self.assertEqual(ns.root.get_string_for_test_comparison(), strip("""
+            Root()
+              Document()
+                replace_own_contents()
+                  contents()
         """))

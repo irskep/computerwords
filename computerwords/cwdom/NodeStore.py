@@ -145,7 +145,7 @@ class NodeStore:
         if not self.get_is_descendant(old_node, self._active_node):
             raise NodeStoreConsistencyError(
                 "You may only replace subtrees inside the active node.")
-        parent = old_subtree.get_parent()
+        parent = old_node.get_parent()
         child_i = parent.children.index(old_node)
         self._mark_subtree_removed(old_node)
         parent.children[child_i] = new_node
