@@ -85,6 +85,9 @@ class NodeStore:
         self._known_ref_ids = set()
         for node in self.postorder_traversal_allowing_ancestor_mutations():
             self._active_node = node
+            # in case a processor dirtied a node still in the future...
+            if node in self._dirty_nodes:
+                self._dirty_nodes.remove(node)
             if self._active_node in self._removed_nodes:
                 raise NodeStoreConsistencyError("This can't happen")
             library.run_processors(self, self._active_node)
