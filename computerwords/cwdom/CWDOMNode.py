@@ -166,6 +166,24 @@ class CWDOMAnchorNode(CWDOMNode):
         super().__init__('Anchor', children)
         self.ref_id = ref_id
 
+    def get_args_string_for_test_comparison(self):
+        return "ref_id={!r}".format(self.ref_id)
+
+    def copy(self):
+        return CWDOMAnchorNode(ref_id=ref_id or self.ref_id)
+
+    def __repr__(self):
+        return "{}(ref_id={!r})".format(self.name, self.ref_id)
+
+
+class CWDOMLinkNode(CWDOMNode):
+    def __init__(self, ref_id, children=None):
+        super().__init__('Link', children)
+        self.ref_id = ref_id
+
+    def get_args_string_for_test_comparison(self):
+        return "ref_id={!r}".format(self.ref_id)
+
     def copy(self):
         return CWDOMAnchorNode(ref_id=ref_id or self.ref_id)
 

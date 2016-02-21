@@ -1,5 +1,6 @@
 import unittest
 
+from tests.CWTestCase import CWTestCase
 from computerwords.cwdom.CWDOMNode import *
 from computerwords.cwdom.NodeStore import NodeStore
 from computerwords.library import Library
@@ -20,7 +21,7 @@ add_links(library)
 add_table_of_contents(library)
 
 
-class TestTableOfContents(unittest.TestCase):
+class TestTableOfContents(CWTestCase):
     def test_collect_entries(self):
         header1 = CWDOMTagNode('h1', {}, [
             CWDOMTextNode('Header 1 text')
@@ -65,3 +66,61 @@ class TestTableOfContents(unittest.TestCase):
                 (TOCEntry(3, "asdf", "asdf"), [])
             ]),
         ])
+
+    def test_make_toc(self):
+        ns = NodeStore(CWDOMRootNode([
+            CWDOMDocumentNode('doc 1', [
+                CWDOMTagNode('table_of_contents', {}, []),
+                CWDOMTagNode('h1', {}, [
+                    CWDOMTextNode('Header 1 text')
+                ]),
+                CWDOMTagNode('h2', {}, [
+                    CWDOMTextNode('Subheader 1 text')
+                ]),
+            ]),
+            CWDOMDocumentNode('doc 2', [
+                CWDOMTagNode('h1', {}, [
+                    CWDOMTextNode('Header 2 text')
+                ]),
+            ]),
+        ]))
+        ns.apply_library(library)
+        self.assertEqual(ns.root.get_string_for_test_comparison(), self.strip("""
+            Root()
+              Document(path='doc 1')
+                ul(kwargs={'class': 'table-of-contents'})
+                  li(kwargs={})
+                    'doc 1'
+                    ul(kwargs={})
+                      li(kwargs={})
+                        Link(ref_id='Header-1-text')
+                          div(kwargs={})
+                            '0.1 '
+                            'Header 1 text'
+                        ul(kwargs={})
+                          li(kwargs={})
+                            Link(ref_id='Subheader-1-text')
+                              div(kwargs={})
+                                '0.1.1 '
+                                'Subheader 1 text'
+                            ul(kwargs={})
+                  li(kwargs={})
+                    'doc 2'
+                    ul(kwargs={})
+                      li(kwargs={})
+                        Link(ref_id='Header-2-text')
+                          div(kwargs={})
+                            '1.1 '
+                            'Header 2 text'
+                        ul(kwargs={})
+                Anchor(ref_id='Header-1-text')
+                  h1(kwargs={})
+                    'Header 1 text'
+                Anchor(ref_id='Subheader-1-text')
+                  h2(kwargs={})
+                    'Subheader 1 text'
+              Document(path='doc 2')
+                Anchor(ref_id='Header-2-text')
+                  h1(kwargs={})
+                    'Header 2 text'
+        """))

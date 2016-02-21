@@ -32,7 +32,10 @@ def stmt_to_tag_or_text(stmt):
                 tag_contents_to_kwargs(tag_contents),
                 stmts_to_list(tag_node.stmts))
         else:
-            return CWDOMTagNode(tag_node)
+            tag_contents = tag_node.self_closing_tag.tag_contents
+            return CWDOMTagNode(
+                tag_contents.bbword.value,
+                tag_contents_to_kwargs(tag_contents))
 
 
 def tag_contents_to_kwargs(tag_contents):

@@ -2,15 +2,13 @@ import logging
 from collections import OrderedDict, namedtuple, deque
 from computerwords.cwdom.CWDOMNode import (
     CWDOMAnchorNode,
+    CWDOMLinkNode,
     CWDOMTagNode,
+    CWDOMTextNode,
 )
 
 
 log = logging.getLogger(__name__)
-
-
-# TODO: store traversal key along with entry in case another processor adds
-# headers behind the cursor
 
 
 HEADER_TAG_NAMES = {'h' + str(i) for i in range(1, 7)}
@@ -46,26 +44,31 @@ def _get_toc_subtree(toc_node, whole_toc, entry_to_number):
         'ul',
         {'class': 'table-of-contents'},
         [
-            CWDOMTagNode('li', [
+            CWDOMTagNode('li', {}, [
                 CWDOMTextNode(path),
                 _nested_list_to_nodes(entry_to_number, nested_list),
             ])
+            for path, nested_list in whole_toc
         ])
 
 
 # [(TOCEntry, [children]), ...] -> DOM
+def _format_entry_number(entry_to_number, entry):
+    return '.'.join(str(n) for n in entry_to_number[entry])
+
 def _nested_list_to_nodes(entry_to_number, entry_children_pairs):
     # TODO: use a deep copy of the entry's original children instead of
     # just the text
-    return CWDOMTagNode('ul', [
-        CWDOMTagNode('li', [
+    return CWDOMTagNode('ul', {}, [
+        CWDOMTagNode('li', {}, [
             CWDOMLinkNode(entry.ref_id, [
-                CWDOMTagNode('div', [
-                    CWDOMTextNode('.'.join(entry_to_number[entry]) + ' '),
+                CWDOMTagNode('div', {}, [
+                    CWDOMTextNode(
+                        _format_entry_number(entry_to_number, entry) + ' '),
                     CWDOMTextNode(entry.text)
                 ])
             ]),
-            _nested_list_to_nodes(children),
+            _nested_list_to_nodes(entry_to_number, children),
         ])
         for entry, children in entry_children_pairs
     ])

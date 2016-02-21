@@ -147,7 +147,7 @@ class NodeStore:
     def _mark_subtree_dirty(self, node):
         self._dirty_nodes.add(node)
         for child in node.children:
-            self._dirty_nodes(child)
+            self._dirty_nodes.add(child)
 
     def replace_subtree(self, old_node, new_node):
         if not self.get_is_descendant(old_node, self._active_node):
