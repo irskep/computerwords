@@ -93,7 +93,8 @@ class TestNodeStoreTraversals(unittest.TestCase):
             [node.name for node in ns.postorder_traversal()],
             ['a', 'x', 'y', 'b', 'c', 'Document', 'Root'])
         self.assertEqual(
-            [node.name for node in ns.postorder_traversal_2()],
+            [node.name for node in
+             ns.postorder_traversal_allowing_ancestor_mutations()],
             ['a', 'x', 'y', 'b', 'c', 'Document', 'Root'])
 
     def test_preorder(self):
@@ -128,6 +129,7 @@ class TestNodeStore(unittest.TestCase):
         ]))
         library = TestLibrary()
         ns.apply_library(library)
+        self.assertTreeIsConsistent(ns.root)
         self.assertEqual(library.visit_history, [
             'a', 'b', 'dirty_a', 'Document', 'Root', 'a'
         ])
@@ -150,6 +152,7 @@ class TestNodeStore(unittest.TestCase):
         ]))
         library = TestLibrary()
         ns.apply_library(library)
+        self.assertTreeIsConsistent(ns.root)
         self.assertEqual(library.visit_history, [
             'a', 'b', 'add_own_child', 'Document', 'Root', 'a_child'])
         self.assertEqual(ns.root.get_string_for_test_comparison(), strip("""

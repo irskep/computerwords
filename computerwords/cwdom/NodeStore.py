@@ -56,7 +56,7 @@ class NodeStore:
                     stack.append((node.children[i], 'yield'))
                     stack.append((node.children[i], 'add_children'))
 
-    def postorder_traversal_2(self, node=None):
+    def postorder_traversal_allowing_ancestor_mutations(self, node=None):
         """
         Yields every node in the tree in post-order.
 
@@ -82,21 +82,24 @@ class NodeStore:
 
     def apply_library(self, library, initial_data=None):
         self.processor_data = initial_data or {}
-        iterator = self.postorder_traversal_2()
         self._dirty_nodes = set()
         self._removed_nodes = set()
-        try:
-            while True:
-                self._active_node = next(iterator)
-                if self._active_node in self._removed_nodes:
-                    raise NodeStoreConsistencyError("This can't happen")
-                library.run_processors(self, self._active_node)
-        except StopIteration:
-            pass
+        for node in self.postorder_traversal_allowing_ancestor_mutations():
+            self._active_node = node
+            if self._active_node in self._removed_nodes:
+                raise NodeStoreConsistencyError("This can't happen")
+            library.run_processors(self, self._active_node)
+
+        # keep doing full passes until no more dirty nodes.
+        # future optimization: remember traversal order and sort dirty nodes
+        # by that instead of doing another full pass.
         dirty_nodes = self._dirty_nodes
         self._dirty_nodes = set()
         while dirty_nodes:
-            for node in dirty_nodes:
+            for node in self.postorder_traversal_allowing_ancestor_mutations():
+                if node not in dirty_nodes:
+                    continue
+
                 self._active_node = node
                 if self._active_node in self._removed_nodes:
                     continue
