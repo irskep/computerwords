@@ -9,6 +9,7 @@ from computerwords.stdlib.links import add_links
 from computerwords.stdlib.table_of_contents import (
     add_table_of_contents,
     TOCEntry,
+    _entries_to_nested_list,
 )
 
 
@@ -40,3 +41,27 @@ class TestTableOfContents(unittest.TestCase):
             'toc_entry': TOCEntry(
                 level=1, text='Header 2 text', ref_id='Header-2-text')
         })
+
+    def test_entries_to_nested_list(self):
+        entries = [
+            TOCEntry(0, "doc", "doc"),
+            TOCEntry(1, "A header", "A-header"),
+            TOCEntry(2, "subsection", "subsection"),
+            TOCEntry(1, "Another header", "Another-header"),
+            TOCEntry(3, "subsubsection", "subsubsection"),
+            TOCEntry(0, "anotherdoc", "anotherdoc"),
+            TOCEntry(3, "asdf", "asdf"),
+        ]
+        self.assertEqual(_entries_to_nested_list(entries), [
+            (TOCEntry(0, 'doc', 'doc'), [
+                (TOCEntry(1, "A header", "A-header"), [
+                    (TOCEntry(2, "subsection", "subsection"), [])
+                ]),
+                (TOCEntry(1, "Another header", "Another-header"), [
+                    (TOCEntry(3, "subsubsection", "subsubsection"), [])
+                ]),
+            ]),
+            (TOCEntry(0, 'anotherdoc', 'anotherdoc'), [
+                (TOCEntry(3, "asdf", "asdf"), [])
+            ]),
+        ])

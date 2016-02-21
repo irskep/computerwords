@@ -118,6 +118,7 @@ class CWDOMStatementsNode(CWDOMNode):
 class CWDOMTagNode(CWDOMNode):
     def __init__(self, name, kwargs, children=None):
         super().__init__(name, children)
+        assert isinstance(kwargs, dict)
         self.kwargs = kwargs
 
     def copy(self, name=None, kwargs=None):
@@ -152,6 +153,9 @@ class CWDOMTextNode(CWDOMNode):
 
     def copy(self):
         return CWDOMTextNode(text=text or self.text)
+
+    def get_args_string_for_test_comparison(self):
+        return repr(self.text)
 
     def __repr__(self):
         return "{}(text={!r})".format(self.name, self.text)

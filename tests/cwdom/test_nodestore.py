@@ -17,7 +17,7 @@ class TestNode(CWDOMNode):
         self.data = data
 
 
-class TestLibrary(Library):
+class LibraryForTesting(Library):
     def __init__(self):
         super().__init__()
         self.visit_history = []
@@ -129,7 +129,7 @@ class TestNodeStore(CWTestCase):
                 CWDOMNode('dirty_a')
             ])
         ]))
-        library = TestLibrary()
+        library = LibraryForTesting()
         ns.apply_library(library)
         self.assertTreeIsConsistent(ns.root)
         self.assertEqual(library.visit_history, [
@@ -152,7 +152,7 @@ class TestNodeStore(CWTestCase):
                 CWDOMNode('add_own_child')
             ])
         ]))
-        library = TestLibrary()
+        library = LibraryForTesting()
         ns.apply_library(library)
         self.assertTreeIsConsistent(ns.root)
         self.assertEqual(library.visit_history, [
@@ -174,7 +174,7 @@ class TestNodeStore(CWTestCase):
                 CWDOMNode('add_root_child')
             ])
         ]))
-        library = TestLibrary()
+        library = LibraryForTesting()
         @library.processor('add_root_child')
         def add_root_child(node_store, node):
             node_store.insert_subtree(node_store.root, 0, CWDOMNode('a_child'))
@@ -190,7 +190,7 @@ class TestNodeStore(CWTestCase):
                 TestNode('add_sibling_child')
             ])
         ]))
-        library = TestLibrary()
+        library = LibraryForTesting()
         @library.processor('add_sibling_child')
         def add_root_child(node_store, node):
             node_store.insert_subtree(a, 0, CWDOMNode('a_child'))
@@ -205,7 +205,7 @@ class TestNodeStore(CWTestCase):
                 CWDOMNode('wrap_self')
             ])
         ]))
-        library = TestLibrary()
+        library = LibraryForTesting()
         ns.apply_library(library)
         self.assertEqual(library.visit_history, [
             'a', 'b', 'wrap_self', 'wrapper', 'Document', 'Root'])
@@ -227,7 +227,7 @@ class TestNodeStore(CWTestCase):
                 ])
             ])
         ]))
-        library = TestLibrary()
+        library = LibraryForTesting()
         ns.apply_library(library)
         self.assertEqual(library.visit_history, [
             'b', 'a', 'wrap_a', 'Document', 'Root', 'wrapper'])
@@ -248,7 +248,7 @@ class TestNodeStore(CWTestCase):
                 ])
             ])
         ]))
-        library = TestLibrary()
+        library = LibraryForTesting()
         ns.apply_library(library)
         self.assertEqual(library.visit_history, [
             'a', 'replace_own_contents', 'Document', 'Root', 'contents'])
