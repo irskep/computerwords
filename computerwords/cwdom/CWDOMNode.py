@@ -27,6 +27,7 @@ class CWDOMNode:
 
         self.name = name
         self.children = children
+        self.data = {}
 
         self.parent_weakref = None
         self.claim_children()
@@ -53,8 +54,8 @@ class CWDOMNode:
         else:
             self.parent_weakref = weakref.ref(new_parent)
 
-    def copy(self, name=None):
-        return CWDOMNode(name=name or self.name)
+    def copy(self):
+        return CWDOMNode(self.name)
 
     def get_string_for_test_comparison(self, inner_indentation=2):
         elements = [
@@ -93,23 +94,24 @@ class CWDOMRootNode(CWDOMNode):
     def __init__(self, children=None):
         super().__init__('Root', children)
 
-    def copy(self, name=None):
+    def copy(self):
         return CWDOMRootNode()
 
 
 class CWDOMDocumentNode(CWDOMNode):
     def __init__(self, path, children=None):
         super().__init__('Document', children)
+        self.path = path
 
-    def copy(self, name=None):
-        return CWDOMDocumentNode(path)
+    def copy(self):
+        return CWDOMDocumentNode(self.path)
 
 
 class CWDOMStatementsNode(CWDOMNode):
     def __init__(self, children=None):
         super().__init__('Statements', children)
 
-    def copy(self, name=None):
+    def copy(self):
         return CWDOMStatementsNode()
 
 
@@ -142,7 +144,7 @@ class CWDOMTextNode(CWDOMNode):
         super().__init__('Text', [])
         self.text = text
 
-    def copy(self, name=None):
+    def copy(self):
         return CWDOMTextNode(text=text or self.text)
 
     def __repr__(self):
@@ -154,7 +156,7 @@ class CWDOMAnchorNode(CWDOMNode):
         super().__init__('Anchor', [])
         self.ref_id = ref_id
 
-    def copy(self, name=None):
+    def copy(self):
         return CWDOMAnchorNode(ref_id=ref_id or self.ref_id)
 
     def __repr__(self):

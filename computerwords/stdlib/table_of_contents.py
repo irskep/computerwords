@@ -9,22 +9,6 @@ from computerwords.cwdom import (
 log = logging.getLogger(__name__)
 
 
-"""
-As the tree is being traversed, each node will be annotated with its traversal
-order encoded in a tuple key like (1, 2, 6, 8, 0).
-
-When you invalidate a node, it will be added to a list like this:
-(traversal_order_key, node)
-
-If a node X has a child A, and node X has a traversal key of (1, 2), and A is
-node X's first child, then node A's traversal key will be (1, 2, 0).
-
-When the end-of-source node is reached by NodeStore, the invalidation list will
-be sorted by traversal key, and all processors for each node will be called
-again.
-"""
-
-
 # TODO: store traversal key along with entry in case another processor adds
 # headers behind the cursor
 
@@ -46,9 +30,44 @@ def tree_to_text(node_store, node):
 
 
 def _add_toc_data_if_not_exists(node_store):
-    node_store.processor_data.setdefault('toc_entries_is_complete', False)
-    node_store.processor_data.setdefault('toc_entries', [])
-    node_store.processor_data.setdefault('toc_entry_to_sequence', None)
+    node_store.processor_data.setdefault('toc_nodes', [])
+    node_store.processor_data.setdefault('toc_heading_nodes', [])
+
+
+def _node_to_toc_entry(node_store, node):
+    text = tree_to_text(node)
+    ref_id = node_store.text_to_ref_id(text)  # might be identical
+    entry = TOCEntry(name_to_level[node.name], text, ref_id)
+
+
+def _get_toc_subtree(toc_node, whole_toc, entry_to_number):
+    return CWDOMTagNode(
+        'ul',
+        kwargs={'class': 'table-of-contents'},
+        [
+            CWDOMTagNode('li', [
+                CWDOMTextNode(path),
+                _nested_list_to_nodes(entry_to_number, nested_list),
+            ])
+        ])
+
+
+# [(TOCEntry, [children]), ...] -> DOM
+def _nested_list_to_nodes(entry_to_number, entry_children_pairs):
+    # TODO: use a deep copy of the entry's original children instead of
+    # just the text
+    return CWDOMTagNode('ul', [
+        CWDOMTagNode('li', [
+            CWDOMLinkNode(entry.ref_id, [
+                CWDOMTagNode('div', [
+                    CWDOMTextNode('.'.join(entry_to_number[entry]) + ' '),
+                    CWDOMTextNode(entry.text)
+                ])
+            ]),
+            _nested_list_to_nodes(children),
+        ])
+        for entry, children in entry_children_pairs
+    ])
 
 
 def _entries_to_nested_list(entries):
@@ -88,30 +107,6 @@ def _store_entry_to_sequence(nested_list, entry_to_sequence, sequence_so_far):
         _store_entry_to_sequence(grandchildren, entry_to_sequence, sequence)
 
 
-# [(TOCEntry, [children]), ...] -> DOM
-def _nested_list_to_nodes(entry_children_pairs):
-    # TODO: use a deep copy of the entry's original children instead of
-    # just the text
-    return [
-        CWDOMTagNode('li', [
-            CWDOMLinkNode(entry.ref_id, [
-                CWDOMTagNode('div', [
-                    CWDOMTextNode(entry.text)
-                ])
-            ])
-        ] + _nested_list_to_nodes(children))
-        for entry, children in entry_children_pairs
-    ]
-
-
-def _get_are_all_headers_valid(node_store):
-    for name in HEADER_TAG_NAMES:
-        for node in node_store.get_nodes(name):
-            if node_store.get_is_node_invalid(node):
-                return False
-    return True
-
-
 def add_table_of_contents(library):
     """
     Collects all `h1`, `h2`, etc. tags in a tree, which
@@ -139,110 +134,62 @@ def add_table_of_contents(library):
     [# only show entries under doc_1.txt #]
     [table_of_contents scope="doc_1.txt" /]
     ```
-
-    # How it works
-
-    On the first pass, the headings are simply collected in a list.
-
-    At the end of all input in the first pass, the `table_of_contents` tag is
-    replaced with a nested `ol` list of the entries. Then all header tags are
-    invalidated.
-
-    On the second pass (triggered by invalidating the headers), each header
-    is wrapped in an anchor node, and a new text node containing the heading
-    number is prepended to the node's list of children. (e.g. "1.1 Quickstart")
     """
 
-    @library.end_processor
-    def process_end(node_store, end_node):
-        _add_toc_data_if_not_exists(node_store)
-        if node_store.processor_data['toc_entries_is_complete']:
-            log.debug('End node: doing nothing')
-        elif _get_are_all_headers_valid(node_store):
-            log.debug('End node: mark entries-complete; invalidate TOC node')
-            node_store.processor_data['toc_entries_is_complete'] = True
-
-            # now go back and fix all the [table_of_contents /] nodes
-            for node in node_store.get_nodes(TOC_TAG_NAME):
-                node_store.invalidate(node)
-        else:
-            log.debug("End node: headers aren't ready, invalidate for another pass")
-            # node_store should have validated this node already; invalidating
-            # it will add it to the next pass.
-            node_store.invalidate(end_node)
-
-    @library.processor('Document')
-    def process_document(node_store, node):
-        _add_toc_data_if_not_exists(node_store)
-        log.debug('Document node: add TOC entry')
-        node_store.processor_data['toc_entries'].append(TOCEntry(0, node.path))
-
-    name_to_level = {'h' + str(i): i for i in range(1, 7)}
     @library.processor('h1')
     @library.processor('h2')
     @library.processor('h3')
     @library.processor('h4')
     @library.processor('h5')
     @library.processor('h6')
-    def process_heading(node_store, node):
+    def process_header(node_store, node):
+        entry = _node_to_toc_entry(node_store, node)
+        anchor = CWDOMAnchorNode(entry.ref_id, [node])
+        anchor.data['toc_entry'] = entry
+        node_store.wrap_node(node, anchor)
+
+    @library.processor('Document')
+    def process_document(node_store, node):
         _add_toc_data_if_not_exists(node_store)
-
-        text = tree_to_text(node)
-        ref_id = node_store.text_to_ref_id(text)  # might be identical
-        entry = TOCEntry(name_to_level[node.name], text, ref_id)
-
-        entry_to_sequence = node_store.processor_data['toc_entry_to_sequence']
-        if entry_to_sequence:
-            log.debug('Header node: add number and anchor')
-            if entry in node_store.processor_data['toc_entry_to_sequence']:
-                prefix = '.'.join(entry_to_sequence[entry]) + ' '
-                _prepend_text_to_node_children(node_store, node, prefix)
-                anchor = CWDOMAnchorNode(entry.ref_id)
-                node_store.wrap_node(node, anchor)
-            else:
-                log.debug("Never mind, it doesn't have a heading number...")
-        else:
-            log.debug('Header node: add TOC entry')
-            node_store.processor_data['toc_entries'].append(entry)
+        node.data['toc_entries'] = [
+            child.data['toc_entry']
+            for child in node.children
+            if 'toc_entry' in child.data
+        ]
 
     @library.processor(TOC_TAG_NAME)
     def process_toc(node_store, node):
         _add_toc_data_if_not_exists(node_store)
+        node_store.processor_data['toc_nodes'].append(node)
 
-        if not node_store.processor_data['toc_entries_is_complete']:
-            return
+    @library.processor('Root')
+    def process_root(node_store, node):
+        _add_toc_data_if_not_exists(node_store)
 
-        anchor = CWDOMAnchorNode('table-of-contents')
-        node_store.replace_node(node, anchor)
+        doc_to_entries = {
+            doc_node.path: doc_node.data['toc_entries']
+            for doc_node in node.children
+            if doc_node.name == 'Document'
+        }
 
-        ul = CWDOMTagNode('ul', kwargs={'class': 'table-of-contents'})
-        # don't add ul to node_store until it has all its children, to cut
-        # down on the number of add_child() calls in this function. (add_child
-        # recursively adds the node's children to node_store and invalidates
-        # them.)
-
-        k = None
-        entries_by_document = {}
-        for entry in node_store.processor_data['toc_entries']:
-            if entry.level == 0:
-                k = entry.path
-                entries_by_document[k] = []
-            else:
-                entries_by_document[k].append(entry)
-
-        output_order = sorted(entries_by_document.keys())
-        node_store.processor_data['toc_entry_to_number'] = {}
+        # TODO: derive from table_of_contents tag contents?
+        output_order = sorted(doc_to_entries.keys())
+        entry_to_number = {}
+        whole_toc = []
         for i, k in output_order:
             nested_list = _entries_to_nested_list(entries_by_document[k])
-            _store_entry_to_sequence(
-                nested_list,
-                node_store.processor_data['toc_entry_to_sequence'],
-                (i,))
-            ul.children = _nested_list_to_nodes(nested_list)
+            _store_entry_to_sequence(nested_list, entry_to_number, (i,))
+            whole_toc.append((k, nested_list))
 
-        node_store.add_child(anchor, ul)
+        # TODO: require different TOC subsets per tag, like sphinx?
+        for toc_node in node_store.processor_data['toc_nodes']:
+            node_store.replace_subtree(
+                toc_node,
+                _get_toc_subtree(toc_node, whole_toc, entry_to_number))
 
-        for name in HEADER_TAG_NAMES:
-            for node in node_store.get_nodes(name):
-                node_store.invalidate(node)
-
+        for heading_node in node_store.processor_data['toc_heading_nodes']:
+            number = '.'.join(entry_to_number[heading_node.data['toc_entry']])
+            node_store.insert_subtree(
+                heading_node,
+                0,
+                CWDOMTextNode(number + ' '))

@@ -1,7 +1,7 @@
 import logging
 import re
 
-from collections import namedtuple
+from collections import deque, namedtuple
 
 from computerwords.cwdom.CWDOMNode import CWDOMEndOfInputNode
 
@@ -15,24 +15,6 @@ NodeAndTraversalKey = namedtuple(
 
 class MissingVisitorError(Exception): pass
 class NodeStoreConsistencyError(Exception): pass
-
-
-# TODO:
-# Hash DOM nodes by ID, not full repr
-# Enforce mutual exclusion of states:
-#   * unvisited
-#   * visited + valid
-#   * visited + invalid
-#   * removed
-
-
-"""
-A node is implicitly invalid iff it has never been visited yet.
-
-A node can be explicitly invalidated at any time.
-
-Visiting a node validates it.
-"""
 
 
 class NodeStore:
@@ -59,240 +41,134 @@ class NodeStore:
             for child in reversed(node.children):
                 stack.append(child)
 
-    ### processing implementation details ###
-
-    def _preorder_traversal_with_keys(self, node=None):
+    def postorder_traversal(self, node=None):
         """
-        Yields every node in the tree in pre-order, paired with a
-        "traversal key": a tuple that you can use to sort all results by their
-        preorder traversal without actually doing the traversal, or without
-        needing to have all nodes present.
-
-        [note]
-        A node's children **may** be mutated during traversal! Because
-        "preorder" means a parent is visited before its children, the iterator
-        doesn't worry about a node's children until it has visited the node.
-
-        This should make it easy to implement simple child-replacement
-        processors.
-        [/note]
+        Yields every node in the tree in post-order. Mutation is disallowed.
         """
-        node = node or self.root
-        stack = [NodeAndTraversalKey(node, ())]
+        root = node or self.root
+        stack = deque([(root, 'yield'), (root, 'add_children')])
         while len(stack) > 0:
-            node_and_traversal_key = stack.pop()
-            yield node_and_traversal_key
-            (node, traversal_key) = node_and_traversal_key
-            new_stack_items = []
+            (node, action) = stack.pop()
+            if action == 'yield':
+                yield node
+            elif action == 'add_children':
+                for i in reversed(range(len(node.children))):
+                    stack.append((node.children[i], 'yield'))
+                    stack.append((node.children[i], 'add_children'))
 
-            # PROBLEM: we add all children to the stack before any of them are
-            # processed. This means that if a processor changes or removes
-            # a child, that change will be ignored.
-            # SOLUTION: children needs to be a collection that can be iterated
-            # over while being mutated.
-            i = 0
-            while i < len(node.children):
-                child = node.children[i]
-                new_stack_items.append(
-                    NodeAndTraversalKey(child, traversal_key + (i,)))
-                i += 1
-            for item in reversed(new_stack_items):
-                stack.append(item)
-
-    def _process_nodes(self, library, nodes_and_traversal_keys):
+    def postorder_traversal_2(self, node=None):
         """
-        nodes: a list of nodes sorted by their preorder traversal order
+        Yields every node in the tree in post-order.
+
+        While running, you may modify, replace, or add ancestors of a node.
         """
-        self._nodes_invalidated_this_pass = set()
-        for node_and_traversal_key in nodes_and_traversal_keys:
-            node = node_and_traversal_key.node
-            self._add_node_to_lists(node)
-            self._set_traversal_key(node, node_and_traversal_key.traversal_key)
-            # TODO: re-run processors if the node replaces itself?
-            # Won't significantly improve runtime upper bound, but might save
-            # a lot of allocations.
-
-            # this node might have been added earlier in this pass. if so,
-            # we can un-invalidate it, since we won't need to touch it in the
-            # next pass.
-            if node in self._nodes_invalidated_this_pass:
-                self._nodes_invalidated_this_pass.remove(node)
-            library.run_processors(self, node)
-
-    def _add_node_to_lists(self, node):
-        self._node_name_to_nodes.setdefault(node.name, set())
-        self._node_name_to_nodes[node.name].add(node)
-
-    def _remove_node(self, node):
-        """DOES NOT UNSET PARENT OR REMOVE ITSELF FROM PARENT'S CHILDREN"""
-        self._removed_nodes.add(node)
-        self._node_name_to_nodes[node.name].remove(node)
-        self._set_traversal_key(node, None)
-        if node in self._nodes_invalidated_this_pass:
-            self._nodes_invalidated_this_pass.remove(node)
-        node.children = []
-
-    def _set_traversal_key(self, node, key):
-        if key is None:
-            if node in self._node_to_traversal_key:
-                del self._node_to_traversal_key[node]
-            return
-
-        if node in self._node_to_traversal_key:
-            existing_key = self._node_to_traversal_key[node]
-            if key != existing_key:
-                raise NodeStoreConsistencyError(
-                    "Node already has a different traversal key")
-        else:
-            self._node_to_traversal_key[node] = key
-
-    def _replace_traversal_key(self, node, key, ignore_missing=True):
-        if node in self._node_to_traversal_key:
-            self._node_to_traversal_key[node] = key
-        else:
-            if ignore_missing:
-                pass
+        cursor = node or self.root
+        while cursor.children:
+            cursor = cursor.children[0]
+        while True:
+            yield cursor
+            parent = cursor.get_parent() 
+            if not parent: break
+            child_i = parent.children.index(cursor)
+            next_child_i = child_i + 1
+            if next_child_i >= len(parent.children):
+                cursor = parent
             else:
-                raise NodeStoreConsistencyError(
-                    "Node has no existing traversal key")
-
-    def _recompute_traversal_keys(self, node, key):
-        # This could potentially do a LOT of unnecessary work (no-op recursion)
-        self._replace_traversal_key(node, key)
-        for i, child in enumerate(node.children):
-            self._replace_traversal_key(node, key + (i,))
-
-    def _invalidate_node(self, node):
-        self._nodes_invalidated_this_pass.add(node)
+                cursor = parent.children[next_child_i]
+                while cursor.children:
+                    cursor = cursor.children[0]
 
     ### processing API ###
 
     def apply_library(self, library, initial_data=None):
-        self._removed_nodes = set()
-        self._node_name_to_nodes = {}
-        self._node_to_traversal_key = {}
-        self._known_ref_ids = set()
-
-        if type(self.root.children[-1]) is not CWDOMEndOfInputNode:
-            self.root.children.append(CWDOMEndOfInputNode())
         self.processor_data = initial_data or {}
+        iterator = self.postorder_traversal_2()
+        self._dirty_nodes = set()
+        self._removed_nodes = set()
+        try:
+            while True:
+                self._active_node = next(iterator)
+                if self._active_node in self._removed_nodes:
+                    raise NodeStoreConsistencyError("This can't happen")
+                library.run_processors(self, self._active_node)
+        except StopIteration:
+            pass
+        dirty_nodes = self._dirty_nodes
+        self._dirty_nodes = set()
+        while dirty_nodes:
+            for node in dirty_nodes:
+                self._active_node = node
+                if self._active_node in self._removed_nodes:
+                    continue
+                library.run_processors(self, self._active_node)
+            dirty_nodes = self._dirty_nodes
+            self._dirty_nodes = set()
 
-        # look forward to all nodes so that processors can look them up
-        # before we've properly reached them
-        for node in self.preorder_traversal(self.root):
-            self._node_name_to_nodes.setdefault(node.name, set())
-            self._node_name_to_nodes[node.name].add(node)
+    def mark_node_dirty(self, node):
+        self._dirty_nodes.add(node)
 
-        self._process_nodes(library, self._preorder_traversal_with_keys())
+    def get_is_node_dirty(self, node):
+        return node in self._dirty_nodes
 
-        while self._nodes_invalidated_this_pass:
-            self._process_nodes(
-                library,
-                sorted(
-                    NodeAndTraversalKey(node, self.get_traversal_key(node))
-                    for node in self._nodes_invalidated_this_pass))
+    def get_was_node_removed(self, node):
+        return node in self._removed_nodes
 
-    def get_traversal_key(self, node):
-        return self._node_to_traversal_key[node]
+    def _simple_wrap(self, inner_node, outer_node):
+        parent = inner_node.get_parent()
+        child_i = parent.children.index(inner_node)
+        parent.children[child_i] = outer_node
+        outer_node.children = [inner_node]
+        outer_node.set_parent(parent)
+        inner_node.set_parent(outer_node)
 
-    def get_has_node_been_traversed_yet(self, node):
-        return node in self._node_to_traversal_key
-
-    def replace_node(self, from_node, to_node):
-        """
-        Replace node A in the tree with new node B. Node A's children become
-        node B's children.
-        """
-        if self.get_has_node_been_traversed_yet(from_node):
-            traversal_key = self.get_traversal_key(from_node)
-        else:
-            traversal_key = None
-        children = from_node.children
-        parent = from_node.get_parent()
-        parent_children_ix = parent.children.index(from_node)
-
-        if parent is None:
-            raise NodeStoreConsistencyError(
-                "Can't replace a node that isn't in the tree yet")
-
-        self._remove_node(from_node)
-
-        if traversal_key is not None:
-            self._set_traversal_key(to_node, traversal_key)
-            self._invalidate_node(to_node)
-        to_node.set_children(children)
-        parent.children[parent_children_ix] = to_node
-        to_node.set_parent(parent)
-
-    def add_node(self, parent, node, i=None):
-        """Recursively add node and all its children"""
-        if i is None:
-            i = len(parent.children)
-
-        if self.get_has_node_been_traversed_yet(parent):
-            traversal_key = self.get_traversal_key(parent) + (0,)
-            if parent.children:
-                if i == 0:
-                    # if first, use existing first child's traversal key minus one
-                    # in the last component
-                    old_key = self.get_traversal_key(parent.children[0])
-                    traversal_key = old_key[:-1] + (old_key[-1] - 1,)
-                elif i == len(parent.children):
-                    old_key = self.get_traversal_key(parent.children[-1])
-                    traversal_key = old_key[:-1] + (old_key[-1] + 1,)
-                else:
-                    # sort just after the previous child
-                    traversal_key = (
-                        self.get_traversal_key(parent.children[i - 1]) + (0,))
-            self._set_traversal_key(node, traversal_key)
-
-        parent.children.insert(i, node)
-        node.set_parent(parent)
-
-        self._add_node_to_lists(node)
-        self._invalidate_node(node)
-        for child in node.children:
-            self.add_node(node)
-
-    def remove_node(self, node):
-        """Recursively remove node and all its children"""
-        children = node.children
-        self._remove_node(node)
-        node.get_parent().children.remove(node)
-        for child in children:
-            self.remove_node(child)
+    def _wrap_descendant_of_active_node(self, inner_node, outer_node):
+        self._simple_wrap(inner_node, outer_node)
+        self.mark_node_dirty(outer_node)
 
     def wrap_node(self, inner_node, outer_node):
-        """
-        inner_node's parent becomes outer-node's parent; inner_node becomes
-        outer_node's only child. Only outer_node ends up invalidated.
-        """
-        # replace inner_node's children entry for outer_node with inner_node
-        # claim inner_node as child of outer_node
-        # recompute traversal keys (blargh)
-        parent = inner_node.get_parent()
-        i = parent.index(inner_node)
-        parent.children[i] = outer_node
-        outer_node.set_parent(parent)
-        outer_node.set_children(inner_node)
+        if self.get_is_descendant(inner_node, self._active_node):
+            self._wrap_descendant_of_active_node(inner_node, outer_node)
+        else:
+            self._simple_wrap(inner_node, outer_node)
 
-        traversal_key = self.get_traversal_key(inner_node)
+    def _mark_subtree_removed(self, node):
+        self._removed_nodes.add(node)
+        for child in node.children:
+            self._mark_subtree_removed(child)
 
-        self._recompute_traversal_keys(inner_node, traversal_key + (0,))
-        self._add_node_to_lists(outer_node)
-        self._set_traversal_key(node, traversal_key)
-        self._invalidate_node(outer_node)
+    def _mark_subtree_dirty(self, node):
+        self._dirty_nodes.add(node)
+        for child in node.children:
+            self._dirty_nodes(child)
 
-    def get_nodes(self, name):
-        return frozenset(self._node_name_to_nodes.get(name, set()))
+    def replace_subtree(self, old_node, new_node):
+        if not self.get_is_descendant(old_node, self._active_node):
+            raise NodeStoreConsistencyError(
+                "You may only replace subtrees inside the active node.")
+        parent = old_subtree.get_parent()
+        child_i = parent.children.index(old_node)
+        self._mark_subtree_removed(old_node)
+        parent.children[child_i] = new_node
+        new_node.set_parent(parent)
+        self._mark_subtree_dirty(new_node)
 
-    def get_is_node_invalid(self, node):
-        return (
-            node in self._nodes_invalidated_this_pass and
-            node not in self._removed_nodes)
+    def insert_subtree(self, parent, i, child):
+        if not (
+                self.get_is_descendant(parent, self._active_node) or
+                parent == self._active_node):
+            raise NodeStoreConsistencyError(
+                "You may only insert subtrees inside the active node.")
+        parent.children.insert(i, child)
+        child.set_parent(parent)
+        self._mark_subtree_dirty(child)
 
-    def invalidate(self, node):
-        self._nodes_invalidated_this_pass.add(node)
+    def get_is_descendant(self, maybe_descendant, maybe_ancestor):
+        parent = maybe_descendant.get_parent()
+        while parent:
+            if parent == maybe_ancestor:
+                return True
+            parent = parent.get_parent()
+        return False
 
     def text_to_ref_id(self, text):
         """Returns a ref_id that is unique against all other ref_ids returned
@@ -307,9 +183,6 @@ class NodeStore:
         ref_id = ref_id_base + '-' + str(i)
         self._known_ref_ids.add(ref_id)
         return ref_id
-
-    def get_is_node_still_in_tree(self, node):
-        return node not in self._removed_nodes
 
     ### Methods used primarily by output step ###
 
