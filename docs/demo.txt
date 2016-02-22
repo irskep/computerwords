@@ -1,6 +1,10 @@
-[h1]Hello, Hipmunkers[/h1]
+[h1]First title[/h1]
 
-[p]This is a demo of Steve's BBCode parser and HTML output. Here is some code:[/p]
+[p]This is a demo of Steve's BBCode parser and HTML output.[/p]
+
+[h2]Subtitle[/h2]
+
+[p]Here is some code:[/p]
 
 [code]
 # this is a print statement

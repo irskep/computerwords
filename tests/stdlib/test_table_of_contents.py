@@ -88,31 +88,23 @@ class TestTableOfContents(CWTestCase):
         self.assertEqual(ns.root.get_string_for_test_comparison(), self.strip("""
             Root()
               Document(path='doc 1')
-                ul(kwargs={'class': 'table-of-contents'})
+                ol(kwargs={'class': 'table-of-contents'})
                   li(kwargs={})
                     'doc 1'
-                    ul(kwargs={})
+                    ol(kwargs={})
                       li(kwargs={})
                         Link(ref_id='Header-1-text')
-                          div(kwargs={})
-                            '0.1 '
-                            'Header 1 text'
-                        ul(kwargs={})
+                          'Header 1 text'
+                        ol(kwargs={})
                           li(kwargs={})
                             Link(ref_id='Subheader-1-text')
-                              div(kwargs={})
-                                '0.1.1 '
-                                'Subheader 1 text'
-                            ul(kwargs={})
+                              'Subheader 1 text'
                   li(kwargs={})
                     'doc 2'
-                    ul(kwargs={})
+                    ol(kwargs={})
                       li(kwargs={})
                         Link(ref_id='Header-2-text')
-                          div(kwargs={})
-                            '1.1 '
-                            'Header 2 text'
-                        ul(kwargs={})
+                          'Header 2 text'
                 Anchor(ref_id='Header-1-text')
                   h1(kwargs={})
                     'Header 1 text'
