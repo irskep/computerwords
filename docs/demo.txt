@@ -8,3 +8,7 @@ print("hello")
 [/code]
 
 [p][strike][b]mighty boldness has struck out[/b][/strike][/p]
+
+[table_of_contents /]
+
+[h1]Another title[/h1]

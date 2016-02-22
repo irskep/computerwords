@@ -7,19 +7,22 @@ class Library:
         super().__init__()
         self.tag_name_to_processors = {}
 
-    def _set_processor(self, tag_name, p):
+    def _set_processor(self, tag_name, p, before_others=False):
         self.tag_name_to_processors.setdefault(tag_name, [])
-        self.tag_name_to_processors[tag_name].append(p)
+        if before_others:
+            self.tag_name_to_processors[tag_name].insert(0, p)
+        else:
+            self.tag_name_to_processors[tag_name].append(p)
 
     # this is a decorator or a normal function
-    def processor(self, tag_name, p=None):
+    def processor(self, tag_name, p=None, before_others=False):
         if p is None:
             def decorator(p2):
-                self._set_processor(tag_name, p2)
+                self._set_processor(tag_name, p2, before_others)
                 return p2
             return decorator
         else:
-            self._set_processor(tag_name, p)
+            self._set_processor(tag_name, p, before_others)
             return p
 
     def get_processors(self, tag_name, strict=True):

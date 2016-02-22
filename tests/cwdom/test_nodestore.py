@@ -27,13 +27,13 @@ class LibraryForTesting(Library):
             self.visit_history.append(node.name)
             self.name_to_nodes[node.name].append(node)
 
-        self.processor('Root', record)
-        self.processor('Document', record)
-        self.processor('a', record)
-        self.processor('b', record)
-        self.processor('a_child', record)
-        self.processor('wrapper', record)
-        self.processor('contents', record)
+        BARE_NAMES = {
+            'Root', 'Document',
+            'a', 'b',
+            'a_child', 'wrapper', 'contents', 'replacement',
+        }
+        for node_name in BARE_NAMES:
+            self.processor(node_name, record)
 
         self.processor('dirty_a', record)
         @self.processor('dirty_a')
@@ -61,6 +61,11 @@ class LibraryForTesting(Library):
         @self.processor('replace_own_contents')
         def replace_own_contents(node_store, node):
             node_store.replace_subtree(node.children[0], CWDOMNode('contents'))
+
+        self.processor('replace_self', record)
+        @self.processor('replace_self')
+        def replace_self(node_store, node):
+            node_store.replace_node(node, CWDOMNode('replacement'))
 
 
 class TestNodeStoreTraversals(CWTestCase):
@@ -257,4 +262,23 @@ class TestNodeStore(CWTestCase):
               Document(path='doc')
                 replace_own_contents()
                   contents()
+        """))
+
+    def test_replace_self_contents(self):
+        ns = NodeStore(CWDOMRootNode([
+            CWDOMDocumentNode('doc', [
+                CWDOMNode('replace_self', [
+                    CWDOMNode('a')
+                ])
+            ])
+        ]))
+        library = LibraryForTesting()
+        ns.apply_library(library)
+        self.assertEqual(library.visit_history, [
+            'a', 'replace_self', 'Document', 'Root', 'replacement'])
+        self.assertEqual(ns.root.get_string_for_test_comparison(), self.strip("""
+            Root()
+              Document(path='doc')
+                replacement()
+                  a()
         """))
