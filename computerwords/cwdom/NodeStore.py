@@ -51,21 +51,7 @@ class NodeStore:
 
         While running, you may modify, replace, or add ancestors of a node.
         """
-        cursor = node or self.root
-        while cursor.children:
-            cursor = cursor.children[0]
-        while True:
-            yield cursor
-            parent = cursor.get_parent() 
-            if not parent: break
-            child_i = parent.children.index(cursor)
-            next_child_i = child_i + 1
-            if next_child_i >= len(parent.children):
-                cursor = parent
-            else:
-                cursor = parent.children[next_child_i]
-                while cursor.children:
-                    cursor = cursor.children[0]
+        return PostorderTraverser(node or self.root)
 
     ### processing API ###
 
