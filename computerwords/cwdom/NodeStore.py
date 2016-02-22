@@ -53,6 +53,10 @@ class NodeStore:
         """
         return PostorderTraverser(node or self.root)
 
+    def copy_tree(self, node):
+        node_copy = node.copy()
+        node.set_children([self.copy_tree(child) for child in node.children])
+
     ### processing API ###
 
     def _first_pass(self, library):
