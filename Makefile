@@ -7,4 +7,4 @@ watchtest:
 	watch -n 0.2 make test
 
 demodocs:
-	python3 -m computerwords - < docs/demo.txt > docs/demo.html
+	python3 -m computerwords --conf docs/conf.json
