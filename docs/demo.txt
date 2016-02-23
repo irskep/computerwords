@@ -1,4 +1,4 @@
-[h1]First title[/h1]
+[h1]First [i]title[/i][/h1]
 
 [p]This is a demo of Steve's BBCode parser and HTML output.[/p]
 

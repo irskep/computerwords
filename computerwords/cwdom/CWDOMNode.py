@@ -57,6 +57,11 @@ class CWDOMNode:
     def copy(self):
         return CWDOMNode(self.name)
 
+    def deepcopy(self):
+        node_copy = self.copy()
+        node_copy.set_children([child.deepcopy() for child in self.children])
+        return node_copy
+
     def get_string_for_test_comparison(self, inner_indentation=2):
         elements = [
             "{}({})".format(
@@ -152,7 +157,7 @@ class CWDOMTextNode(CWDOMNode):
         return repr(self.text)
 
     def copy(self):
-        return CWDOMTextNode(text=text or self.text)
+        return CWDOMTextNode(self.text)
 
     def get_args_string_for_test_comparison(self):
         return repr(self.text)
@@ -170,7 +175,7 @@ class CWDOMAnchorNode(CWDOMNode):
         return "ref_id={!r}".format(self.ref_id)
 
     def copy(self):
-        return CWDOMAnchorNode(ref_id=ref_id or self.ref_id)
+        return CWDOMAnchorNode(self.ref_id)
 
     def __repr__(self):
         return "{}(ref_id={!r})".format(self.name, self.ref_id)
@@ -185,7 +190,7 @@ class CWDOMLinkNode(CWDOMNode):
         return "ref_id={!r}".format(self.ref_id)
 
     def copy(self):
-        return CWDOMAnchorNode(ref_id=ref_id or self.ref_id)
+        return CWDOMAnchorNode(self.ref_id)
 
     def __repr__(self):
         return "{}(ref_id={!r})".format(self.name, self.ref_id)

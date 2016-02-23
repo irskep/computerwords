@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 HEADER_TAG_NAMES = {'h' + str(i) for i in range(1, 7)}
 NAME_TO_LEVEL = {'h' + str(i): i for i in range(1, 7)}
 TOC_TAG_NAME = 'table_of_contents'
-TOCEntry = namedtuple('TOCEntry', ['level', 'text', 'ref_id'])
+TOCEntry = namedtuple('TOCEntry', ['level', 'heading_node', 'ref_id'])
 
 
 def tree_to_text(node_store, node):
@@ -36,7 +36,7 @@ def _add_toc_data_if_not_exists(node_store):
 def _node_to_toc_entry(node_store, node):
     text = tree_to_text(node_store, node)
     ref_id = node_store.text_to_ref_id(text)  # might be identical
-    return TOCEntry(NAME_TO_LEVEL[node.name], text, ref_id)
+    return TOCEntry(NAME_TO_LEVEL[node.name], node, ref_id)
 
 
 def _get_toc_subtree(toc_node, whole_toc, entry_to_number):
@@ -57,13 +57,9 @@ def _format_entry_number(entry_to_number, entry):
     return '.'.join(str(n) for n in entry_to_number[entry])
 
 def _nested_list_to_node(entry_to_number, entry_children_pairs):
-    # TODO: use a deep copy of the entry's original children instead of
-    # just the text
     def make_li(entry, children):
         li_contents = [
-            CWDOMLinkNode(entry.ref_id, [
-                CWDOMTextNode(entry.text)
-            ])
+            CWDOMLinkNode(entry.ref_id, [entry.heading_node.deepcopy()])
         ]
         if children:
             li_contents.append(_nested_list_to_node(entry_to_number, children))

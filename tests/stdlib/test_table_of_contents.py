@@ -36,11 +36,11 @@ class TestTableOfContents(CWTestCase):
         ns.apply_library(library)
         self.assertEqual(header1.get_parent().data, {
             'toc_entry': TOCEntry(
-                level=1, text='Header 1 text', ref_id='Header-1-text')
+                level=1, heading_node=header1, ref_id='Header-1-text')
         })
         self.assertEqual(header2.get_parent().data, {
             'toc_entry': TOCEntry(
-                level=1, text='Header 2 text', ref_id='Header-2-text')
+                level=1, heading_node=header2, ref_id='Header-2-text')
         })
 
     def test_entries_to_nested_list(self):
@@ -94,17 +94,20 @@ class TestTableOfContents(CWTestCase):
                     ol(kwargs={})
                       li(kwargs={})
                         Link(ref_id='Header-1-text')
-                          'Header 1 text'
+                          h1(kwargs={})
+                            'Header 1 text'
                         ol(kwargs={})
                           li(kwargs={})
                             Link(ref_id='Subheader-1-text')
-                              'Subheader 1 text'
+                              h2(kwargs={})
+                                'Subheader 1 text'
                   li(kwargs={})
                     'doc 2'
                     ol(kwargs={})
                       li(kwargs={})
                         Link(ref_id='Header-2-text')
-                          'Header 2 text'
+                          h1(kwargs={})
+                            'Header 2 text'
                 Anchor(ref_id='Header-1-text')
                   h1(kwargs={})
                     'Header 1 text'
