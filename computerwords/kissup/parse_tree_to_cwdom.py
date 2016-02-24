@@ -9,8 +9,7 @@ class DuplicateArgumentsError(ParseError):
 
 
 def parse_tree_to_cwdom(root):
-    return NodeStore(
-        CWDOMRootNode([CWDOMDocumentNode('stdin.bb', stmts_to_list(root))]))
+    return stmts_to_list(root)
 
 
 def stmts_to_list(stmts):

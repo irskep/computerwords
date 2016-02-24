@@ -1,6 +1,7 @@
 {
     "file_hierarchy": [
-        {"demo.txt": []}
+        {"demo.txt": []},
+        "demo2.txt"
     ],
     "output_file": "demo.html"
 }

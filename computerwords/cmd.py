@@ -5,6 +5,8 @@ import sys
 
 from collections import namedtuple
 
+from computerwords.cwdom.CWDOMNode import CWDOMDocumentNode, CWDOMRootNode
+from computerwords.cwdom.NodeStore import NodeStore
 from computerwords.kissup import string_to_cwdom
 from computerwords.htmlwriter import cwdom_to_html_string
 from computerwords.stdlib import stdlib
@@ -43,16 +45,22 @@ class DocumentHierarchy:
     def __repr__(self):
         return repr(self.entries)
 
+    def __iter__(self):
+        return iter(self.entries)
+
 
 def _glob_or_set_of_globs_to_doc_hierarchy_entry(files_root, entry):
     if isinstance(entry, str):
-        return sorted(files_root.glob(entry))
+        globs = sorted(files_root.glob(entry))
+        if len(globs) != 1:
+            raise ValueError("Handle this case please")
+        return DocumentHierarchySubtree(globs[0], [])
     elif isinstance(entry, set):
         return sorted(list(set().union(*[files_root.glob(sub_entry) for sub_entry in entry])))
     elif isinstance(entry, dict):
         if len(entry) != 1:
             raise ValueError("One ping only")
-        path = list(entry.keys())[0]
+        path = (files_root / list(entry.keys())[0]).resolve()
         sub_entries = list(entry.values())[0]
         if not isinstance(sub_entries, list):
             raise ValueError("file_hierarchy subtrees must be lists")
@@ -61,6 +69,17 @@ def _glob_or_set_of_globs_to_doc_hierarchy_entry(files_root, entry):
                 files_root, sub_entry) for sub_entry in sub_entries])
     else:
         raise ValueError("Unsupported file_hierarchy value: {}".format(entry))
+
+
+def _add_document_nodes(document_nodes, subtree):
+    with subtree.root_path.open() as f:
+        root = CWDOMDocumentNode(
+            str(subtree.root_path),
+            string_to_cwdom(f.read(), stdlib.get_allowed_tags()))
+    document_nodes.append(root)
+    for child in subtree.children:
+        _add_document_nodes(document_nodes, child)
+    return document_nodes
 
 
 def run():
@@ -78,8 +97,11 @@ def run():
     print(repr(doc_hierarchy))
     # file_paths = 
 
-    node_store = string_to_cwdom(input_str, stdlib.get_allowed_tags())
-
+    document_nodes = []
+    for doc in doc_hierarchy:
+        _add_document_nodes(document_nodes, doc)
+    node_store = NodeStore(CWDOMRootNode(document_nodes))
     node_store.apply_library(stdlib)
 
-    cwdom_to_html_string(stdlib, node_store, sys.stdout)
+    with (files_root / conf['output_file']).open('w') as f:
+        cwdom_to_html_string(stdlib, node_store, f)
