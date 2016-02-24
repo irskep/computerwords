@@ -55,8 +55,6 @@ def _glob_or_set_of_globs_to_doc_hierarchy_entry(files_root, entry):
         if len(globs) != 1:
             raise ValueError("Handle this case please")
         return DocumentHierarchySubtree(globs[0], [])
-    elif isinstance(entry, set):
-        return sorted(list(set().union(*[files_root.glob(sub_entry) for sub_entry in entry])))
     elif isinstance(entry, dict):
         if len(entry) != 1:
             raise ValueError("One ping only")
