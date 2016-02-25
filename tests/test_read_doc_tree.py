@@ -74,6 +74,17 @@ class ReadDocTreeTestCase(unittest.TestCase):
     def test_multi_glob(self):
         doc_tree, _ = read_doc_tree(self.dir, ['*.md'], _empty)
         self.assertSequenceEqual(doc_tree.entries, [
+            DocSubtree(self.dir / "index.md", ("index.md",), []),
+            DocSubtree(self.dir / "a.md", ('a.md',), []),
+        ])
+
+    def test_nested_glob(self):
+        doc_tree, _ = read_doc_tree(self.dir, ['**/*.md'], _empty)
+        self.assertSequenceEqual(doc_tree.entries, [
             DocSubtree(self.dir / "a.md", ('a.md',), []),
             DocSubtree(self.dir / "index.md", ("index.md",), []),
+            DocSubtree(self.dir / "x" / "b.md", ("x", "b.md"), []),
+            DocSubtree(self.dir / "y" / "index.md", ("y", "index.md"), [
+                DocSubtree(self.dir / "y" / "c.md", ("y", "c.md"), []),
+            ]),
         ])
