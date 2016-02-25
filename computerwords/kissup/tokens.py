@@ -21,13 +21,13 @@ class Token:
 
 
 class BracketLeftToken(Token):
-    name = "["
-    def __init__(self, line, pos, value='['):
+    name = "<"
+    def __init__(self, line, pos, value='<'):
         super().__init__(line, pos, value)
 
 class BracketRightToken(Token):
-    name = "]"
-    def __init__(self, line, pos, value=']'):
+    name = ">"
+    def __init__(self, line, pos, value='>'):
         super().__init__(line, pos, value)
 
 class BBWordToken(Token):

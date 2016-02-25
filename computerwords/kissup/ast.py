@@ -40,6 +40,8 @@ def create_ast_node(class_name, production_name, forms):
             for field in form._fields:
                 field_value_name = getattr(form, field).name
                 expected_field_value_name = {
+                    'angle_bracket_left': '<',
+                    'angle_bracket_right': '>',
                     'bracket_left': '[',
                     'bracket_right': ']',
                     'equals': '=',
@@ -127,17 +129,17 @@ TagNode = create_ast_node(
 
 OpenTagNode = create_ast_node(
     'OpenTagNode', 'open_tag',
-    [['bracket_left', 'tag_contents', 'bracket_right']])
+    [['angle_bracket_left', 'tag_contents', 'angle_bracket_right']])
 
 
 CloseTagNode = create_ast_node(
     'CloseTagNode', 'close_tag',
-    [['bracket_left', 'slash', 'bbword', 'bracket_right']])
+    [['angle_bracket_left', 'slash', 'bbword', 'angle_bracket_right']])
 
 
 SelfClosingTagNode = create_ast_node(
     'SelfClosingTagNode', 'self_closing_tag',
-    [['bracket_left', 'tag_contents', 'slash', 'bracket_right']])
+    [['angle_bracket_left', 'tag_contents', 'slash', 'angle_bracket_right']])
 
 
 TagContentsNode = create_ast_node(

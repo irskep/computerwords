@@ -3,7 +3,9 @@ import re
 from . import tokens
 
 
-TEXT_BACKSLASH_CHARS = {'[', ']', '\\'}
+LEFT_ANGLE_BRACKET = '<'
+RIGHT_ANGLE_BRACKET = '>'
+TEXT_BACKSLASH_CHARS = {LEFT_ANGLE_BRACKET, RIGHT_ANGLE_BRACKET, '[', ']', '\\'}
 STRING_LITERAL_BACKSLASH_CHARS = {'"', '\\'}
 
 
@@ -43,13 +45,13 @@ def _match_text(s, i, num_brackets, line, pos):
         if not is_last_char:
             next_char = s[i + 1]
 
-        if i >= len(s) or s[i] == '[':
+        if i >= len(s) or s[i] == LEFT_ANGLE_BRACKET:
             if chars:
                 return (tokens.TextToken(line, pos, ''.join(chars)), i, num_brackets)
             else:
                 return None
-        elif s[i] == ']':
-            raise LexError(line, pos, "The character ']' must be escaped when used in text")
+        elif s[i] == RIGHT_ANGLE_BRACKET:
+            raise LexError(line, pos, "The character '>' must be escaped when used in text")
         elif s[i] == '\\':
             if next_char in TEXT_BACKSLASH_CHARS:
                 chars.append(next_char)
@@ -104,7 +106,7 @@ def _match_left_bracket(s, i, num_brackets, line, pos):
     if num_brackets > 0:
         return None
 
-    if s[i] == '[':
+    if s[i] == LEFT_ANGLE_BRACKET:
         return (tokens.BracketLeftToken(line, pos, s[i]), i + 1, num_brackets + 1)
     else:
         return None
@@ -114,7 +116,7 @@ def _match_right_bracket(s, i, num_brackets, line, pos):
     if num_brackets < 1:
         return None
 
-    if s[i] == ']':
+    if s[i] == RIGHT_ANGLE_BRACKET:
         return (tokens.BracketRightToken(line, pos, s[i]), i + 1, num_brackets - 1)
     else:
         return None
@@ -135,7 +137,7 @@ def _make_re_matcher(expr, required_num_brackets, Cls):
 
 TOKEN_FNS = [
     _match_left_bracket,
-    _make_re_matcher(r'[^[\]\s=/"]+', 1, tokens.BBWordToken),
+    _make_re_matcher(r'[^[\<>\s=/"]+', 1, tokens.BBWordToken),
     _make_re_matcher(r'\s+', 1, tokens.SpaceToken),
     _make_re_matcher(r'=', 1, tokens.EqualsToken),
     _match_string_literal,

@@ -12,11 +12,11 @@ stmt -> TEXT
 tag -> open_tag stmts_a close_tag
      | self_closing_tag
 
-open_tag -> [ tag_contents space? ]
+open_tag -> < tag_contents space? >
 
-close_tag -> [ space? / BBWORD ]
+close_tag -> < space? / BBWORD >
 
-self_closing_tag -> [ tag_contents / space? ]
+self_closing_tag -> < tag_contents / space? >
 
 tag_contents -> space? BBWORD tag_args space?
 
@@ -46,7 +46,7 @@ class TagMismatchError(ParseError):
             "Tag mismatch:" +
             " {tag1} (line {line1}, col {col1}) and" +
             " {tag2} (line {line2}, col {col2})." +
-            " Did you forget to close your [{tag1}] tag?")
+            " Did you forget to close your <{tag1}> tag?")
         msg = msg_fmt.format(
             tag1 = token1.value,
             tag2 = token2.value,
@@ -74,7 +74,7 @@ def token_rule(name):
             return (None, i)
     return parse_token
 
-for name in ('TEXT', '[', ']', '/', '=', 'BBWORD', 'STRING', 'ε', 'SPACE'):
+for name in ('TEXT', '<', '>', '/', '=', '[', ']', 'BBWORD', 'STRING', 'ε', 'SPACE'):
     rule('token_' + name, token_rule(name))
 
 def empty_rule(Cls, form):
@@ -127,19 +127,19 @@ rule('tag',
         sequence_rule(TagNode, 1, 'open_tag', 'stmts_a', 'close_tag')),
     sequence_rule(TagNode, 2, 'self_closing_tag'))
 
-#open_tag -> [ tag_contents ]
+#open_tag -> < tag_contents >
 rule('open_tag', sequence_rule(
-    OpenTagNode, 1, 'token_[', 'tag_contents', 'token_]'))
+    OpenTagNode, 1, 'token_<', 'tag_contents', 'token_>'))
 
-#close_tag -> [ / BBWORD ]
+#close_tag -> < / BBWORD >
 rule('close_tag', sequence_rule(
-    CloseTagNode, 1, 'token_[', 'space?', 'token_/', 'token_BBWORD', 'token_]'))
+    CloseTagNode, 1, 'token_<', 'space?', 'token_/', 'token_BBWORD', 'token_>'))
 
-#self_closing_tag -> [ tag_contents space? / space? ]
+#self_closing_tag -> < tag_contents space? / space? >
 rule('self_closing_tag',
     validate(self_closing_tag_should_be_allowed,
         sequence_rule(SelfClosingTagNode, 1,
-            'token_[', 'tag_contents', 'space?', 'token_/', 'space?', 'token_]')))
+            'token_<', 'tag_contents', 'space?', 'token_/', 'space?', 'token_>')))
 
 #space? -> SPACE
 #        | ε

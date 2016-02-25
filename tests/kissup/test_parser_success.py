@@ -55,7 +55,7 @@ class TestParser(unittest.TestCase):
             ast.StmtNode(1, expected_token_node))
 
     def test_arg_value_1(self):
-        tokens = lex('[a_bbword]')
+        tokens = lex('<a_bbword>')
         (stmt_node, i) = parse_production('arg_value', tokens, 1)
         self.assertEqual(i, 2)
         self.assertEqual(
@@ -66,7 +66,7 @@ class TestParser(unittest.TestCase):
             """))
 
     def test_arg_value_2(self):
-        tokens = lex(r'["a \" string"]')
+        tokens = lex(r'<"a \" string">')
         (stmt_node, i) = parse_production('arg_value', tokens, 1)
         self.assertEqual(i, 2)
         self.assertEqual(
@@ -77,7 +77,7 @@ class TestParser(unittest.TestCase):
             """))
 
     def test_tag_arg(self):
-        tokens = lex('[x=y]')
+        tokens = lex('<x=y>')
         (stmt_node, i) = parse_production('tag_arg', tokens, 1)
         self.assertEqual(i, 4)
         self.assertEqual(
@@ -91,7 +91,7 @@ class TestParser(unittest.TestCase):
             """))
 
     def test_tag_args_a(self):
-        tokens = lex('[ x=y]')
+        tokens = lex('< x=y>')
         (stmt_node, i) = parse_production('tag_args', tokens, 1)
         self.assertEqual(i, 5)
         self.assertEqual(
@@ -108,7 +108,7 @@ class TestParser(unittest.TestCase):
             """))
 
     def test_tag_args_b(self):
-        tokens = lex('[ a="b" x=y]')
+        tokens = lex('< a="b" x=y>')
         (stmt_node, i) = parse_production('tag_args', tokens, 1)
         self.assertEqual(i, 9)
         self.assertEqual(
@@ -132,7 +132,7 @@ class TestParser(unittest.TestCase):
             """))
 
     def test_tag_contents_a(self):
-        tokens = lex('[abc]')
+        tokens = lex('<abc>')
         (stmt_node, i) = parse_production('tag_contents', tokens, 1)
         self.assertEqual(i, 2)
         self.assertEqual(
@@ -144,7 +144,7 @@ class TestParser(unittest.TestCase):
             """))
 
     def test_tag_contents_b(self):
-        tokens = lex('[abc x=y ]')  # include optional whitespace
+        tokens = lex('<abc x=y >')  # include optional whitespace
         (stmt_node, i) = parse_production('tag_contents', tokens, 1)
         self.assertEqual(i, 6)
         self.assertEqual(
@@ -163,48 +163,48 @@ class TestParser(unittest.TestCase):
             """))
 
     def test_self_closing_tag(self):
-        tokens = lex('[abc /]')
+        tokens = lex('<abc />')
         (stmt_node, i) = parse_production('self_closing_tag', tokens, 0)
         self.assertEqual(i, 5)
         self.assertEqual(
             stmt_node.get_string_for_test_comparison(),
             strip("""
                 self_closing_tag_1
-                  bracket_left: token_[: '['
+                  angle_bracket_left: token_<: '<'
                   tag_contents: tag_contents_1
                     bbword: token_BBWORD: 'abc'
                     tag_args: tag_args_2
                   slash: token_/: '/'
-                  bracket_right: token_]: ']'
+                  angle_bracket_right: token_>: '>'
             """))
 
     def test_open_tag(self):
-        tokens = lex('[ abc]')  # include optional whitespace
+        tokens = lex('< abc>')  # include optional whitespace
         (stmt_node, i) = parse_production('open_tag', tokens, 0)
         self.assertEqual(i, 4)
         self.assertEqual(
             stmt_node.get_string_for_test_comparison(),
             strip("""
                 open_tag_1
-                  bracket_left: token_[: '['
+                  angle_bracket_left: token_<: '<'
                   tag_contents: tag_contents_1
                     bbword: token_BBWORD: 'abc'
                     tag_args: tag_args_2
-                  bracket_right: token_]: ']'
+                  angle_bracket_right: token_>: '>'
             """))
 
     def test_close_tag(self):
-        tokens = lex('[ /abc]')  # include optional whitespace
+        tokens = lex('< /abc>')  # include optional whitespace
         (stmt_node, i) = parse_production('close_tag', tokens, 0)
         self.assertEqual(i, 5)
         self.assertEqual(
             stmt_node.get_string_for_test_comparison(),
             strip("""
                 close_tag_1
-                  bracket_left: token_[: '['
+                  angle_bracket_left: token_<: '<'
                   slash: token_/: '/'
                   bbword: token_BBWORD: 'abc'
-                  bracket_right: token_]: ']'
+                  angle_bracket_right: token_>: '>'
             """))
 
     def test_stmt_1_differently(self):
@@ -219,7 +219,7 @@ class TestParser(unittest.TestCase):
             """))
 
     def test_stmt_2(self):
-        tokens = lex('[abc/]')
+        tokens = lex('<abc/>')
         (stmt_node, i) = parse_production('stmt', tokens, 0)
         self.assertEqual(i, 4)
         self.assertEqual(
@@ -228,12 +228,12 @@ class TestParser(unittest.TestCase):
                 stmt_2
                   tag: tag_2
                     self_closing_tag: self_closing_tag_1
-                      bracket_left: token_[: '['
+                      angle_bracket_left: token_<: '<'
                       tag_contents: tag_contents_1
                         bbword: token_BBWORD: 'abc'
                         tag_args: tag_args_2
                       slash: token_/: '/'
-                      bracket_right: token_]: ']'
+                      angle_bracket_right: token_>: '>'
             """))
 
     def test_stmts_b_2_empty_input(self):
@@ -257,7 +257,7 @@ class TestParser(unittest.TestCase):
             """))
 
     def test_stmts_b_1_self_closing_tag(self):
-        tokens = lex('[abc /]')
+        tokens = lex('<abc />')
         (stmt_node, i) = parse_production('stmts_b', tokens, 0)
         self.assertEqual(i, 6)
         self.assertEqual(
@@ -267,17 +267,17 @@ class TestParser(unittest.TestCase):
                   stmt: stmt_2
                     tag: tag_2
                       self_closing_tag: self_closing_tag_1
-                        bracket_left: token_[: '['
+                        angle_bracket_left: token_<: '<'
                         tag_contents: tag_contents_1
                           bbword: token_BBWORD: 'abc'
                           tag_args: tag_args_2
                         slash: token_/: '/'
-                        bracket_right: token_]: ']'
+                        angle_bracket_right: token_>: '>'
                   stmts: stmts_2
             """))
 
     def test_stmts_a_1_self_closing_tag(self):
-        tokens = lex('[abc /]')
+        tokens = lex('<abc />')
         (stmt_node, i) = parse_production('stmts_a', tokens, 0)
         self.assertEqual(i, 5)
         self.assertEqual(
@@ -287,17 +287,17 @@ class TestParser(unittest.TestCase):
                   stmt: stmt_2
                     tag: tag_2
                       self_closing_tag: self_closing_tag_1
-                        bracket_left: token_[: '['
+                        angle_bracket_left: token_<: '<'
                         tag_contents: tag_contents_1
                           bbword: token_BBWORD: 'abc'
                           tag_args: tag_args_2
                         slash: token_/: '/'
-                        bracket_right: token_]: ']'
+                        angle_bracket_right: token_>: '>'
                   stmts: stmts_2
             """))
 
     def test_stmts_multiple(self):
-        tokens = lex('text[abc /]')
+        tokens = lex('text<abc />')
         (stmt_node, i) = parse_production('stmts_b', tokens, 0)
         self.assertEqual(i, 7)
         self.assertEqual(
@@ -310,12 +310,12 @@ class TestParser(unittest.TestCase):
                     stmt: stmt_2
                       tag: tag_2
                         self_closing_tag: self_closing_tag_1
-                          bracket_left: token_[: '['
+                          angle_bracket_left: token_<: '<'
                           tag_contents: tag_contents_1
                             bbword: token_BBWORD: 'abc'
                             tag_args: tag_args_2
                           slash: token_/: '/'
-                          bracket_right: token_]: ']'
+                          angle_bracket_right: token_>: '>'
                     stmts: stmts_2
             """))
 

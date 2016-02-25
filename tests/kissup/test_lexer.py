@@ -21,7 +21,7 @@ def strip(s):
 
 class TestLexer(unittest.TestCase):
     def test_simple(self):
-        self.assertEqual(lex('['), [
+        self.assertEqual(lex('<'), [
             t.BracketLeftToken(0, 0),
             t.EndToken(0, 1)
         ])
@@ -29,15 +29,15 @@ class TestLexer(unittest.TestCase):
             t.TextToken(0, 0, 'a'),
             t.EndToken(0, 1)
         ])
-        self.assertEqual(lex('a['), [
+        self.assertEqual(lex('a<'), [
             t.TextToken(0, 0, 'a'),
-            t.BracketLeftToken(0, 1, '['),
+            t.BracketLeftToken(0, 1, '<'),
             t.EndToken(0, 2)
         ])
 
     def test_text_good_escapes(self):
-        input_str = r'abcd\\ fooey \[ \]'
-        expected_output_str = r'abcd\ fooey [ ]'
+        input_str = r'abcd\\ fooey \[ \] \< \>'
+        expected_output_str = r'abcd\ fooey [ ] < >'
         self.assertEqual(lex(input_str), [
             t.TextToken(0, 0, expected_output_str),
             # End token comes at the end of the *input* string!
@@ -52,10 +52,10 @@ class TestLexer(unittest.TestCase):
 
     def test_stuff_that_fails_outside_brackets(self):
         with self.assertRaises(lexer.LexError):
-            lex(']')
+            lex('>')
 
     def test_bbcode_simple(self):
-        tokens = lex("[aa  bb=cc]text[/aa]")
+        tokens = lex("<aa  bb=cc>text</aa>")
         self.assertEqual(tokens, [
             t.BracketLeftToken(0, 0),
             t.BBWordToken(0, 1, 'aa'),
@@ -73,7 +73,7 @@ class TestLexer(unittest.TestCase):
         ])
 
     def test_bbcode_with_string_literals(self):
-        input_string = r'["escaped \"\\[] string" /]' 
+        input_string = r'<"escaped \"\\[] string" />' 
         tokens = lex(input_string)
         self.assertEqual(tokens, [
             t.BracketLeftToken(0, 0),
