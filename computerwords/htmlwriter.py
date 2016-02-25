@@ -1,6 +1,12 @@
 from computerwords.cwdom.NodeStore import NodeStoreVisitor
 
 
+def _anchor_to_href(link_node, anchor_node):
+    # in a multi-page world, we can omit the document part
+    # if link_node.document_id == anchor_node.document_id.
+    return "#{}-{}".format(anchor_node.document_id, anchor_node.ref_id)
+
+
 class WritingVisitor(NodeStoreVisitor):
     def __init__(self, output_stream):
         super().__init__()
@@ -12,7 +18,7 @@ class TagVisitor(WritingVisitor):
         super().__init__(output_stream)
         self.tag_name = tag_name
 
-    def before_children(self, node):
+    def before_children(self, node_store, node):
         args_str_items = []
         for k, v in node.kwargs.items():
             # TODO: escape the value properly
@@ -20,7 +26,7 @@ class TagVisitor(WritingVisitor):
         self.output_stream.write('<{}{}>'.format(
             self.tag_name, ''.join(args_str_items)))
 
-    def after_children(self, node):
+    def after_children(self, node_store, node):
         self.output_stream.write('</{}>'.format(self.tag_name))
 
 
@@ -29,31 +35,36 @@ class TextVisitor(WritingVisitor):
         super().__init__(output_stream)
         self.tag_name = tag_name
 
-    def before_children(self, node):
+    def before_children(self, node_store, node):
         self.output_stream.write(node.text)
 
 
 class AnchorVisitor(WritingVisitor):
-    def before_children(self, node):
-        self.output_stream.write('<a name="{}">'.format(node.ref_id))
+    def before_children(self, node_store, node):
+        # just relative to itself
+        href = _anchor_to_href(node, node)
+        self.output_stream.write('<a name="{}">'.format(href))
 
-    def after_children(self, node):
+    def after_children(self, node_store, node):
         self.output_stream.write('</a>')
 
 
 class LinkVisitor(WritingVisitor):
-    def before_children(self, node):
-        self.output_stream.write('<a href="#{}">'.format(node.ref_id))
+    def before_children(self, node_store, node):
+        href = _anchor_to_href(
+            node,
+            node_store.processor_data['ref_id_to_anchor'][node.ref_id])
+        self.output_stream.write('<a href="{}">'.format(href))
 
-    def after_children(self, node):
+    def after_children(self, node_store, node):
         self.output_stream.write('</a>')
 
 
 class DocumentVisitor(WritingVisitor):
-    def before_children(self, node):
+    def before_children(self, node_store, node):
         self.output_stream.write('<html><body>')
 
-    def after_children(self, node):
+    def after_children(self, node_store, node):
         self.output_stream.write('</body></html>')
 
 

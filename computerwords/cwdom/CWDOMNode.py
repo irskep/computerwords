@@ -19,8 +19,10 @@ id_generator = IDGenerator()
 
 
 class CWDOMNode:
-    def __init__(self, name, children=None):
+    def __init__(self, name, children=None, document_id=None):
         super().__init__()
+
+        self.document_id = document_id
 
         if children is None:
             children = []
@@ -54,8 +56,13 @@ class CWDOMNode:
         else:
             self.parent_weakref = weakref.ref(new_parent)
 
+    def deep_set_document_id(self, new_id):
+        self.document_id = new_id
+        for child in self.children:
+            child.deep_set_document_id(new_id)
+
     def copy(self):
-        return CWDOMNode(self.name)
+        return CWDOMNode(self.name, document_id=self.document_id)
 
     def deepcopy(self):
         node_copy = self.copy()
@@ -89,16 +96,16 @@ class CWDOMNode:
 
 
 class CWDOMRootNode(CWDOMNode):
-    def __init__(self, children=None):
-        super().__init__('Root', children)
+    def __init__(self, children=None, document_id=None):
+        super().__init__('Root', children, document_id=document_id)
 
     def copy(self):
-        return CWDOMRootNode()
+        return CWDOMRootNode(document_id=self.document_id)
 
 
 class CWDOMDocumentNode(CWDOMNode):
-    def __init__(self, path, children=None):
-        super().__init__('Document', children)
+    def __init__(self, path, children=None, document_id=None):
+        super().__init__('Document', children, document_id=document_id)
         self.path = path
 
     def get_args_string_for_test_comparison(self):
@@ -109,27 +116,20 @@ class CWDOMDocumentNode(CWDOMNode):
             self.name, self.path, self.children)
 
     def copy(self):
-        return CWDOMDocumentNode(self.path)
-
-
-class CWDOMStatementsNode(CWDOMNode):
-    def __init__(self, children=None):
-        super().__init__('Statements', children)
-
-    def copy(self):
-        return CWDOMStatementsNode()
+        return CWDOMDocumentNode(self.path, document_id=document_id)
 
 
 class CWDOMTagNode(CWDOMNode):
-    def __init__(self, name, kwargs, children=None):
-        super().__init__(name, children)
+    def __init__(self, name, kwargs, children=None, document_id=None):
+        super().__init__(name, children, document_id=document_id)
         assert isinstance(kwargs, dict)
         self.kwargs = kwargs
 
     def copy(self, name=None, kwargs=None):
         return CWDOMTagNode(
             name=name or self.name,
-            kwargs=kwargs or self.kwargs)
+            kwargs=kwargs or self.kwargs,
+            document_id=self.document_id)
 
     def get_args_string_for_test_comparison(self):
         return 'kwargs={!r}'.format(self.kwargs)
@@ -149,8 +149,8 @@ class CWDOMTagNode(CWDOMNode):
 
 
 class CWDOMTextNode(CWDOMNode):
-    def __init__(self, text):
-        super().__init__('Text', [])
+    def __init__(self, text, document_id=None):
+        super().__init__('Text', [], document_id=document_id)
         self.text = text
 
     def get_string_for_test_comparison(self, inner_indentation=2):
@@ -167,30 +167,30 @@ class CWDOMTextNode(CWDOMNode):
 
 
 class CWDOMAnchorNode(CWDOMNode):
-    def __init__(self, ref_id, children=None):
-        super().__init__('Anchor', children)
+    def __init__(self, ref_id, children=None, document_id=None):
+        super().__init__('Anchor', children, document_id=document_id)
         self.ref_id = ref_id
 
     def get_args_string_for_test_comparison(self):
         return "ref_id={!r}".format(self.ref_id)
 
     def copy(self):
-        return CWDOMAnchorNode(self.ref_id)
+        return CWDOMAnchorNode(self.ref_id, document_id=document_id)
 
     def __repr__(self):
         return "{}(ref_id={!r})".format(self.name, self.ref_id)
 
 
 class CWDOMLinkNode(CWDOMNode):
-    def __init__(self, ref_id, children=None):
-        super().__init__('Link', children)
+    def __init__(self, ref_id, children=None, document_id=None):
+        super().__init__('Link', children, document_id=document_id)
         self.ref_id = ref_id
 
     def get_args_string_for_test_comparison(self):
         return "ref_id={!r}".format(self.ref_id)
 
     def copy(self):
-        return CWDOMAnchorNode(self.ref_id)
+        return CWDOMAnchorNode(self.ref_id, document_id=self.document_id)
 
     def __repr__(self):
         return "{}(ref_id={!r})".format(self.name, self.ref_id)

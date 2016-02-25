@@ -36,7 +36,7 @@ class DictCascade:
 
 
 DocumentHierarchySubtree = namedtuple(
-    'DocumentHierarchySubtree', ['root_path', 'children'])
+    'DocumentHierarchySubtree', ['root_path', 'children', 'document_id'])
 class DocumentHierarchy:
     def __init__(self, entries):
         super().__init__()
@@ -54,27 +54,32 @@ def _glob_or_set_of_globs_to_doc_hierarchy_entry(files_root, entry):
         globs = sorted(files_root.glob(entry))
         if len(globs) != 1:
             raise ValueError("Handle this case please")
-        return DocumentHierarchySubtree(globs[0], [])
+        return DocumentHierarchySubtree(
+            globs[0], [], globs[0].relative_to(files_root))
     elif isinstance(entry, dict):
         if len(entry) != 1:
             raise ValueError("One ping only")
         path = (files_root / list(entry.keys())[0]).resolve()
         sub_entries = list(entry.values())[0]
+        doc_id = path.relative_to(files_root)
         if not isinstance(sub_entries, list):
             raise ValueError("file_hierarchy subtrees must be lists")
         return DocumentHierarchySubtree(
-            path, [_glob_or_set_of_globs_to_doc_hierarchy_entry(
-                files_root, sub_entry) for sub_entry in sub_entries])
+            path,
+            [_glob_or_set_of_globs_to_doc_hierarchy_entry(
+                files_root, sub_entry) for sub_entry in sub_entries],
+            doc_id)
     else:
         raise ValueError("Unsupported file_hierarchy value: {}".format(entry))
 
 
 def _add_document_nodes(document_nodes, subtree):
     with subtree.root_path.open() as f:
-        root = CWDOMDocumentNode(
+        doc_node = CWDOMDocumentNode(
             str(subtree.root_path),
             string_to_cwdom(f.read(), stdlib.get_allowed_tags()))
-    document_nodes.append(root)
+        doc_node.deep_set_document_id(subtree.document_id)
+    document_nodes.append(doc_node)
     for child in subtree.children:
         _add_document_nodes(document_nodes, child)
     return document_nodes
@@ -87,13 +92,10 @@ def run():
 
     conf = DictCascade(DEFAULT_CONFIG, json.load(args.conf))
     files_root = pathlib.Path(args.conf.name).parent.resolve()
-    print(conf['file_hierarchy'])
     doc_hierarchy = DocumentHierarchy([
         _glob_or_set_of_globs_to_doc_hierarchy_entry(files_root, entry)
         for entry in conf['file_hierarchy']
     ])
-    print(repr(doc_hierarchy))
-    # file_paths = 
 
     document_nodes = []
     for doc in doc_hierarchy:

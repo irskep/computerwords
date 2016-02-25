@@ -132,6 +132,7 @@ class NodeStore:
         outer_node.children = [inner_node]
         outer_node.set_parent(parent)
         inner_node.set_parent(outer_node)
+        outer_node.document_id = inner_node.document_id
         if parent.name == 'Anchor':
             raise ValueError()
 
@@ -168,6 +169,7 @@ class NodeStore:
         self._mark_subtree_removed(old_node)
         parent.children[child_i] = new_node
         new_node.set_parent(parent)
+        new_node.deep_set_document_id(parent.document_id)
         self._mark_subtree_dirty(new_node)
 
     def insert_subtree(self, parent, i, child):
@@ -178,6 +180,7 @@ class NodeStore:
                 "You may only insert subtrees inside the active node.")
         parent.children.insert(i, child)
         child.set_parent(parent)
+        child.deep_set_document_id(parent.document_id)
         self._mark_subtree_dirty(child)
 
     def replace_node(self, old_node, new_node):
@@ -189,6 +192,7 @@ class NodeStore:
         new_node.set_children(old_node.children)
         parent.children[child_i] = new_node
         new_node.set_parent(parent)
+        new_node.document_id = old_node.document_id
 
         self._removed_nodes.add(old_node)
         self._dirty_nodes.add(new_node)
@@ -229,15 +233,15 @@ class NodeStore:
         except KeyError:
             raise MissingVisitorError(
                 "No visitor registered for {!r}".format(node.name))
-        visitor.before_children(node)
+        visitor.before_children(self, node)
         for child in node.children:
             self.visit_all(node_name_to_visitor, child)
-        visitor.after_children(node)
+        visitor.after_children(self, node)
 
 
 class NodeStoreVisitor:
-    def before_children(self, node):
+    def before_children(self, node_store, node):
         pass
 
-    def after_children(self, node):
+    def after_children(self, node_store, node):
         pass
