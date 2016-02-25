@@ -7,7 +7,7 @@ from computerwords.cwdom.CWDOMNode import CWDOMDocumentNode
 class DocTreeError(Exception): pass
 
 
-DocSubtree = namedtuple('DocSubtree', ['root_path', 'children', 'document_id'])
+DocSubtree = namedtuple('DocSubtree', ['root_path', 'document_id', 'children'])
 
 
 class DocTree:
@@ -31,7 +31,7 @@ def _glob_or_set_of_globs_to_doc_hierarchy_entry(files_root, entry):
         if len(globs) != 1:
             raise ValueError("Handle this case please")
         return DocSubtree(
-            globs[0], [], str(globs[0].relative_to(files_root)))
+            globs[0], str(globs[0].relative_to(files_root)), [])
     elif isinstance(entry, dict):
         if len(entry) != 1:
             raise DocTreeError("Only one key per dict allowed")
@@ -45,10 +45,9 @@ def _glob_or_set_of_globs_to_doc_hierarchy_entry(files_root, entry):
             raise DocTreeError("Subtree values must be either string or list")
 
         return DocSubtree(
-            path,
+            path, doc_id,
             [_glob_or_set_of_globs_to_doc_hierarchy_entry(
-                files_root, sub_entry) for sub_entry in sub_entries],
-            doc_id)
+                files_root, sub_entry) for sub_entry in sub_entries])
     else:
         raise ValueError("Unsupported file_hierarchy value: {}".format(entry))
 
