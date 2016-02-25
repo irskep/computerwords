@@ -114,10 +114,15 @@ def add_table_of_contents(library):
     @library.processor('h5')
     @library.processor('h6')
     def process_header(node_store, node):
+        _add_toc_data_if_not_exists(node_store)
+        node_store.processor_data['toc_heading_nodes'].append(node)
         entry = _node_to_toc_entry(node_store, node)
         anchor = CWDOMAnchorNode(entry.ref_id)
-        anchor.data['toc_entry'] = entry
         node_store.wrap_node(node, anchor)
+
+        # associate this entry with both nodes for convenience
+        node.data['toc_entry'] = entry
+        anchor.data['toc_entry'] = entry
 
     @library.processor('Document')
     def process_document(node_store, node):
@@ -161,8 +166,10 @@ def add_table_of_contents(library):
                     entry_to_number, top_level_entries,
                     {'class': 'table-of-contents'}))
 
+        # optional: insert heading numbers
         for heading_node in node_store.processor_data['toc_heading_nodes']:
-            number = '.'.join(entry_to_number[heading_node.data['toc_entry']])
+            number = _format_entry_number(
+                entry_to_number, heading_node.data['toc_entry'])
             node_store.insert_subtree(
                 heading_node,
                 0,

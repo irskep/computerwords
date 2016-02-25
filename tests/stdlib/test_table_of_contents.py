@@ -14,14 +14,14 @@ from computerwords.stdlib.table_of_contents import (
 )
 
 
-library = Library()
-add_basics(library)
-add_html(library)
-add_links(library)
-add_table_of_contents(library)
-
-
 class TestTableOfContents(CWTestCase):
+    def setUp(self):
+        self.library = Library()
+        add_basics(self.library)
+        add_html(self.library)
+        add_links(self.library)
+        add_table_of_contents(self.library)
+
     def test_collect_entries(self):
         header1 = CWDOMTagNode('h1', {}, [
             CWDOMTextNode('Header 1 text')
@@ -33,7 +33,7 @@ class TestTableOfContents(CWTestCase):
             CWDOMDocumentNode('doc 1', [header1]),
             CWDOMDocumentNode('doc 2', [header2]),
         ]))
-        ns.apply_library(library)
+        ns.apply_library(self.library)
         self.assertEqual(header1.get_parent().data, {
             'toc_entry': TOCEntry(
                 level=1, heading_node=header1, ref_id='Header-1-text')
@@ -84,7 +84,7 @@ class TestTableOfContents(CWTestCase):
                 ]),
             ]),
         ]))
-        ns.apply_library(library)
+        ns.apply_library(self.library)
         self.assertEqual(ns.root.get_string_for_test_comparison(), self.strip("""
             Root()
               Document(path='doc 1')
@@ -104,12 +104,15 @@ class TestTableOfContents(CWTestCase):
                         'Header 2 text'
                 Anchor(ref_id='Header-1-text')
                   h1(kwargs={})
+                    '1 '
                     'Header 1 text'
                 Anchor(ref_id='Subheader-1-text')
                   h2(kwargs={})
+                    '1.1 '
                     'Subheader 1 text'
               Document(path='doc 2')
                 Anchor(ref_id='Header-2-text')
                   h1(kwargs={})
+                    '2 '
                     'Header 2 text'
         """))
