@@ -34,23 +34,23 @@ class ReadDocTreeTestCase(unittest.TestCase):
     def test_simple(self):
         doc_tree, _ = read_doc_tree(self.dir, ['index.md'], _empty)
         self.assertSequenceEqual(doc_tree.entries, [
-            DocSubtree(self.dir / "index.md", "index.md", []),
+            DocSubtree(self.dir / "index.md", ("index.md",), []),
         ])
 
     def test_flat(self):
         doc_tree, _ = read_doc_tree(
             self.dir, ['index.md', 'a.md'], _empty)
         self.assertSequenceEqual(doc_tree.entries, [
-            DocSubtree(self.dir / "index.md", "index.md", []),
-            DocSubtree(self.dir / "a.md", 'a.md', []),
+            DocSubtree(self.dir / "index.md", ("index.md",), []),
+            DocSubtree(self.dir / "a.md", ('a.md',), []),
         ])
 
     def test_nested(self):
         doc_tree, _ = read_doc_tree(
             self.dir, [{'index.md': ['a.md']}], _empty)
         self.assertSequenceEqual(doc_tree.entries, [
-            DocSubtree(self.dir / "index.md", "index.md", [
-                DocSubtree(self.dir / "a.md", 'a.md', []),
+            DocSubtree(self.dir / "index.md", ("index.md",), [
+                DocSubtree(self.dir / "a.md", ('a.md',), []),
             ]),
         ])
 
@@ -58,9 +58,9 @@ class ReadDocTreeTestCase(unittest.TestCase):
         doc_tree, _ = read_doc_tree(
             self.dir, [{'index.md': [{'a.md': ['x/b.md']}]}], _empty)
         self.assertSequenceEqual(doc_tree.entries, [
-            DocSubtree(self.dir / "index.md", "index.md", [
-                DocSubtree(self.dir / "a.md", 'a.md', [
-                    DocSubtree(self.dir / "x" / "b.md", 'x/b.md', []),
+            DocSubtree(self.dir / "index.md", ("index.md",), [
+                DocSubtree(self.dir / "a.md", ('a.md',), [
+                    DocSubtree(self.dir / "x" / "b.md", ('x', 'b.md'), []),
                 ]),
             ]),
         ])
@@ -68,12 +68,12 @@ class ReadDocTreeTestCase(unittest.TestCase):
     def test_single_glob(self):
         doc_tree, _ = read_doc_tree(self.dir, ['x/*.md'], _empty)
         self.assertSequenceEqual(doc_tree.entries, [
-            DocSubtree(self.dir / "x" / "b.md", "x/b.md", []),
+            DocSubtree(self.dir / "x" / "b.md", ("x", "b.md"), []),
         ])
 
     def test_multi_glob(self):
         doc_tree, _ = read_doc_tree(self.dir, ['*.md'], _empty)
         self.assertSequenceEqual(doc_tree.entries, [
-            DocSubtree(self.dir / "a.md", 'a.md', []),
-            DocSubtree(self.dir / "index.md", "index.md", []),
+            DocSubtree(self.dir / "a.md", ('a.md',), []),
+            DocSubtree(self.dir / "index.md", ("index.md",), []),
         ])

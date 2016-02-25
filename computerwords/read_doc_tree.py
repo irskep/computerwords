@@ -33,12 +33,12 @@ def _glob_or_set_of_globs_to_doc_hierarchy_entry(files_root, entry):
     if isinstance(entry, str):
         globs = sorted(files_root.glob(entry))
         for path in sorted(globs):
-            yield DocSubtree(path, str(path.relative_to(files_root)), [])
+            yield DocSubtree(path, path.relative_to(files_root).parts, [])
     elif isinstance(entry, dict):
         if len(entry) != 1:
             raise DocTreeError("Only one key per dict allowed")
         path = (files_root / list(entry.keys())[0]).resolve()
-        doc_id = str(path.relative_to(files_root))
+        doc_id = path.relative_to(files_root).parts
 
         sub_entries = list(entry.values())[0]
         if isinstance(sub_entries, str):
