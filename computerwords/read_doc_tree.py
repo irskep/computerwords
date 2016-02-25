@@ -4,6 +4,9 @@ from itertools import chain
 from computerwords.cwdom.CWDOMNode import CWDOMDocumentNode
 
 
+class DocTreeError(Exception): pass
+
+
 DocSubtree = namedtuple('DocSubtree', ['root_path', 'children', 'document_id'])
 
 
@@ -18,6 +21,9 @@ class DocTree:
     def __iter__(self):
         return iter(self.entries)
 
+    def __eq__(self, other):
+        return type(self) is type(other) and self.entries == other.entries
+
 
 def _glob_or_set_of_globs_to_doc_hierarchy_entry(files_root, entry):
     if isinstance(entry, str):
@@ -25,15 +31,19 @@ def _glob_or_set_of_globs_to_doc_hierarchy_entry(files_root, entry):
         if len(globs) != 1:
             raise ValueError("Handle this case please")
         return DocSubtree(
-            globs[0], [], globs[0].relative_to(files_root))
+            globs[0], [], str(globs[0].relative_to(files_root)))
     elif isinstance(entry, dict):
         if len(entry) != 1:
-            raise ValueError("One ping only")
+            raise DocTreeError("Only one key per dict allowed")
         path = (files_root / list(entry.keys())[0]).resolve()
+        doc_id = str(path.relative_to(files_root))
+
         sub_entries = list(entry.values())[0]
-        doc_id = path.relative_to(files_root)
+        if isinstance(sub_entries, str):
+            sub_entries = [sub_entries]
         if not isinstance(sub_entries, list):
-            raise ValueError("file_hierarchy subtrees must be lists")
+            raise DocTreeError("Subtree values must be either string or list")
+
         return DocSubtree(
             path,
             [_glob_or_set_of_globs_to_doc_hierarchy_entry(
@@ -53,7 +63,7 @@ def doc_subtree_to_cwdom(subtree, get_doc_cwdom):
 
     yield doc_node
     for child in subtree.children:
-        yield from _doc_subtree_to_cwdom(child)
+        yield from doc_subtree_to_cwdom(child, get_doc_cwdom)
 
 
 
