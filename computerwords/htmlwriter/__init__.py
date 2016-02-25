@@ -13,7 +13,12 @@ class TagVisitor(WritingVisitor):
         self.tag_name = tag_name
 
     def before_children(self, node):
-        self.output_stream.write('<{}>'.format(self.tag_name))
+        args_str_items = []
+        for k, v in node.kwargs.items():
+            # TODO: escape the value properly
+            args_str_items.append(" {}='{}'".format(k, v))
+        self.output_stream.write('<{}{}>'.format(
+            self.tag_name, ''.join(args_str_items)))
 
     def after_children(self, node):
         self.output_stream.write('</{}>'.format(self.tag_name))

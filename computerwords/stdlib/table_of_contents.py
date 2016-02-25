@@ -39,24 +39,13 @@ def _node_to_toc_entry(node_store, node):
     return TOCEntry(NAME_TO_LEVEL[node.name], node, ref_id)
 
 
-def _get_toc_subtree(toc_node, whole_toc, entry_to_number):
-    return CWDOMTagNode(
-        'ol',
-        {'class': 'table-of-contents'},
-        [
-            CWDOMTagNode('li', {}, [
-                CWDOMTextNode(path),
-                _nested_list_to_node(entry_to_number, nested_list),
-            ])
-            for path, nested_list in whole_toc
-        ])
-
-
 # [(TOCEntry, [children]), ...] -> DOM
 def _format_entry_number(entry_to_number, entry):
     return '.'.join(str(n) for n in entry_to_number[entry])
 
-def _nested_list_to_node(entry_to_number, entry_children_pairs):
+def _nested_list_to_node(
+        entry_to_number, entry_children_pairs, tag_kwargs=None):
+    tag_kwargs = tag_kwargs or {}
     def make_li(entry, children):
         li_contents = [
             CWDOMLinkNode(entry.ref_id, [entry.heading_node.deepcopy()])
@@ -64,7 +53,7 @@ def _nested_list_to_node(entry_to_number, entry_children_pairs):
         if children:
             li_contents.append(_nested_list_to_node(entry_to_number, children))
         return CWDOMTagNode('li', {}, li_contents)
-    return CWDOMTagNode('ol', {}, [
+    return CWDOMTagNode('ol', tag_kwargs, [
         make_li(entry, children) for entry, children in entry_children_pairs
     ])
 
@@ -155,19 +144,22 @@ def add_table_of_contents(library):
         }
 
         # TODO: derive from table_of_contents tag contents?
-        output_order = sorted(doc_to_entries.keys())
+        sorted_paths = sorted(doc_to_entries.keys())
+        top_level_entries = []
+        for path in sorted_paths:
+            top_level_entries.extend(
+                _entries_to_nested_list(doc_to_entries[path]))
+
         entry_to_number = {}
-        whole_toc = []
-        for i, k in enumerate(output_order):
-            nested_list = _entries_to_nested_list(doc_to_entries[k])
-            _store_entry_to_sequence(nested_list, entry_to_number, (i,))
-            whole_toc.append((k, nested_list))
+        _store_entry_to_sequence(top_level_entries, entry_to_number, ())
 
         # TODO: require different TOC subsets per tag, like sphinx?
         for toc_node in node_store.processor_data['toc_nodes']:
             node_store.replace_subtree(
                 toc_node,
-                _get_toc_subtree(toc_node, whole_toc, entry_to_number))
+                _nested_list_to_node(
+                    entry_to_number, top_level_entries,
+                    {'class': 'table-of-contents'}))
 
         for heading_node in node_store.processor_data['toc_heading_nodes']:
             number = '.'.join(entry_to_number[heading_node.data['toc_entry']])
