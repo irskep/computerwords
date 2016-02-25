@@ -21,9 +21,10 @@ class NodeStoreConsistencyError(Exception): pass
 
 
 class NodeStore:
-    def __init__(self, root):
+    def __init__(self, root, env=None):
         super().__init__()
         self.root = root
+        self.env = env or {}
 
     ### operators and builtins ###
 
