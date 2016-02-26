@@ -1,4 +1,5 @@
 from collections import namedtuple, OrderedDict
+from functools import cmp_to_key
 from itertools import chain
 
 from computerwords.cwdom.CWDOMNode import CWDOMDocumentNode
@@ -29,17 +30,32 @@ class DocTree:
         return type(self) is type(other) and self.entries == other.entries
 
 
-def _flat_paths_to_sorted_nested_paths(files_root, paths):
-    d = OrderedDict()
-    for path in paths:
-        d[path] = []
-        #path = path.relative_to(files_root)
-        #print(path.parts)
-    return d
+def is_name_top(name):
+    if name == '__init__.py': return True
+    if name.lower().startswith('readme'): return True
+    if name.startswith('index.'): return True
+    return False
 
 
-def _nested_globs_to_doc_subtree_children(files_root, path_children_pairs):
-    return path_children_pairs
+@cmp_to_key
+def _path_sort_key(a, b):
+    a_name = a.name
+    b_name = b.name
+    if a.parts[:-1] == b.parts[:-1]:
+        if is_name_top(a_name) and not is_name_top(b_name):
+            return -1
+        elif is_name_top(b_name) and not is_name_top(a_name):
+            return 1
+        elif a < b:
+            return -1
+        elif b > a:
+            return 1
+        else:
+            return 0
+    else:
+        if a < b: return -1
+        if b < a: return 1
+        return 0
 
 
 def _dict_to_doc_subtree(files_root, entry):
@@ -64,12 +80,11 @@ def _conf_entry_to_doc_subtree(files_root, entry):
     if isinstance(entry, str):
         entry = [entry]
     if isinstance(entry, list):
-        paths = sorted(chain_list([files_root.glob(glob) for glob in entry]))
-        nested_paths = _flat_paths_to_sorted_nested_paths(files_root, paths)
-        for path, children in nested_paths.items():
-            yield DocSubtree(
-                path, path.relative_to(files_root).parts,
-                _nested_globs_to_doc_subtree_children(files_root, children))
+        paths = sorted(
+            chain_list([files_root.glob(glob) for glob in entry]),
+            key=_path_sort_key)
+        for path in paths:
+            yield DocSubtree(path, path.relative_to(files_root).parts, [])
     elif isinstance(entry, dict):
         yield from _dict_to_doc_subtree(files_root, entry)
     else:

@@ -1,6 +1,8 @@
 import unittest
 import pathlib
 
+from collections import OrderedDict
+
 from computerwords.cwdom.CWDOMNode import CWDOMDocumentNode
 from computerwords.read_doc_tree import (
     read_doc_tree,
@@ -24,6 +26,7 @@ def _print_doc_subtree(subtree, indent_level=0):
 
 class ReadDocTreeTestCase(unittest.TestCase):
     def setUp(self):
+        self.maxDiff = None
         self.path = pathlib.Path(__file__).resolve()
         self.test_dir = self.path.parent
         self.test_files_dir = self.test_dir / '_doc_tree_test_files'
@@ -81,10 +84,13 @@ class ReadDocTreeTestCase(unittest.TestCase):
     def test_nested_glob(self):
         doc_tree, _ = read_doc_tree(self.dir, ['**/*.md'], _empty)
         self.assertSequenceEqual(doc_tree.entries, [
-            DocSubtree(self.dir / "a.md", ('a.md',), []),
             DocSubtree(self.dir / "index.md", ("index.md",), []),
+            DocSubtree(self.dir / "a.md", ('a.md',), []),
             DocSubtree(self.dir / "x" / "b.md", ("x", "b.md"), []),
-            DocSubtree(self.dir / "y" / "index.md", ("y", "index.md"), [
-                DocSubtree(self.dir / "y" / "c.md", ("y", "c.md"), []),
-            ]),
+            DocSubtree(self.dir / "y" / "index.md", ("y", "index.md"), []),
+            DocSubtree(self.dir / "y" / "c.md", ("y", "c.md"), []),
+            DocSubtree(self.dir / "y" / "yy" / "index.md", ("y", "yy", "index.md"), []),
+            DocSubtree(self.dir / "y" / "yy" / "page2.md", ("y", "yy", "page2.md"), []),
+            DocSubtree(self.dir / "y" / "yy" / "yyy" / "page3.md", ("y", "yy", "yyy", "page3.md"), []),
+            DocSubtree(self.dir / "z" / "zz" / "blah.md", ("z", "zz", "blah.md"), []),
         ])
