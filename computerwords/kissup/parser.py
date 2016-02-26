@@ -174,3 +174,22 @@ def parse_kissup(tokens, allowed_tags=None):
         allowed_tags = set()
     config = ParserConfig(allowed_tags)
     return call_parse_function('stmts_b', tokens, 0, config)[0]
+
+
+def parse_open_tag(tokens, allowed_tags=None):
+    if allowed_tags is None:
+        allowed_tags = set()
+    config = ParserConfig(allowed_tags)
+    return call_parse_function('open_tag', tokens, 0, config)[0]
+
+def parse_close_tag(tokens, allowed_tags=None):
+    if allowed_tags is None:
+        allowed_tags = set()
+    config = ParserConfig(allowed_tags)
+    return call_parse_function('close_tag', tokens, 0, config)[0]
+
+def parse_self_closing_tag(tokens, allowed_tags=None):
+    if allowed_tags is None:
+        allowed_tags = set()
+    config = ParserConfig(allowed_tags)
+    return call_parse_function('self_closing_tag', tokens, 0, config)[0]

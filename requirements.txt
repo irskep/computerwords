@@ -1,0 +1,2 @@
+CommonMark==0.6.3
+future==0.15.2

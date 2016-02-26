@@ -70,7 +70,7 @@ class TestTableOfContents(CWTestCase):
     def test_make_toc(self):
         ns = NodeStore(CWDOMRootNode([
             CWDOMDocumentNode('doc 1', [
-                CWDOMTagNode('table_of_contents', {}, []),
+                CWDOMTagNode('table-of-contents', {}, []),
                 CWDOMTagNode('h1', {}, [
                     CWDOMTextNode('Header 1 text')
                 ]),

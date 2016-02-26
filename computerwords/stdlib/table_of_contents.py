@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 
 HEADER_TAG_NAMES = {'h' + str(i) for i in range(1, 7)}
 NAME_TO_LEVEL = {'h' + str(i): i for i in range(1, 7)}
-TOC_TAG_NAME = 'table_of_contents'
+TOC_TAG_NAME = 'table-of-contents'
 TOCEntry = namedtuple('TOCEntry', ['level', 'heading_node', 'ref_id'])
 
 
@@ -81,7 +81,7 @@ def _store_entry_to_sequence(nested_list, entry_to_sequence, sequence_so_far):
 def add_table_of_contents(library):
     """
     Collects all `h1`, `h2`, etc. tags in a tree, which
-    you can display with `[table_of_contents /]`.
+    you can display with `[table-of-contents /]`.
 
     Currently they are displayed in alphabetical order. 
 
@@ -93,17 +93,17 @@ def add_table_of_contents(library):
     ## Explicit ordering of documents
 
     ```
-    [table_of_contents]
+    [table-of-contents]
         doc_1.txt
         doc_2.txt
-    [/table_of_contents]
+    [/table-of-contents]
     ```
 
     ## Scoped TOC instances (for sidebars)
 
     ```
     [# only show entries under doc_1.txt #]
-    [table_of_contents scope="doc_1.txt" /]
+    [table-of-contents scope="doc_1.txt" /]
     ```
     """
 
@@ -148,7 +148,7 @@ def add_table_of_contents(library):
             if doc_node.name == 'Document'
         }
 
-        # TODO: derive from table_of_contents tag contents?
+        # TODO: derive from table-of-contents tag contents?
         sorted_paths = sorted(doc_to_entries.keys())
         top_level_entries = []
         for path in sorted_paths:

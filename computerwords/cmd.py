@@ -3,11 +3,12 @@ import json
 import pathlib
 import sys
 
+from computerwords.commonmark_to_cwdom import commonmark_to_cwdom
 from computerwords.config import DictCascade, DEFAULT_CONFIG
 from computerwords.cwdom.CWDOMNode import CWDOMRootNode
 from computerwords.cwdom.NodeStore import NodeStore
 from computerwords.htmlwriter import cwdom_to_html_string
-from computerwords.kissup import string_to_cwdom
+# from computerwords.kissup import string_to_cwdom
 from computerwords.read_doc_tree import read_doc_tree
 from computerwords.stdlib import stdlib
 
@@ -18,6 +19,12 @@ def _get_doc_cwdom(subtree):
 
 
 def run():
+    with open('test.md') as f:
+        for item in commonmark_to_cwdom(f.read()):
+            print(item.get_string_for_test_comparison())
+
+
+    return
     p = argparse.ArgumentParser()
     p.add_argument('--conf', default="conf.json", type=argparse.FileType('r'))
     args = p.parse_args()
