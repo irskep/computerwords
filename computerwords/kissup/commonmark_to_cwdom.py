@@ -140,7 +140,7 @@ def t_Item(ast_node):
 
 @t('HtmlBlock')
 def t_HtmlBlock(ast_node):
-    self_closing_tag = maybe_parse_self_closing_tag(ast_node)
+    self_closing_tag = maybe_parse_self_closing_tag(ast_node.literal)
     if self_closing_tag:
         return self_closing_tag
     else:
@@ -208,8 +208,8 @@ def _ast_node_to_cwdom(ast_node):
     return cwdom_node
 
 
-def maybe_parse_self_closing_tag(ast_node):
-    tokens = list(lex_kissup(ast_node.literal))
+def maybe_parse_self_closing_tag(literal):
+    tokens = list(lex_kissup(literal))
     ast = parse_self_closing_tag(tokens)
     if ast:
         return CWDOMTagNode(
@@ -227,7 +227,7 @@ def fix_ignored_html(node):
     # replace self-closing tags
     for i, child in enumerate(children):
         if isinstance(child, UnparsedTagNode):
-            self_closing_tag = maybe_parse_self_closing_tag(ast_node)
+            self_closing_tag = maybe_parse_self_closing_tag(child.literal)
             if self_closing_tag:
                 node.children[i] = self_closing_tag
 
@@ -237,8 +237,9 @@ def fix_ignored_html(node):
             ast = parse_open_tag(tokens)
             if ast:
                 left_i = i
-                tag_name = ast.bbword.value
-                new_tag = CWDOMTagNode(tag_name, {})
+                new_tag = CWDOMTagNode(
+                    ast.tag_contents.bbword.value,
+                    tag_contents_to_kwargs(ast.tag_contents))
                 break
 
     if new_tag is None:
@@ -246,18 +247,21 @@ def fix_ignored_html(node):
             fix_ignored_html(child)
         return
 
+    print(node.get_string_for_test_comparison())
+
     right_i = None
     for i, child in reversed(list(enumerate(children))):
+        print(i, left_i)
         if i <= left_i:
             raise ValueError("Matching tag not found for {}".format(
                 new_tag.name))
         if isinstance(child, UnparsedTagNode):
             tokens = list(lex_kissup(child.literal))
-            if parse_self_closing_tag(tokens):
-                continue
+            print(tokens)
             ast = parse_close_tag(tokens)
             if ast:
                 tag_name = ast.bbword.value
+                print(tag_name, new_tag.name)
                 if tag_name != new_tag.name:
                     raise ValueError("Mismatched closing tag: {} vs {}".format(
                         new_tag.name, tag_name))

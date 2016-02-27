@@ -1,5 +1,4 @@
 """
-
 stmts_a -> stmt stmts_a
          | ε
 
@@ -180,7 +179,7 @@ def parse_open_tag(tokens, allowed_tags=None):
     if allowed_tags is None:
         allowed_tags = set()
     config = ParserConfig(allowed_tags)
-    result = call_parse_function('close_tag', tokens, 0, config)
+    result = call_parse_function('open_tag', tokens, 0, config)
     return result[0] if result else None
 
 def parse_close_tag(tokens, allowed_tags=None):

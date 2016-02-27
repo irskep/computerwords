@@ -135,7 +135,7 @@ class CWDOMTagNode(CWDOMNode):
         return 'kwargs={!r}'.format(self.kwargs)
 
     def __repr__(self):
-        return '{}(kwargs={!r}, children={!r}'.format(
+        return '{}(kwargs={!r}, children={!r})'.format(
             self.name, self.kwargs, self.children)
 
     def __eq__(self, other):
