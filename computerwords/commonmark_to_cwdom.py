@@ -6,6 +6,10 @@ import CommonMark
 
 from computerwords.cwdom.CWDOMNode import *
 from computerwords.kissup.lexer import lex_kissup
+from computerwords.kissup.parse_tree_to_cwdom import (
+    parse_tree_to_cwdom,
+    tag_contents_to_kwargs,
+)
 from computerwords.kissup.parser import (
     parse_open_tag,
     parse_close_tag,
@@ -17,6 +21,12 @@ class UnparsedTagNode(CWDOMNode):
     def __init__(self, literal):
         super().__init__('UnparsedTag')
         self.literal = literal
+
+    def get_args_string_for_test_comparison(self):
+        return repr(self.literal)
+
+    def __repr__(self):
+        return "{}(literal={!r})".format(self.name, self.literal)
 
 
 def _dump(ast_node):
@@ -82,7 +92,7 @@ def t_HtmlBlock(ast_node):
 
 @t('HtmlInline')
 def t_HtmlInline(ast_node):
-    return CWDOMTagNode('tt', {}, [CWDOMTextNode(ast_node.literal)])
+    return UnparsedTagNode(ast_node.literal)
 
 @t('Emph')
 def t_Emph(ast_node):
@@ -144,19 +154,60 @@ def _ast_node_to_cwdom(ast_node):
 def fix_ignored_html(node):
     children = node.children
     left_i = None
+    new_tag = None
+
+    # replace self-closing tags
     for i, child in enumerate(children):
         if isinstance(child, UnparsedTagNode):
-            left_i = i
-            break
+            tokens = list(lex_kissup(child.literal))
+            ast = parse_self_closing_tag(tokens)
+            if ast:
+                node.children[i] = CWDOMTagNode(
+                    ast.tag_contents.bbword.value,
+                    tag_contents_to_kwargs(ast.tag_contents))
 
-    if left_i is None:
+    for i, child in enumerate(children):
+        if isinstance(child, UnparsedTagNode):
+            tokens = list(lex_kissup(child.literal))
+            ast = parse_open_tag(tokens)
+            if ast:
+                left_i = i
+                tag_name = ast.tag_contents.bbword.value
+                kwargs = tag_contents_to_kwargs(ast.tag_contents)
+                new_tag = CWDOMTagNode(tag_name, kwargs)
+                break
+
+    if new_tag is None:
         for child in node.children:
             fix_ignored_html(child)
         return
 
-    print("----------")
-    left_node = parse_open_tag(lex_kissup(node.literal))
-    print(left_node)
+    right_i = None
+    for i, child in reversed(list(enumerate(children))):
+        if i <= left_i:
+            raise ValueError("Matching tag not found for {}".format(
+                new_tag.name))
+        if isinstance(child, UnparsedTagNode):
+            tokens = list(lex_kissup(child.literal))
+            if parse_self_closing_tag(tokens):
+                continue
+            ast = parse_close_tag(tokens)
+            if ast:
+                tag_name = ast.bbword.value
+                if tag_name != new_tag.name:
+                    raise ValueError("Mismatched closing tag: {} vs {}".format(
+                        new_tag.name, tag_name))
+                right_i = i
+                break
+
+    sub_children = children[left_i+1:right_i]
+    del node.children[left_i+1:right_i+1]
+    node.children[left_i] = new_tag
+    new_tag.set_children(sub_children)
+    node.claim_children()
+
+    for child in node.children:
+        fix_ignored_html(child)
 
 
 def commonmark_to_cwdom(text):

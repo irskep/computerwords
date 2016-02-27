@@ -95,7 +95,7 @@ def tags_should_match(tag_node, config):
 
 def self_closing_tag_should_be_allowed(tag_node, config):
     tag_name_token = tag_node.tag_contents.bbword.token
-    if tag_name_token.value not in config.allowed_tags:
+    if config.allowed_tags and tag_name_token.value not in config.allowed_tags:
         raise UnknownTagError(tag_name_token)
     return True
 
@@ -186,10 +186,12 @@ def parse_close_tag(tokens, allowed_tags=None):
     if allowed_tags is None:
         allowed_tags = set()
     config = ParserConfig(allowed_tags)
-    return call_parse_function('close_tag', tokens, 0, config)[0]
+    result = call_parse_function('close_tag', tokens, 0, config)
+    return result[0] if result else None
 
 def parse_self_closing_tag(tokens, allowed_tags=None):
     if allowed_tags is None:
         allowed_tags = set()
     config = ParserConfig(allowed_tags)
-    return call_parse_function('self_closing_tag', tokens, 0, config)[0]
+    result = call_parse_function('self_closing_tag', tokens, 0, config)
+    return result[0] if result else None
