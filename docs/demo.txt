@@ -1,18 +1,18 @@
-<h1>First <i>title</i></h1>
+# First *title*
 
-<p>This is a demo of Steve's BBCode parser and HTML output.</p>
+This is a demo of Steve's BBCode parser and HTML output.
 
-<h2>Subtitle</h2>
+## Subtitle
 
-<p>Here is some code:</p>
+Here is some code:
 
-<code>
+```python
 # this is a print statement
 print("hello")
-</code>
+```
 
-<p><strike><b>mighty boldness has struck out</b></strike></p>
+_**formatting!**_
 
-<table_of_contents />
+<table-of-contents />
 
-<h1>Another title</h1>
+# Another title

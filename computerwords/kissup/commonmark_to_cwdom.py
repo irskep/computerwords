@@ -5,16 +5,66 @@ from collections import OrderedDict
 import CommonMark
 
 from computerwords.cwdom.CWDOMNode import *
-from computerwords.kissup.lexer import lex_kissup
-from computerwords.kissup.parse_tree_to_cwdom import (
-    parse_tree_to_cwdom,
-    tag_contents_to_kwargs,
-)
-from computerwords.kissup.parser import (
+from .lexer import lex_kissup
+from .parser import (
     parse_open_tag,
     parse_close_tag,
     parse_self_closing_tag,
 )
+
+### begin __init__.py ###
+
+from .lexer import lex_kissup
+from .parser import parse_kissup
+from .parse_tree_to_cwdom import parse_tree_to_cwdom
+
+def lex_and_parse_kissup(string, allowed_tags):
+    return parse_kissup(list(lex_kissup(string)), allowed_tags=allowed_tags)
+
+
+def string_to_cwdom(string, allowed_tags):
+    return parse_tree_to_cwdom(lex_and_parse_kissup(string, allowed_tags))
+
+### end __init__.py ###
+
+### begin parse_tree_to_cwdom ###
+
+from .ast import StmtsNode, TagArgsNode
+from .parser import ParseError
+from computerwords.cwdom.CWDOMNode import *
+from computerwords.cwdom.NodeStore import NodeStore
+from .parse_tree_to_cwdom_util import *
+
+
+def parse_tree_to_cwdom(root):
+    return list(stmts_to_list(root))
+
+
+def stmts_to_list(stmts):
+    assert type(stmts) is StmtsNode
+    if stmts.form_num == 1:
+        yield from (list(stmt_to_tag_or_text(stmts.stmt)) + list(stmts_to_list(stmts.stmts)))
+
+
+def stmt_to_tag_or_text(stmt):
+    if stmt.form_num == 1:
+        yield CWDOMTextNode(stmt.text.value)
+        #yield from commonmark_to_cwdom(stmt.text.value)
+    else:
+        tag_node = stmt.tag
+        if tag_node.form_num == 1:
+            tag_contents = tag_node.open_tag.tag_contents
+            yield CWDOMTagNode(
+                tag_contents.bbword.value,
+                tag_contents_to_kwargs(tag_contents),
+                stmts_to_list(tag_node.stmts))
+        else:
+            tag_contents = tag_node.self_closing_tag.tag_contents
+            yield CWDOMTagNode(
+                tag_contents.bbword.value,
+                tag_contents_to_kwargs(tag_contents))
+
+### end parse_tree_to_cwdom ###
 
 
 class UnparsedTagNode(CWDOMNode):
@@ -52,6 +102,12 @@ def post(name):
     return dec
 
 
+@t('Text')
+def t_Text(ast_node):
+    return CWDOMTextNode(ast_node.literal)
+    #tokens = list(lex_kissup(ast_node.literal))
+    #return string_to_cwdom(ast_node.literal, None)
+
 @t('Document')
 def t_Document(ast_node):
     return CWDOMDocumentNode('PATH')
@@ -59,10 +115,6 @@ def t_Document(ast_node):
 @t('Heading')
 def t_Header(ast_node):
     return CWDOMTagNode('h{}'.format(ast_node.level), {})
-
-@t('Text')
-def t_Text(ast_node):
-    return CWDOMTextNode(ast_node.literal)
 
 @t('Paragraph')
 def t_Paragraph(ast_node):
@@ -88,7 +140,11 @@ def t_Item(ast_node):
 
 @t('HtmlBlock')
 def t_HtmlBlock(ast_node):
-    return CWDOMTagNode('pre', {}, [CWDOMTextNode(ast_node.literal)])
+    self_closing_tag = maybe_parse_self_closing_tag(ast_node)
+    if self_closing_tag:
+        return self_closing_tag
+    else:
+        return CWDOMTagNode('pre', {}, [CWDOMTextNode(ast_node.literal)])
 
 @t('HtmlInline')
 def t_HtmlInline(ast_node):
@@ -151,6 +207,17 @@ def _ast_node_to_cwdom(ast_node):
     return cwdom_node
 
 
+def maybe_parse_self_closing_tag(ast_node):
+    tokens = list(lex_kissup(ast_node.literal))
+    ast = parse_self_closing_tag(tokens)
+    if ast:
+        return CWDOMTagNode(
+            ast.tag_contents.bbword.value,
+            tag_contents_to_kwargs(ast.tag_contents))
+    else:
+        return None
+
+
 def fix_ignored_html(node):
     children = node.children
     left_i = None
@@ -159,12 +226,9 @@ def fix_ignored_html(node):
     # replace self-closing tags
     for i, child in enumerate(children):
         if isinstance(child, UnparsedTagNode):
-            tokens = list(lex_kissup(child.literal))
-            ast = parse_self_closing_tag(tokens)
-            if ast:
-                node.children[i] = CWDOMTagNode(
-                    ast.tag_contents.bbword.value,
-                    tag_contents_to_kwargs(ast.tag_contents))
+            self_closing_tag = maybe_parse_self_closing_tag(ast_node)
+            if self_closing_tag:
+                node.children[i] = self_closing_tag
 
     for i, child in enumerate(children):
         if isinstance(child, UnparsedTagNode):
@@ -172,9 +236,8 @@ def fix_ignored_html(node):
             ast = parse_open_tag(tokens)
             if ast:
                 left_i = i
-                tag_name = ast.tag_contents.bbword.value
-                kwargs = tag_contents_to_kwargs(ast.tag_contents)
-                new_tag = CWDOMTagNode(tag_name, kwargs)
+                tag_name = ast.bbword.value
+                new_tag = CWDOMTagNode(tag_name, {})
                 break
 
     if new_tag is None:
