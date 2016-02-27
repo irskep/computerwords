@@ -13,6 +13,6 @@ print("hello")
 
 _**formatting!**_
 
-<table-of-contents /><div>a div</div>
+<table-of-contents /><div>a _div<b>!</b>_</div>
 
 # Another title
