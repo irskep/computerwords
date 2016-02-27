@@ -4,7 +4,8 @@ from computerwords.cwdom.NodeStore import NodeStoreVisitor
 def _anchor_to_href(link_node, anchor_node):
     # in a multi-page world, we can omit the document part
     # if link_node.document_id == anchor_node.document_id.
-    return "#{}-{}".format(anchor_node.document_id, anchor_node.ref_id)
+    return "{}-{}".format(
+        '/'.join(anchor_node.document_id), anchor_node.ref_id)
 
 
 class WritingVisitor(NodeStoreVisitor):
@@ -54,7 +55,7 @@ class LinkVisitor(WritingVisitor):
         href = _anchor_to_href(
             node,
             node_store.processor_data['ref_id_to_anchor'][node.ref_id])
-        self.output_stream.write('<a href="{}">'.format(href))
+        self.output_stream.write('<a href="#{}">'.format(href))
 
     def after_children(self, node_store, node):
         self.output_stream.write('</a>')
