@@ -48,8 +48,8 @@ def stmts_to_list(stmts):
 
 def stmt_to_tag_or_text(stmt):
     if stmt.form_num == 1:
-        yield CWDOMTextNode(stmt.text.value)
-        #yield from commonmark_to_cwdom(stmt.text.value)
+        #yield CWDOMTextNode(stmt.text.value)
+        yield from commonmark_to_cwdom(stmt.text.value)
     else:
         tag_node = stmt.tag
         if tag_node.form_num == 1:
