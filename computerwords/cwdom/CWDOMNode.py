@@ -41,6 +41,7 @@ class CWDOMNode:
             child.set_parent(self)
 
     def set_children(self, children):
+        assert(isinstance(children, list))
         self.children = children
         self.claim_children()
 
