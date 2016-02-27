@@ -168,7 +168,8 @@ def t_ThematicBreak(ast_node):
 
 @t('CodeBlock')
 def t_CodeBlock(ast_node):
-    return CWDOMTagNode('pre', {'language': ast_node.info})
+    return CWDOMTagNode(
+        'pre', {'language': ast_node.info}, [CWDOMTextNode(ast_node.literal)])
 
 @t('Code')
 def t_Code(ast_node):
