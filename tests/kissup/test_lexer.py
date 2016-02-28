@@ -49,10 +49,6 @@ class TestLexer(unittest.TestCase):
         with self.assertRaises(html_lexer.LexError):
             lex("\\")
 
-    def test_stuff_that_fails_outside_brackets(self):
-        with self.assertRaises(html_lexer.LexError):
-            lex('>')
-
     def test_bbcode_simple(self):
         tokens = lex("<aa  bb=cc>text</aa>")
         self.assertEqual(tokens, [

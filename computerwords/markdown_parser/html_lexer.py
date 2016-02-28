@@ -50,8 +50,6 @@ def _match_text(s, i, num_brackets, line, pos):
                 return (tokens.TextToken(line, pos, ''.join(chars)), i, num_brackets)
             else:
                 return None
-        elif s[i] == RIGHT_ANGLE_BRACKET:
-            raise LexError(line, pos, "The character '>' must be escaped when used in text")
         elif s[i] == '\\':
             if next_char in TEXT_BACKSLASH_CHARS:
                 chars.append(next_char)

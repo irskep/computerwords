@@ -12,17 +12,31 @@ with Computer Words.
 
 # Basics
 
-## Write some Markdown
+`docs/index.md`:
 
-`index.md`:
-
-```markdown filename=index.md
+```markdown filename=docs/index.md
 # My Cool Project
 
 Hello world!
 ```
 
-## Write a config file
+`docs/conf.json`:
+
+```json filename=docs/conf.json
+{
+  "site_title": "My Cool Project",
+  "site_subtitle": "The coolest project ever",
+  "css_files": ["style.css"],
+  "file_hierarchy": ["*.md"]
+}
+```
+
+command:
+```sh
+> python3 -m computerwords --conf docs/conf.json
+```
+
+The built docs are now in `docs/build/`.
 
 <a name="computer-flavored-markdown" />
 # Computer Flavored Markdown
