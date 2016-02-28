@@ -167,19 +167,22 @@ class CWDOMTextNode(CWDOMNode):
         return "{}(text={!r})".format(self.name, self.text)
 
 
-class CWDOMAnchorNode(CWDOMNode):
-    def __init__(self, ref_id, children=None, document_id=None):
-        super().__init__('Anchor', children, document_id=document_id)
+class CWDOMAnchorNode(CWDOMTagNode):
+    def __init__(self, ref_id, kwargs=None, children=None, document_id=None):
+        super().__init__(
+            'Anchor', kwargs or {}, children, document_id=document_id)
         self.ref_id = ref_id
 
     def get_args_string_for_test_comparison(self):
-        return "ref_id={!r}".format(self.ref_id)
+        return "ref_id={!r}, kwargs={!r}".format(self.ref_id, self.kwargs)
 
     def copy(self):
-        return CWDOMAnchorNode(self.ref_id, document_id=document_id)
+        return CWDOMAnchorNode(
+            self.ref_id, self.kwargs, document_id=document_id)
 
     def __repr__(self):
-        return "{}(ref_id={!r})".format(self.name, self.ref_id)
+        return "{}(ref_id={!r}, kwargs={!r})".format(
+            self.name, self.ref_id, self.kwargs)
 
 
 class CWDOMLinkNode(CWDOMNode):

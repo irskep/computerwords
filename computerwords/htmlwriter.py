@@ -11,6 +11,14 @@ def _anchor_to_href(link_node, anchor_node):
         '/'.join(anchor_node.document_id), anchor_node.ref_id)
 
 
+def _html_attrs_to_string(kwargs):
+    args_str_items = []
+    for k, v in kwargs.items():
+        # TODO: escape the value properly
+        args_str_items.append(" {}='{}'".format(k, v))
+    return ''.join(args_str_items)
+
+
 class WritingVisitor(NodeStoreVisitor):
     def __init__(self, output_stream):
         super().__init__()
@@ -23,12 +31,8 @@ class TagVisitor(WritingVisitor):
         self.tag_name = tag_name
 
     def before_children(self, node_store, node):
-        args_str_items = []
-        for k, v in node.kwargs.items():
-            # TODO: escape the value properly
-            args_str_items.append(" {}='{}'".format(k, v))
         self.output_stream.write('<{}{}>'.format(
-            self.tag_name, ''.join(args_str_items)))
+            self.tag_name, _html_attrs_to_string(node.kwargs)))
 
     def after_children(self, node_store, node):
         self.output_stream.write('</{}>'.format(self.tag_name))
@@ -47,7 +51,8 @@ class AnchorVisitor(WritingVisitor):
     def before_children(self, node_store, node):
         # just relative to itself
         href = _anchor_to_href(node, node)
-        self.output_stream.write('<a name="{}">'.format(href))
+        self.output_stream.write('<a name="{}"{}>'.format(
+            href, _html_attrs_to_string(node.kwargs)))
 
     def after_children(self, node_store, node):
         self.output_stream.write('</a>')
@@ -66,17 +71,13 @@ class LinkVisitor(WritingVisitor):
 
 class DocumentVisitor(WritingVisitor):
     def before_children(self, node_store, node):
-        self.output_stream.write('<html><body>')
+        self.output_stream.write('<article>')
 
     def after_children(self, node_store, node):
-        self.output_stream.write('</body></html>')
+        self.output_stream.write('</article>')
 
 
 def write(config, input_files_root, output_files_root, library, node_store):
-    print(config)
-    print(input_files_root)
-    print(output_files_root)
-
     static_dir = output_files_root / config['static_dir_name']
     static_dir.mkdir(exist_ok=True)
 
@@ -94,8 +95,10 @@ def write(config, input_files_root, output_files_root, library, node_store):
 
     module_dir = pathlib.Path(__file__).parent.resolve()
 
+    css_theme = config['css_theme'] + ".css"
     css_files = [
-        (module_dir / "_css" / "normalize.css", static_dir / "normalize.css")
+        (module_dir / "_css" / "normalize.css", static_dir / "normalize.css"),
+        (module_dir / "_css" / css_theme, static_dir / css_theme),
     ]
     if config['css_files']:
         for path_str in config['css_files']:

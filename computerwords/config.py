@@ -12,6 +12,7 @@ DEFAULT_CONFIG = {
     'static_dir_name': 'static',
     'meta_description': '',
     'css_files': None,
+    'css_theme': 'default',
 }
 
 

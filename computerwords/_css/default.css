@@ -1,0 +1,53 @@
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 100%;
+  color: black;
+  margin: 0;
+  padding: 0;
+  line-height: 135%;
+}
+
+a {
+  color: #008;
+  text-decoration: none;
+}
+
+a:visited {
+  color: #208;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+p {
+  margin: 1rem 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  line-height: 135%;
+}
+a.header-anchor {
+  color: black;
+}
+
+header#pageheader, footer#pagefooter, main#pagebody {
+  width: 100%;
+  max-width: 768px;
+  margin: auto;
+  padding: 0 1rem;
+}
+
+header#pageheader {
+  text-align: center;
+  border-bottom: 1px solid black;
+}
+
+header#pageheader h1 {
+  margin: 0;
+  line-height: 200%;
+}

@@ -46,7 +46,7 @@ def _format_entry_number(entry_to_number, entry):
 def _nested_list_to_node(entry_to_number, entry_children_pairs):
     def make_li(entry, children):
         li_contents = [
-            CWDOMLinkNode(entry.ref_id, [entry.heading_node.deepcopy()])
+            CWDOMLinkNode(entry.ref_id, entry.heading_node.deepcopy().children)
         ]
         if children:
             li_contents.append(_nested_list_to_node(entry_to_number, children))
@@ -112,10 +112,13 @@ def add_table_of_contents(library):
     @library.processor('h5')
     @library.processor('h6')
     def process_header(node_store, node):
+        if node.kwargs.get('skip_toc', '').lower() == 'true':
+            return
         _add_toc_data_if_not_exists(node_store)
         node_store.processor_data['toc_heading_nodes'].append(node)
         entry = _node_to_toc_entry(node_store, node)
-        anchor = CWDOMAnchorNode(entry.ref_id)
+        anchor = CWDOMAnchorNode(
+            entry.ref_id, kwargs={'class': 'header-anchor'})
         node_store.wrap_node(node, anchor)
 
         # associate this entry with both nodes for convenience

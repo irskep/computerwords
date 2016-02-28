@@ -93,25 +93,22 @@ class TestTableOfContents(CWTestCase):
                   ol(kwargs={})
                     li(kwargs={})
                       Link(ref_id='Header-1-text')
-                        h1(kwargs={})
-                          'Header 1 text'
+                        'Header 1 text'
                       ol(kwargs={})
                         li(kwargs={})
                           Link(ref_id='Subheader-1-text')
-                            h2(kwargs={})
-                              'Subheader 1 text'
+                            'Subheader 1 text'
                     li(kwargs={})
                       Link(ref_id='Header-2-text')
-                        h1(kwargs={})
-                          'Header 2 text'
-                Anchor(ref_id='Header-1-text')
+                        'Header 2 text'
+                Anchor(ref_id='Header-1-text', kwargs={'class': 'header-anchor'})
                   h1(kwargs={})
                     'Header 1 text'
-                Anchor(ref_id='Subheader-1-text')
+                Anchor(ref_id='Subheader-1-text', kwargs={'class': 'header-anchor'})
                   h2(kwargs={})
                     'Subheader 1 text'
               Document(path='doc 2')
-                Anchor(ref_id='Header-2-text')
+                Anchor(ref_id='Header-2-text', kwargs={'class': 'header-anchor'})
                   h1(kwargs={})
                     'Header 2 text'
         """))

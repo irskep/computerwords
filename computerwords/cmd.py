@@ -14,12 +14,6 @@ from computerwords.read_doc_tree import read_doc_tree
 from computerwords.stdlib import stdlib
 
 
-def _get_doc_cwdom(subtree):
-    with subtree.root_path.open() as f:
-        return commonmark_to_cwdom(f.read())
-        # return string_to_cwdom(f.read(), stdlib.get_allowed_tags())
-
-
 def run():
     p = argparse.ArgumentParser()
     p.add_argument('--conf', default="conf.json", type=argparse.FileType('r'))
@@ -28,6 +22,11 @@ def run():
 
     conf = DictCascade(DEFAULT_CONFIG, json.load(args.conf))
     files_root = pathlib.Path(args.conf.name).parent.resolve()
+
+    def _get_doc_cwdom(subtree):
+        with subtree.root_path.open() as f:
+            return commonmark_to_cwdom(f.read(), stdlib.get_allowed_tags())
+            # return string_to_cwdom(f.read(), stdlib.get_allowed_tags())
 
     doc_tree, document_nodes = read_doc_tree(
         files_root, conf['file_hierarchy'], _get_doc_cwdom)
