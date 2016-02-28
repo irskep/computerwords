@@ -42,12 +42,20 @@ header#pageheader, footer#pagefooter, main#pagebody {
   padding: 0 1rem;
 }
 
+/* header */
+
 header#pageheader {
   text-align: center;
-  border-bottom: 1px solid black;
 }
 
 header#pageheader h1 {
-  margin: 0;
-  line-height: 200%;
+  margin-top: 0.5em;
+  margin-bottom: 0;
+}
+header#pageheader h2 {
+  margin-top: 0.5em;
+  padding-bottom: 0.5em;
+  margin-bottom: 0;
+  font-size: 1rem;
+  border-bottom: 1px solid black;
 }

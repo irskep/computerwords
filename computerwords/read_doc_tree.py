@@ -82,7 +82,7 @@ def _dict_to_doc_subtree(files_root, entry):
 
 def _conf_entry_to_doc_subtree(files_root, entry):
     if isinstance(entry, str):
-        entry = [entry]
+        entry = [entry]  # fallthrough
     if isinstance(entry, list):
         paths = sorted(
             chain_list([files_root.glob(glob) for glob in entry]),

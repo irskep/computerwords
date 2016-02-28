@@ -101,9 +101,10 @@ def write(config, input_files_root, output_files_root, library, node_store):
         (module_dir / "_css" / css_theme, static_dir / css_theme),
     ]
     if config['css_files']:
+        assert(isinstance(config['css_files'], list))
         for path_str in config['css_files']:
             for path in input_files_root.glob(path_str):
-                rel_path = path.relative_to(input_files)
+                rel_path = path.relative_to(input_files_root)
                 css_files.append((path, output_files_root.joinpath(rel_path)))
 
     for in_path, out_path in css_files:
