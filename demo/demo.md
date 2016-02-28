@@ -1,4 +1,5 @@
 # **<strike>_Computer Words_</strike>** demo
+:+1:
 
 This is a demo of Steve's BBCode parser and HTML output.
 

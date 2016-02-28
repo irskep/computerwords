@@ -23,6 +23,7 @@ def _get_doc_cwdom(subtree):
 def run():
     p = argparse.ArgumentParser()
     p.add_argument('--conf', default="conf.json", type=argparse.FileType('r'))
+    p.add_argument('--debug', default=False, type=bool)
     args = p.parse_args()
 
     conf = DictCascade(DEFAULT_CONFIG, json.load(args.conf))
@@ -33,7 +34,8 @@ def run():
     node_store = NodeStore(CWDOMRootNode(document_nodes), {
         'doc_tree': doc_tree
     })
-    print(node_store.root.get_string_for_test_comparison())
+    if args.debug:
+        print(node_store.root.get_string_for_test_comparison())
     node_store.apply_library(stdlib)
 
     with (files_root / conf['output_file']).open('w') as f:

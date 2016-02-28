@@ -1,4 +1,4 @@
-.PHONY: test watchtest demodocs
+.PHONY: test watchtest demo docs
 
 test:
 	python3 -m unittest discover tests
@@ -6,5 +6,8 @@ test:
 watchtest:
 	watch -n 0.2 make test
 
-demodocs:
+demo:
+	python3 -m computerwords --conf demo/conf.json
+
+docs:
 	python3 -m computerwords --conf docs/conf.json

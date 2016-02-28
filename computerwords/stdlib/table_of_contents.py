@@ -167,10 +167,10 @@ def add_table_of_contents(library):
                     {'class': 'table-of-contents'}))
 
         # optional: insert heading numbers
-        for heading_node in node_store.processor_data['toc_heading_nodes']:
-            number = _format_entry_number(
-                entry_to_number, heading_node.data['toc_entry'])
-            node_store.insert_subtree(
-                heading_node,
-                0,
-                CWDOMTextNode(number + ' '))
+        # for heading_node in node_store.processor_data['toc_heading_nodes']:
+        #     number = _format_entry_number(
+        #         entry_to_number, heading_node.data['toc_entry'])
+        #     node_store.insert_subtree(
+        #         heading_node,
+        #         0,
+        #         CWDOMTextNode(number + ' '))
