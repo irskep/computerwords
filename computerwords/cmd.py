@@ -7,8 +7,8 @@ from computerwords import htmlwriter
 from computerwords.config import DictCascade, DEFAULT_CONFIG
 from computerwords.cwdom.CWDOMNode import CWDOMRootNode
 from computerwords.cwdom.NodeStore import NodeStore
-from computerwords.markdown_parser.commonmark_to_cwdom import (
-    commonmark_to_cwdom,
+from computerwords.markdown_parser.cfm_to_cwdom import (
+    cfm_to_cwdom,
 )
 from computerwords.read_doc_tree import read_doc_tree
 from computerwords.stdlib import stdlib
@@ -25,7 +25,7 @@ def run():
 
     def _get_doc_cwdom(subtree):
         with subtree.root_path.open() as f:
-            return commonmark_to_cwdom(f.read(), stdlib.get_allowed_tags())
+            return cfm_to_cwdom(f.read(), stdlib.get_allowed_tags())
             # return string_to_cwdom(f.read(), stdlib.get_allowed_tags())
 
     doc_tree, document_nodes = read_doc_tree(

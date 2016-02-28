@@ -20,7 +20,7 @@ def lex_and_parse_html(string, allowed_tags):
     return parse_html(list(lex_html(string)), allowed_tags=allowed_tags)
 
 
-def string_to_cwdom(string, config):
+def html_string_to_cwdom(string, config):
     return parse_tree_to_cwdom(lex_and_parse_html(string, config), config)
 
 ### end __init__.py ###
@@ -137,9 +137,10 @@ def t_List(ast_node, config):
 def t_Item(ast_node, config):
     yield CWDOMTagNode('li', {})
 
+i = 0
 @t('HtmlBlock')
 def t_HtmlBlock(ast_node, config):
-    yield from string_to_cwdom(ast_node.literal, config)
+    yield from html_string_to_cwdom(ast_node.literal, config)
 
 @t('HtmlInline')
 def t_HtmlInline(ast_node, config):
@@ -281,3 +282,7 @@ def commonmark_to_cwdom(text, config):
     doc_node = list(_ast_node_to_cwdom(parser.parse(text), config))[0]
     fix_ignored_html(doc_node)
     return _replace_lone_p(doc_node.children)
+
+
+def cfm_to_cwdom(text, config):
+    return html_string_to_cwdom(text, config)

@@ -14,6 +14,8 @@ with Computer Words.
 
 ## Write some Markdown
 
+`index.md`:
+
 ```markdown filename=index.md
 # My Cool Project
 

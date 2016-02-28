@@ -62,3 +62,13 @@ header#pageheader h2 {
   font-size: 1rem;
   border-bottom: 1px solid black;
 }
+
+/* block-level semantic elements */
+
+pre {
+  margin-left: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  padding: 0.5rem;
+  background-color: #fafafa;
+}
