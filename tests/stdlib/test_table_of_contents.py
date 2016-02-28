@@ -104,15 +104,12 @@ class TestTableOfContents(CWTestCase):
                         'Header 2 text'
                 Anchor(ref_id='Header-1-text')
                   h1(kwargs={})
-                    '1 '
                     'Header 1 text'
                 Anchor(ref_id='Subheader-1-text')
                   h2(kwargs={})
-                    '1.1 '
                     'Subheader 1 text'
               Document(path='doc 2')
                 Anchor(ref_id='Header-2-text')
                   h1(kwargs={})
-                    '2 '
                     'Header 2 text'
         """))
