@@ -58,11 +58,15 @@ def _path_sort_key(a, b):
         return 0
 
 
+def _get_doc_id(files_root, path):
+    rp = path.relative_to(files_root)
+    return rp.parts[:-1] + (rp.stem,)
+
+
 def _dict_to_doc_subtree(files_root, entry):
     if len(entry) != 1:
         raise DocTreeError("Only one key per dict allowed")
     path = (files_root / list(entry.keys())[0]).resolve()
-    doc_id = path.relative_to(files_root).parts
 
     sub_entries = list(entry.values())[0]
     if isinstance(sub_entries, str):
@@ -71,7 +75,7 @@ def _dict_to_doc_subtree(files_root, entry):
         raise DocTreeError("Subtree values must be either string or list")
 
     yield DocSubtree(
-        path, doc_id,
+        path, _get_doc_id(files_root, path),
         chain_list([_conf_entry_to_doc_subtree(
             files_root, sub_entry) for sub_entry in sub_entries]))
 
@@ -84,7 +88,7 @@ def _conf_entry_to_doc_subtree(files_root, entry):
             chain_list([files_root.glob(glob) for glob in entry]),
             key=_path_sort_key)
         for path in paths:
-            yield DocSubtree(path, path.relative_to(files_root).parts, [])
+            yield DocSubtree(path, _get_doc_id(files_root, path), [])
     elif isinstance(entry, dict):
         yield from _dict_to_doc_subtree(files_root, entry)
     else:

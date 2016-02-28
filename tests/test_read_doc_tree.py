@@ -37,23 +37,23 @@ class ReadDocTreeTestCase(unittest.TestCase):
     def test_simple(self):
         doc_tree, _ = read_doc_tree(self.dir, ['index.md'], _empty)
         self.assertSequenceEqual(doc_tree.entries, [
-            DocSubtree(self.dir / "index.md", ("index.md",), []),
+            DocSubtree(self.dir / "index.md", ("index",), []),
         ])
 
     def test_flat(self):
         doc_tree, _ = read_doc_tree(
             self.dir, ['index.md', 'a.md'], _empty)
         self.assertSequenceEqual(doc_tree.entries, [
-            DocSubtree(self.dir / "index.md", ("index.md",), []),
-            DocSubtree(self.dir / "a.md", ('a.md',), []),
+            DocSubtree(self.dir / "index.md", ("index",), []),
+            DocSubtree(self.dir / "a.md", ('a',), []),
         ])
 
     def test_nested(self):
         doc_tree, _ = read_doc_tree(
             self.dir, [{'index.md': ['a.md']}], _empty)
         self.assertSequenceEqual(doc_tree.entries, [
-            DocSubtree(self.dir / "index.md", ("index.md",), [
-                DocSubtree(self.dir / "a.md", ('a.md',), []),
+            DocSubtree(self.dir / "index.md", ("index",), [
+                DocSubtree(self.dir / "a.md", ('a',), []),
             ]),
         ])
 
@@ -61,9 +61,9 @@ class ReadDocTreeTestCase(unittest.TestCase):
         doc_tree, _ = read_doc_tree(
             self.dir, [{'index.md': [{'a.md': ['x/b.md']}]}], _empty)
         self.assertSequenceEqual(doc_tree.entries, [
-            DocSubtree(self.dir / "index.md", ("index.md",), [
-                DocSubtree(self.dir / "a.md", ('a.md',), [
-                    DocSubtree(self.dir / "x" / "b.md", ('x', 'b.md'), []),
+            DocSubtree(self.dir / "index.md", ("index",), [
+                DocSubtree(self.dir / "a.md", ('a',), [
+                    DocSubtree(self.dir / "x" / "b.md", ('x', 'b'), []),
                 ]),
             ]),
         ])
@@ -71,26 +71,26 @@ class ReadDocTreeTestCase(unittest.TestCase):
     def test_single_glob(self):
         doc_tree, _ = read_doc_tree(self.dir, ['x/*.md'], _empty)
         self.assertSequenceEqual(doc_tree.entries, [
-            DocSubtree(self.dir / "x" / "b.md", ("x", "b.md"), []),
+            DocSubtree(self.dir / "x" / "b.md", ("x", "b"), []),
         ])
 
     def test_multi_glob(self):
         doc_tree, _ = read_doc_tree(self.dir, ['*.md'], _empty)
         self.assertSequenceEqual(doc_tree.entries, [
-            DocSubtree(self.dir / "index.md", ("index.md",), []),
-            DocSubtree(self.dir / "a.md", ('a.md',), []),
+            DocSubtree(self.dir / "index.md", ("index",), []),
+            DocSubtree(self.dir / "a.md", ('a',), []),
         ])
 
     def test_nested_glob(self):
         doc_tree, _ = read_doc_tree(self.dir, ['**/*.md'], _empty)
         self.assertSequenceEqual(doc_tree.entries, [
-            DocSubtree(self.dir / "index.md", ("index.md",), []),
-            DocSubtree(self.dir / "a.md", ('a.md',), []),
-            DocSubtree(self.dir / "x" / "b.md", ("x", "b.md"), []),
-            DocSubtree(self.dir / "y" / "index.md", ("y", "index.md"), []),
-            DocSubtree(self.dir / "y" / "c.md", ("y", "c.md"), []),
-            DocSubtree(self.dir / "y" / "yy" / "index.md", ("y", "yy", "index.md"), []),
-            DocSubtree(self.dir / "y" / "yy" / "page2.md", ("y", "yy", "page2.md"), []),
-            DocSubtree(self.dir / "y" / "yy" / "yyy" / "page3.md", ("y", "yy", "yyy", "page3.md"), []),
-            DocSubtree(self.dir / "z" / "zz" / "blah.md", ("z", "zz", "blah.md"), []),
+            DocSubtree(self.dir / "index.md", ("index",), []),
+            DocSubtree(self.dir / "a.md", ('a',), []),
+            DocSubtree(self.dir / "x" / "b.md", ("x", "b"), []),
+            DocSubtree(self.dir / "y" / "index.md", ("y", "index"), []),
+            DocSubtree(self.dir / "y" / "c.md", ("y", "c"), []),
+            DocSubtree(self.dir / "y" / "yy" / "index.md", ("y", "yy", "index"), []),
+            DocSubtree(self.dir / "y" / "yy" / "page2.md", ("y", "yy", "page2"), []),
+            DocSubtree(self.dir / "y" / "yy" / "yyy" / "page3.md", ("y", "yy", "yyy", "page3"), []),
+            DocSubtree(self.dir / "z" / "zz" / "blah.md", ("z", "zz", "blah"), []),
         ])
