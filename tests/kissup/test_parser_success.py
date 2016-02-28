@@ -1,25 +1,25 @@
 import unittest
 from textwrap import dedent
 
-from computerwords.kissup import lexer
-from computerwords.kissup import tokens as t
-from computerwords.kissup import ast
-from computerwords.kissup import parser
-from computerwords.kissup import parser_support
+from computerwords.markdown_parser import tokens as t
+from computerwords.markdown_parser import ast
+from computerwords.markdown_parser import parser_support
+from computerwords.markdown_parser.html_lexer import lex_html
+from computerwords.markdown_parser.html_parser import ParserConfig
 
 
 parse_funcs = parser_support.PARSE_FUNC_REGISTRY
 
 
 def lex(s):
-    return list(lexer.lex_kissup(s))
+    return list(lex_html(s))
 
 
 def strip(s):
     return dedent(s)[1:-1]
 
 
-def parse_production(name, tokens, i, config=parser.ParserConfig({'abc'})):
+def parse_production(name, tokens, i, config=ParserConfig({'abc'})):
     return parse_funcs[name](tokens, i, config)
 
 

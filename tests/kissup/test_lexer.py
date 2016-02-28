@@ -1,18 +1,17 @@
 import unittest
 from textwrap import dedent
 
-from computerwords.kissup import lexer
-from computerwords.kissup import tokens as t
-from computerwords.kissup import ast
-from computerwords.kissup import parser
-from computerwords.kissup import parser_support
+from computerwords.markdown_parser import html_lexer
+from computerwords.markdown_parser import tokens as t
+from computerwords.markdown_parser import ast
+from computerwords.markdown_parser import parser_support
 
 
 parse_funcs = parser_support.PARSE_FUNC_REGISTRY
 
 
 def lex(s):
-    return list(lexer.lex_kissup(s))
+    return list(html_lexer.lex_html(s))
 
 
 def strip(s):
@@ -45,13 +44,13 @@ class TestLexer(unittest.TestCase):
         ])
 
     def test_text_bad_escapes(self):
-        with self.assertRaises(lexer.LexError):
+        with self.assertRaises(html_lexer.LexError):
             lex(r'\z')
-        with self.assertRaises(lexer.LexError):
+        with self.assertRaises(html_lexer.LexError):
             lex("\\")
 
     def test_stuff_that_fails_outside_brackets(self):
-        with self.assertRaises(lexer.LexError):
+        with self.assertRaises(html_lexer.LexError):
             lex('>')
 
     def test_bbcode_simple(self):

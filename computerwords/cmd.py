@@ -3,12 +3,13 @@ import json
 import pathlib
 import sys
 
-from computerwords.kissup.commonmark_to_cwdom import commonmark_to_cwdom
+from computerwords.markdown_parser.commonmark_to_cwdom import (
+    commonmark_to_cwdom,
+)
 from computerwords.config import DictCascade, DEFAULT_CONFIG
 from computerwords.cwdom.CWDOMNode import CWDOMRootNode
 from computerwords.cwdom.NodeStore import NodeStore
 from computerwords.htmlwriter import cwdom_to_html_string
-# from computerwords.kissup import string_to_cwdom
 from computerwords.read_doc_tree import read_doc_tree
 from computerwords.stdlib import stdlib
 

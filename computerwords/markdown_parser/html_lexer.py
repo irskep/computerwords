@@ -147,7 +147,7 @@ TOKEN_FNS = [
 ]
 
 
-def lex_kissup(s):
+def lex_html(s):
     line_indexes = [0] + [m.start() for m in re.finditer('\n', s)] + [len(s)]
     line = 0
     i = 0

@@ -168,7 +168,7 @@ rule('arg_value',
     sequence_rule(ArgValueNode, 2, 'token_STRING'))
 
 
-def parse_kissup(tokens, allowed_tags=None):
+def parse_html(tokens, allowed_tags=None):
     if allowed_tags is None:
         allowed_tags = set()
     config = ParserConfig(allowed_tags)

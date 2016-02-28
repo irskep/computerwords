@@ -5,8 +5,8 @@ from collections import OrderedDict
 import CommonMark
 
 from computerwords.cwdom.CWDOMNode import *
-from .lexer import lex_kissup
-from .parser import (
+from .html_lexer import lex_html
+from .html_parser import (
     parse_open_tag,
     parse_close_tag,
     parse_self_closing_tag,
@@ -14,23 +14,22 @@ from .parser import (
 
 ### begin __init__.py ###
 
-from .lexer import lex_kissup
-from .parser import parse_kissup
+from .html_parser import parse_html
 from .parse_tree_to_cwdom import parse_tree_to_cwdom
 
-def lex_and_parse_kissup(string, allowed_tags):
-    return parse_kissup(list(lex_kissup(string)), allowed_tags=allowed_tags)
+def lex_and_parse_html(string, allowed_tags):
+    return parse_html(list(lex_html(string)), allowed_tags=allowed_tags)
 
 
 def string_to_cwdom(string, allowed_tags):
-    return parse_tree_to_cwdom(lex_and_parse_kissup(string, allowed_tags))
+    return parse_tree_to_cwdom(lex_and_parse_html(string, allowed_tags))
 
 ### end __init__.py ###
 
 ### begin parse_tree_to_cwdom ###
 
 from .ast import StmtsNode, TagArgsNode
-from .parser import ParseError
+from .html_parser import ParseError
 from computerwords.cwdom.CWDOMNode import *
 from computerwords.cwdom.NodeStore import NodeStore
 from .parse_tree_to_cwdom_util import *
@@ -208,7 +207,7 @@ def _ast_node_to_cwdom(ast_node):
 
 
 def maybe_parse_self_closing_tag(literal):
-    tokens = list(lex_kissup(literal))
+    tokens = list(lex_html(literal))
     ast = parse_self_closing_tag(tokens)
     if ast:
         return CWDOMTagNode(
@@ -232,7 +231,7 @@ def fix_ignored_html(node):
 
     for i, child in enumerate(children):
         if isinstance(child, UnparsedTagNode):
-            tokens = list(lex_kissup(child.literal))
+            tokens = list(lex_html(child.literal))
             ast = parse_open_tag(tokens)
             if ast:
                 left_i = i
@@ -252,7 +251,7 @@ def fix_ignored_html(node):
             raise ValueError("Matching tag not found for {}".format(
                 new_tag.name))
         if isinstance(child, UnparsedTagNode):
-            tokens = list(lex_kissup(child.literal))
+            tokens = list(lex_html(child.literal))
             ast = parse_close_tag(tokens)
             if ast:
                 tag_name = ast.bbword.value

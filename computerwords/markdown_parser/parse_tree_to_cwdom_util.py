@@ -1,5 +1,5 @@
 from .ast import TagArgsNode
-from .parser import ParseError
+from .html_parser import ParseError
 from computerwords.cwdom.CWDOMNode import *
 
 

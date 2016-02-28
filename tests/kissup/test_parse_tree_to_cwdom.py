@@ -1,17 +1,17 @@
 import unittest
 from tests.CWTestCase import CWTestCase
-from computerwords.kissup.parse_tree_to_cwdom import (
+from computerwords.markdown_parser.parse_tree_to_cwdom import (
     parse_tree_to_cwdom,
     DuplicateArgumentsError,
 )
-from computerwords.kissup import lex_and_parse_kissup
+from computerwords.markdown_parser import lex_and_parse_html
 from computerwords.cwdom.CWDOMNode import CWDOMDocumentNode
 from computerwords.cwdom.NodeStore import NodeStore
 
 
 class TestParseTreeToCWDOM(CWTestCase):
     def test_basic(self):
-        parse_tree = lex_and_parse_kissup(
+        parse_tree = lex_and_parse_html(
             "outer text <abc x=y>inner text</abc>", allowed_tags={'abc'})
         ns = NodeStore(CWDOMDocumentNode('stdin.bb', parse_tree_to_cwdom(parse_tree)))
 
@@ -24,7 +24,7 @@ class TestParseTreeToCWDOM(CWTestCase):
 
     def test_duplicate_arg(self):
         with self.assertRaises(DuplicateArgumentsError):
-            parse_tree = lex_and_parse_kissup(
+            parse_tree = lex_and_parse_html(
                 "outer text <abc x=y x=z>inner text</abc>",
                 allowed_tags={'abc'})
             dom = parse_tree_to_cwdom(parse_tree)
