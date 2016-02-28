@@ -181,7 +181,7 @@ def t_Hardbreak(ast_node, config):
 @t('Softbreak')
 def t_Softbreak(ast_node, config):
     # optionally insert br here
-    yield CWDOMTextNode('')
+    yield CWDOMTextNode(' ')
 
 @t('Image')
 def t_Image(ast_node, config):
