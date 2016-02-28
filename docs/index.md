@@ -12,6 +12,11 @@ with Computer Words.
 
 # Basics
 
+First, install Python 3.5. Yes, I'm serious. Python 3.4 may honestly be the
+lowest version this project supports. But that doesn't mean you can only
+document Python 3.4+ code in it! More on that later. For now, get it installed
+and then write some files.
+
 `docs/index.md`:
 
 ```markdown filename=docs/index.md
@@ -37,6 +42,3 @@ command:
 ```
 
 The built docs are now in `docs/build/`.
-
-<a name="computer-flavored-markdown" />
-# Computer Flavored Markdown

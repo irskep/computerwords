@@ -49,7 +49,6 @@ def stmts_to_list(stmts, config):
 
 def stmt_to_tag_or_text(stmt, config):
     if stmt.form_num == 1:
-        #yield CWDOMTextNode(stmt.text.value)
         yield from commonmark_to_cwdom(stmt.text.value, config)
     else:
         tag_node = stmt.tag
@@ -285,4 +284,4 @@ def commonmark_to_cwdom(text, config):
 
 
 def cfm_to_cwdom(text, config):
-    return html_string_to_cwdom(text, config)
+    return commonmark_to_cwdom(text, config)

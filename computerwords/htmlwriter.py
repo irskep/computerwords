@@ -1,5 +1,6 @@
-from io import StringIO
+import html
 import pathlib
+from io import StringIO
 
 from computerwords.cwdom.NodeStore import NodeStoreVisitor
 
@@ -44,7 +45,7 @@ class TextVisitor(WritingVisitor):
         self.tag_name = tag_name
 
     def before_children(self, node_store, node):
-        self.output_stream.write(node.text)
+        self.output_stream.write(html.escape(node.text))
 
 
 class AnchorVisitor(WritingVisitor):

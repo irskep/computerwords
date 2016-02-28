@@ -3,6 +3,6 @@
     "site_subtitle": "A system for writing and publishing documentation",
     "css_files": ["style.css"],
     "file_hierarchy": [
-        "index.md"
+        "*.md"
     ]
 }
