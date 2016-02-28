@@ -17,7 +17,7 @@ from computerwords.stdlib import stdlib
 def run():
     p = argparse.ArgumentParser()
     p.add_argument('--conf', default="conf.json", type=argparse.FileType('r'))
-    p.add_argument('--debug', default=False, type=bool)
+    p.add_argument('--debug', default=False, action='store_true')
     args = p.parse_args()
 
     conf = DictCascade(DEFAULT_CONFIG, json.load(args.conf))

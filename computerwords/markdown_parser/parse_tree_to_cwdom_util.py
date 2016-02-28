@@ -28,7 +28,7 @@ def tag_args_to_list(tag_args):
 
 
 def get_tag_arg_value(tag_arg):
-    if tag_arg.form_num == 1:
+    try:
         return tag_arg.arg_value.bbword.value
-    else:
-        return tag_arg.arg_value.token_TEXT.value
+    except AttributeError:
+        return tag_arg.arg_value.string.value

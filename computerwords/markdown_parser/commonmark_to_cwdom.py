@@ -139,11 +139,7 @@ def t_Item(ast_node, config):
 
 @t('HtmlBlock')
 def t_HtmlBlock(ast_node, config):
-    self_closing_tag = maybe_parse_self_closing_tag(ast_node.literal)
-    if self_closing_tag:  # infinite loop if we don't short circuit(?)
-        yield self_closing_tag
-    else:
-        yield from string_to_cwdom(ast_node.literal, config)
+    yield from string_to_cwdom(ast_node.literal, config)
 
 @t('HtmlInline')
 def t_HtmlInline(ast_node, config):
