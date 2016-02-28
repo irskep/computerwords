@@ -76,6 +76,14 @@ def _store_entry_to_sequence(nested_list, entry_to_sequence, sequence_so_far):
         _store_entry_to_sequence(grandchildren, entry_to_sequence, sequence)
 
 
+def _doc_tree_to_sorted_paths(doc_tree):
+    items = []
+    for entry in doc_tree:
+        items.append(str(entry.root_path))
+        items += _doc_tree_to_sorted_paths(entry.children)
+    return items
+
+
 def add_table_of_contents(library):
     """
     Collects all `h1`, `h2`, etc. tags in a tree, which
@@ -149,8 +157,7 @@ def add_table_of_contents(library):
             if doc_node.name == 'Document'
         }
 
-        # TODO: derive from table-of-contents tag contents?
-        sorted_paths = sorted(doc_to_entries.keys())
+        sorted_paths = _doc_tree_to_sorted_paths(node_store.env['doc_tree'])
         top_level_entries = []
         for path in sorted_paths:
             top_level_entries.extend(
