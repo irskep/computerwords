@@ -5,7 +5,7 @@ def add_html(library):
 
     library.HTML_TAGS = {
         'strong', 'i', 'u', 's', 'tt', 'span', 'pre',
-        'p', 'div',
+        'p', 'div', 'a',
         'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
         'ol', 'ul', 'li'
     } | library.SEMANTIC_HTML_TAGS
