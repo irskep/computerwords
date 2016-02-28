@@ -1,10 +1,14 @@
 def add_html(library):
+    library.SEMANTIC_HTML_TAGS = {
+        'main', 'header', 'footer', 'article', 'section', 'aside', 'nav'
+    }
+
     library.HTML_TAGS = {
         'strong', 'i', 'u', 's', 'tt', 'span', 'pre',
         'p', 'div',
         'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
         'ol', 'ul', 'li'
-    }
+    } | library.SEMANTIC_HTML_TAGS
 
     library.ALIAS_HTML_TAGS = {
         'strike': 's',

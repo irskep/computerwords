@@ -8,6 +8,9 @@ log = logging.getLogger(__name__)
 
 class CWTestCase(unittest.TestCase):
 
+    def setUp(self):
+        self.maxDiff = None
+
     def strip(self, s):
         return dedent(s)[1:-1]
 

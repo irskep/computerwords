@@ -43,9 +43,7 @@ def _node_to_toc_entry(node_store, node):
 def _format_entry_number(entry_to_number, entry):
     return '.'.join(str(n) for n in entry_to_number[entry])
 
-def _nested_list_to_node(
-        entry_to_number, entry_children_pairs, tag_kwargs=None):
-    tag_kwargs = tag_kwargs or {}
+def _nested_list_to_node(entry_to_number, entry_children_pairs):
     def make_li(entry, children):
         li_contents = [
             CWDOMLinkNode(entry.ref_id, [entry.heading_node.deepcopy()])
@@ -53,7 +51,7 @@ def _nested_list_to_node(
         if children:
             li_contents.append(_nested_list_to_node(entry_to_number, children))
         return CWDOMTagNode('li', {}, li_contents)
-    return CWDOMTagNode('ol', tag_kwargs, [
+    return CWDOMTagNode('ol', {}, [
         make_li(entry, children) for entry, children in entry_children_pairs
     ])
 
@@ -162,9 +160,9 @@ def add_table_of_contents(library):
         for toc_node in node_store.processor_data['toc_nodes']:
             node_store.replace_subtree(
                 toc_node,
-                _nested_list_to_node(
-                    entry_to_number, top_level_entries,
-                    {'class': 'table-of-contents'}))
+                CWDOMTagNode('nav', {'class': 'table-of-contents'}, [
+                    _nested_list_to_node(entry_to_number, top_level_entries),
+                ]))
 
         # optional: insert heading numbers
         # for heading_node in node_store.processor_data['toc_heading_nodes']:

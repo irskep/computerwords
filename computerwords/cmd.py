@@ -3,13 +3,13 @@ import json
 import pathlib
 import sys
 
-from computerwords.markdown_parser.commonmark_to_cwdom import (
-    commonmark_to_cwdom,
-)
+from computerwords import htmlwriter
 from computerwords.config import DictCascade, DEFAULT_CONFIG
 from computerwords.cwdom.CWDOMNode import CWDOMRootNode
 from computerwords.cwdom.NodeStore import NodeStore
-from computerwords.htmlwriter import cwdom_to_html_string
+from computerwords.markdown_parser.commonmark_to_cwdom import (
+    commonmark_to_cwdom,
+)
 from computerwords.read_doc_tree import read_doc_tree
 from computerwords.stdlib import stdlib
 
@@ -38,5 +38,7 @@ def run():
         print(node_store.root.get_string_for_test_comparison())
     node_store.apply_library(stdlib)
 
-    with (files_root / conf['output_file']).open('w') as f:
-        cwdom_to_html_string(stdlib, node_store, f)
+    output_root = pathlib.Path(files_root) / pathlib.Path(conf['output_dir'])
+    output_root.mkdir(exist_ok=True)
+
+    htmlwriter.write(conf, files_root, output_root, stdlib, node_store)
