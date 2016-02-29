@@ -49,7 +49,8 @@ In an ideal world, I could simply describe Computer Flavored Markdown as
 string.” In reality, it is exactly that, with two exceptions:
 
 1. The HTML is parsed by a simple recursive descent parser that I wrote, not
-   a proper spec-following web browser.
+   a proper spec-following web browser. It was actually written as a BBCode
+   parser. At some point I swapped the square brackets for angle brackets.
 
 2. The awkward marriage of a CommonMark parser, which doesn't try to parse
    HTML but merely faithfully pass it through, and a hand-written HTML parser,

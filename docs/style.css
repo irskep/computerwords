@@ -50,6 +50,10 @@ nav.table-of-contents li:before {
 
 /* style tweaks */
 
+a {
+  color: #04a;
+}
+
 tt, tt, tt, tt, tt, tt {
   font-size: 85%;
 }

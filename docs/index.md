@@ -6,9 +6,9 @@ The page you are reading was written in
 [Computer Flavored Markdown](#computer-flavored-markdown) and compiled
 with Computer Words.
 
-[Computer Words on GitHub](http://github.com/irskep/computerwords)
+[Computer Words on GitHub](https://github.com/irskep/computerwords)
 
-[Source code for this page](http://github.com/irskep/computerwords/)
+[Source code for this page](https://github.com/irskep/computerwords/tree/master/docs)
 
 <h1 skip_toc=True>Table of Contents</h1>
 
