@@ -1,4 +1,4 @@
-.PHONY: test watchtest demo docs
+.PHONY: test watchtest demo docs docsdebug deploy-docs
 
 test:
 	python3 -m unittest discover tests
@@ -14,3 +14,6 @@ docs:
 
 docsdebug:
 	python3 -m computerwords --conf docs/conf.json --debug
+
+deploy-docs: docs
+	ghp-import -n docs/build
