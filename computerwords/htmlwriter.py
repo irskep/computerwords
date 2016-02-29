@@ -75,7 +75,7 @@ class DocumentVisitor(WritingVisitor):
         self.output_stream.write('<article>')
 
     def after_children(self, node_store, node):
-        self.output_stream.write('</article>')
+        self.output_stream.write('<hr /></article>')
 
 
 def write(config, input_files_root, output_files_root, library, node_store):
