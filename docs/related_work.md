@@ -35,7 +35,8 @@ impression that we really share a target audience.
 
 The author of Pollen is Matthew Butterick, author of
 [Practical Typography](http://practicaltypography.com). It's a fun and useful
-read. Many of the defaults in Computer Words are based on its advice.
+read. Many of the defaults in Computer Words are based on its advice. Mr.
+Butterick [feels the same way I do about Sphinx's default themes](http://practicaltypography.com/websites.html).
 
 ## Jekyll
 
