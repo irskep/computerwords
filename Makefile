@@ -16,4 +16,4 @@ docsdebug:
 	python3 -m computerwords --conf docs/conf.json --debug
 
 deploy-docs: docs
-	ghp-import -n docs/build
+	ghp-import -np docs/build
