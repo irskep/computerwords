@@ -66,9 +66,14 @@ header#pageheader h2 {
 /* block-level semantic elements */
 
 pre {
-  margin-left: 1rem;
   border: 1px solid #ddd;
   border-radius: 3px;
   padding: 0.5rem;
   background-color: #fafafa;
+}
+
+/* inline elements */
+
+tt {
+  font-family: Menlo,Consolas,monaco,monospace;
 }
