@@ -3,6 +3,9 @@
     "site_subtitle": "A system for writing and publishing documentation",
     "css_files": ["style.css"],
     "file_hierarchy": [
-        "*.md"
+        "index.md",
+        "computer_flavored_markdown.md",
+        "about.md",
+        "roadmap.md"
     ]
 }

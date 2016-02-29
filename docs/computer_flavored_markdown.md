@@ -33,7 +33,7 @@ transforms that collects all your headings, and replaces the contents of
 
 The means by which this happens is described later.
 
-## Disclaimer and apology
+## Work-in-progress disclaimer and apology
 
 You might be thinking to yourself, “oh great, another crappy Markdown variant.”
 Well, I am thinking the same thing. I did my best to mitigate the damage, but

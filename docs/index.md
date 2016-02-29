@@ -12,10 +12,10 @@ with Computer Words.
 
 # Basics
 
-First, install Python 3.5. Yes, I'm serious. Python 3.4 may honestly be the
-lowest version this project supports. But that doesn't mean you can only
-document Python 3.4+ code in it! More on that later. For now, get it installed
-and then write some files.
+First, install Python 3.5. (Yes, I'm serious. See
+[Why Python 3.5?](#why-python-3.5)) Then get the source code of this project
+(that's right, I haven't released it yet) and install the requirements.
+Now you're ready to run! You just need to write a Markdown file and a config.
 
 `docs/index.md`:
 

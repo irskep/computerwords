@@ -24,8 +24,34 @@ header#pageheader h1 {
   font-size: 36px;
 }
 
+/* TOC */
+
+nav.table-of-contents ol {
+  padding-left: 20px;
+  counter-reset: item;
+}
+nav.table-of-contents ol ol {
+}
+
+nav.table-of-contents li {
+  display: block;
+}
+
+nav.table-of-contents li:before {
+  counter-increment: item;
+  content: counters(item, ".") ". "; 
+}
+
 /* style tweaks */
 
 tt, tt, tt, tt, tt, tt {
   font-size: 85%;
+}
+
+hr {
+  height: 1px;
+  color: #ccc;
+  background: #ccc;
+  font-size: 0;
+  border: 0;
 }
