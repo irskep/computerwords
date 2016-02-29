@@ -1,0 +1,79 @@
+html { box-sizing: border-box; }
+*, *:before, *:after { box-sizing: inherit; }
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 100%;
+  color: black;
+  margin: 0;
+  padding: 0;
+  line-height: 135%;
+}
+
+a {
+  color: #008;
+  text-decoration: none;
+}
+
+a:visited {
+  color: #208;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+p {
+  margin: 1rem 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  line-height: 135%;
+}
+a.header-anchor {
+  color: black;
+}
+
+header#pageheader, footer#pagefooter, main#pagebody {
+  width: 100%;
+  max-width: 768px;
+  margin: auto;
+  padding: 0 1rem;
+}
+
+/* header */
+
+header#pageheader {
+  text-align: center;
+}
+
+header#pageheader h1 {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+}
+header#pageheader h2 {
+  margin-top: 0.5em;
+  padding-bottom: 0.5em;
+  margin-bottom: 0;
+  font-size: 1rem;
+  border-bottom: 1px solid black;
+}
+
+/* block-level semantic elements */
+
+pre {
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  padding: 0.5rem;
+  background-color: #fafafa;
+}
+
+/* inline elements */
+
+tt {
+  font-family: Menlo,Consolas,monaco,monospace;
+}

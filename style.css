@@ -1,0 +1,74 @@
+/* http://www.cssfontstack.com/Book-Antiqua */
+body {
+  font-family: Book Antiqua,Palatino,Palatino Linotype,Palatino LT STD,Georgia,serif;
+}
+
+h1 { font-size: 1.5rem; font-weight: 500; }
+h2 { font-size: 1.25rem; font-weight: bold; }
+h3 { font-size: 1.25rem; font-weight: 500; }
+h4 { font-size: 1rem; font-weight: bold; }
+h5 { font-size: 1rem; font-weight: 500; }
+h6 { font-size: 1rem; font-weight: bold; color: #666;}
+
+blockquote {
+  font-size: 21px;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: 400;
+  line-height: 30px;
+}
+
+/* Titles */
+
+header#pageheader h1 {
+  font-size: 36px;
+}
+
+@media (max-width: 400px) {
+  header#pageheader h1 {
+    font-size: 24px;
+  }
+}
+
+/* TOC */
+
+nav.table-of-contents ol {
+  padding-left: 20px;
+  counter-reset: item;
+}
+nav.table-of-contents ol ol {
+}
+
+nav.table-of-contents li {
+  display: block;
+}
+
+nav.table-of-contents li:before {
+  counter-increment: item;
+  content: counters(item, ".") ". "; 
+}
+
+/* style tweaks */
+
+a {
+  color: #04a;
+}
+
+tt, tt, tt, tt, tt, tt {
+  font-size: 85%;
+}
+
+hr {
+  height: 1px;
+  color: #ccc;
+  background: #ccc;
+  font-size: 0;
+  border: 0;
+}
+
+@media (max-width: 400px) {
+  pre {
+    font-size: 0.8em;
+    line-height: 120%;
+  }
+}
