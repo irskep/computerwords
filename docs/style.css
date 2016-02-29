@@ -24,6 +24,12 @@ header#pageheader h1 {
   font-size: 36px;
 }
 
+@media (max-width: 400px) {
+  header#pageheader h1 {
+    font-size: 24px;
+  }
+}
+
 /* TOC */
 
 nav.table-of-contents ol {
@@ -54,4 +60,11 @@ hr {
   background: #ccc;
   font-size: 0;
   border: 0;
+}
+
+@media (max-width: 400px) {
+  pre {
+    font-size: 0.8em;
+    line-height: 120%;
+  }
 }
