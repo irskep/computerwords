@@ -62,7 +62,8 @@ def _entries_to_nested_list(entries):
     for entry in entries:
         parent_entry, list_to_add_to = stack[-1]
         while entry.level <= parent_entry.level:
-            parent_entry, list_to_add_to = stack.pop()
+            stack.pop()
+            parent_entry, list_to_add_to = stack[-1]
         pair = (entry, [])
         list_to_add_to.append(pair)
         stack.append(pair)
@@ -157,7 +158,11 @@ def add_table_of_contents(library):
             if doc_node.name == 'Document'
         }
 
-        sorted_paths = _doc_tree_to_sorted_paths(node_store.env['doc_tree'])
+        if node_store.env and 'doc_tree' in node_store.env:
+            sorted_paths = _doc_tree_to_sorted_paths(
+                node_store.env['doc_tree'])
+        else:
+            sorted_paths = sorted(doc_to_entries.keys())
         top_level_entries = []
         for path in sorted_paths:
             top_level_entries.extend(
@@ -166,7 +171,6 @@ def add_table_of_contents(library):
         entry_to_number = {}
         _store_entry_to_sequence(top_level_entries, entry_to_number, ())
 
-        # TODO: require different TOC subsets per tag, like sphinx?
         for toc_node in node_store.processor_data['toc_nodes']:
             node_store.replace_subtree(
                 toc_node,

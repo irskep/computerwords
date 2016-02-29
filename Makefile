@@ -11,3 +11,6 @@ demo:
 
 docs:
 	python3 -m computerwords --conf docs/conf.json
+
+docsdebug:
+	python3 -m computerwords --conf docs/conf.json --debug

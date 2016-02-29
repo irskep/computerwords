@@ -14,7 +14,7 @@ from computerwords.stdlib.table_of_contents import (
 )
 
 
-class TestTableOfContents(CWTestCase):
+class TableOfContentsTestCase(CWTestCase):
     def setUp(self):
         super().setUp()
         self.library = Library()
@@ -49,6 +49,7 @@ class TestTableOfContents(CWTestCase):
             TOCEntry(0, "doc", "doc"),
             TOCEntry(1, "A header", "A-header"),
             TOCEntry(2, "subsection", "subsection"),
+            TOCEntry(2, "subsection 2", "subsection-2"),
             TOCEntry(1, "Another header", "Another-header"),
             TOCEntry(3, "subsubsection", "subsubsection"),
             TOCEntry(0, "anotherdoc", "anotherdoc"),
@@ -57,7 +58,8 @@ class TestTableOfContents(CWTestCase):
         self.assertEqual(_entries_to_nested_list(entries), [
             (TOCEntry(0, 'doc', 'doc'), [
                 (TOCEntry(1, "A header", "A-header"), [
-                    (TOCEntry(2, "subsection", "subsection"), [])
+                    (TOCEntry(2, "subsection", "subsection"), []),
+                    (TOCEntry(2, "subsection 2", "subsection-2"), []),
                 ]),
                 (TOCEntry(1, "Another header", "Another-header"), [
                     (TOCEntry(3, "subsubsection", "subsubsection"), [])
@@ -77,6 +79,9 @@ class TestTableOfContents(CWTestCase):
                 ]),
                 CWDOMTagNode('h2', {}, [
                     CWDOMTextNode('Subheader 1 text')
+                ]),
+                CWDOMTagNode('h2', {}, [
+                    CWDOMTextNode('Subheader 2 text')
                 ]),
             ]),
             CWDOMDocumentNode('doc 2', [
@@ -98,6 +103,9 @@ class TestTableOfContents(CWTestCase):
                         li(kwargs={})
                           Link(ref_id='Subheader-1-text')
                             'Subheader 1 text'
+                        li(kwargs={})
+                          Link(ref_id='Subheader-2-text')
+                            'Subheader 2 text'
                     li(kwargs={})
                       Link(ref_id='Header-2-text')
                         'Header 2 text'
@@ -107,6 +115,9 @@ class TestTableOfContents(CWTestCase):
                 Anchor(ref_id='Subheader-1-text', kwargs={'class': 'header-anchor'})
                   h2(kwargs={})
                     'Subheader 1 text'
+                Anchor(ref_id='Subheader-2-text', kwargs={'class': 'header-anchor'})
+                  h2(kwargs={})
+                    'Subheader 2 text'
               Document(path='doc 2')
                 Anchor(ref_id='Header-2-text', kwargs={'class': 'header-anchor'})
                   h1(kwargs={})
