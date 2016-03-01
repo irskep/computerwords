@@ -11,11 +11,11 @@ some text
 
 becomes this:
 
-```graphviz-convert
-strict graph {
-    Document[label="Document(path='readme.md')"]
-    TitleText[label="Text('Title')"]
-    BodyText[label="Text('some text')"]
+```graphviz-dot-convert
+strict digraph {
+    Document [label="Document(path='readme.md')"]
+    TitleText [label="Text(text='Title')"]
+    BodyText [label="Text(text='some text')"]
 
     Document -> h1
     h1 -> TitleText

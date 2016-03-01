@@ -22,6 +22,8 @@ def run():
 
     conf = DictCascade(DEFAULT_CONFIG, json.load(args.conf))
     files_root = pathlib.Path(args.conf.name).parent.resolve()
+    output_root = pathlib.Path(files_root) / pathlib.Path(conf['output_dir'])
+    output_root.mkdir(exist_ok=True)
 
     def _get_doc_cwdom(subtree):
         with subtree.root_path.open() as f:
@@ -31,13 +33,12 @@ def run():
     doc_tree, document_nodes = read_doc_tree(
         files_root, conf['file_hierarchy'], _get_doc_cwdom)
     node_store = NodeStore(CWDOMRootNode(document_nodes), {
-        'doc_tree': doc_tree
+        'doc_tree': doc_tree,
+        'output_dir': output_root,
     })
     if args.debug:
         print(node_store.root.get_string_for_test_comparison())
     node_store.apply_library(stdlib)
 
-    output_root = pathlib.Path(files_root) / pathlib.Path(conf['output_dir'])
-    output_root.mkdir(exist_ok=True)
 
     htmlwriter.write(conf, files_root, output_root, stdlib, node_store)

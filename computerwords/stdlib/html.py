@@ -8,7 +8,7 @@ def add_html(library):
         'p', 'div', 'a',
         'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
         'ol', 'ul', 'li',
-        'blockquote',
+        'blockquote', 'img',
     } | library.SEMANTIC_HTML_TAGS
 
     library.ALIAS_HTML_TAGS = {
