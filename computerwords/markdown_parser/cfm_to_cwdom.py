@@ -147,32 +147,17 @@ def t_List(ast_node, config):
 def t_Item(ast_node, config):
     yield CWDOMTagNode('li', {})
 
-def _do_your_best(literal):
-    self_closing_tag = maybe_parse_self_closing_tag(literal)
-    if self_closing_tag:
-        return self_closing_tag
-    else:
-        open_tag = maybe_parse_open_tag(literal)
-        if open_tag:
-            return open_tag
-        else:
-            close_tag = maybe_parse_close_tag(literal)
-            if close_tag:
-                return close_tag
-            else:
-                raise ValueError("HTML parser can't handle {!r}".format(literal))
-
 @t('HtmlBlock')
 def t_HtmlBlock(ast_node, config):
     try:
         items = list(html_string_to_cwdom(ast_node.literal, config))
         yield from items
     except ParseError:
-        yield _do_your_best(ast_node.literal)
+        yield from _do_your_best(ast_node.literal)
 
 @t('HtmlInline')
 def t_HtmlInline(ast_node, config):
-    yield _do_your_best(ast_node.literal)
+    yield from _do_your_best(ast_node.literal)
 
 @t('Emph')
 def t_Emph(ast_node, config):
@@ -218,33 +203,67 @@ def post_Image(node, config):
     node.set_children([])
 
 
+class NonFatalParseError(Exception): pass
+
+
+def _do_your_best(literal):
+    try:
+        yield from maybe_parse_self_closing_tag(literal)
+        return
+    except NonFatalParseError:
+        pass
+
+    try:
+        yield from maybe_parse_open_tag(literal)
+        return
+    except NonFatalParseError:
+        pass
+
+
+    try:
+        yield from maybe_parse_close_tag(literal)
+        return
+    except NonFatalParseError:
+        pass
+
+    raise ValueError("HTML parser can't handle {!r}".format(literal))
+
+
+def _yield_nodes(literal, tokens, i, node):
+    yield node
+    if i < len(tokens) - 1:
+        yield CWDOMTextNode(literal[tokens[i].pos:])
+
+
 def maybe_parse_self_closing_tag(literal):
     tokens = list(lex_html(literal))
-    ast = parse_self_closing_tag(tokens)
-    if ast:
-        return CWDOMTagNode(
-            ast.tag_contents.bbword.value,
-            tag_contents_to_kwargs(ast.tag_contents))
+    result = parse_self_closing_tag(tokens)
+    if result:
+        yield from _yield_nodes(literal, tokens, result[1], CWDOMTagNode(
+            result[0].tag_contents.bbword.value,
+            tag_contents_to_kwargs(result[0].tag_contents)))
     else:
-        return None
+        raise NonFatalParseError()
 
 
 def maybe_parse_open_tag(literal):
     tokens = list(lex_html(literal))
-    ast = parse_open_tag(tokens)
-    if ast:
-        return UnparsedOpenTagNode(ast, literal)
+    result = parse_open_tag(tokens)
+    if result:
+        yield from _yield_nodes(
+            literal, tokens, result[1], UnparsedOpenTagNode(result[0], literal))
     else:
-        return None
+        raise NonFatalParseError()
 
 
 def maybe_parse_close_tag(literal):
     tokens = list(lex_html(literal))
-    ast = parse_close_tag(tokens)
-    if ast:
-        return UnparsedCloseTagNode(ast, literal)
+    result = parse_close_tag(tokens)
+    if result:
+        yield from _yield_nodes(
+            literal, tokens, result[1], UnparsedCloseTagNode(result[0], literal))
     else:
-        return None
+        raise NonFatalParseError()
 
 
 class NoMatchingTagError(Exception): pass
