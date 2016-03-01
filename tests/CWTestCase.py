@@ -15,5 +15,8 @@ class CWTestCase(unittest.TestCase):
         return dedent(s)[1:-1]
 
     def log_tree(self, ns):
+        self.log_node(ns.root)
+
+    def log_node(self, node):
         logging.basicConfig(level=logging.DEBUG)
-        log.debug('\n' + ns.root.get_string_for_test_comparison())
+        log.debug('\n' + node.get_string_for_test_comparison())
