@@ -12,7 +12,7 @@ TAGS = {'a', 'b', 'c', 'x', 'y', 'z'}
 class IntegratedHTMLParsingTestCase(CWTestCase):
     def test_inline_html(self):
         root = CWDOMRootNode(cfm_to_cwdom("a <b>b</b> c", TAGS))
-        self.assertSequenceEqual(
+        self.assertMultiLineEqual(
             root.get_string_for_test_comparison(), self.strip("""
                 Root()
                   'a '
@@ -27,7 +27,7 @@ class IntegratedHTMLParsingTestCase(CWTestCase):
             </x>abc
         """)
         root = CWDOMRootNode(cfm_to_cwdom(s, TAGS))
-        self.assertSequenceEqual(
+        self.assertMultiLineEqual(
             root.get_string_for_test_comparison(), self.strip("""
                 Root()
                   x(kwargs={})
@@ -45,7 +45,7 @@ class IntegratedHTMLParsingTestCase(CWTestCase):
         print('----------------------')
         root = CWDOMRootNode(cfm_to_cwdom(s, TAGS))
         self.log_node(root)
-        self.assertSequenceEqual(
+        self.assertMultiLineEqual(
             root.get_string_for_test_comparison(), self.strip("""
                 Root()
                   p(kwargs={})
