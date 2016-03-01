@@ -1,3 +1,4 @@
+import hashlib
 import subprocess
 from computerwords.cwdom.CWDOMNode import CWDOMTagNode
 
@@ -9,16 +10,17 @@ def language(l):
     return decorator
 
 
-diagram_num = 0
 @language('graphviz-dot-convert')
 def lang_graphviz_convert(node_store, node):
-    global diagram_num
-    diagram_num += 1
-    output_path = node_store.env['output_dir'] / "{}.png".format(diagram_num)
+    code = node.children[0].text.encode('UTF-8')
+    h = hashlib.sha256()
+    h.update(code)
+
+    output_path = node_store.env['output_dir'] / "{}.png".format(h.hexdigest())
     src = output_path.relative_to(node_store.env['output_dir'])
     p = subprocess.Popen(
         ['dot', '-Tpng', '-o', str(output_path)], stdin=subprocess.PIPE)
-    p.communicate(node.children[0].text.encode('UTF-8'), timeout=10)
+    p.communicate(code, timeout=10)
     node_store.replace_subtree(
         node, CWDOMTagNode('div', {'class': 'graphviz-graph'}, [
             CWDOMTagNode('img', {'src': str(src)}),
