@@ -22,7 +22,6 @@ class IntegratedHTMLParsingTestCase(CWTestCase):
             """)
         )
 
-    @unittest.skip("")
     def test_block_html_1(self):
         s = self.strip("""
             <x>some test
@@ -30,6 +29,14 @@ class IntegratedHTMLParsingTestCase(CWTestCase):
         """)
         root = CWDOMRootNode(cfm_to_cwdom(s, TAGS))
         self.log_node(root)
+        self.assertSequenceEqual(
+            root.get_string_for_test_comparison(), self.strip("""
+                Root()
+                  x(kwargs={})
+                    'some test'
+                    ' '
+            """)
+        )
 
     @unittest.skip("")
     def test_block_html_2(self):
