@@ -139,7 +139,11 @@ def t_Item(ast_node, config):
 i = 0
 @t('HtmlBlock')
 def t_HtmlBlock(ast_node, config):
-    yield from html_string_to_cwdom(ast_node.literal, config)
+    try:
+        items = list(html_string_to_cwdom(ast_node.literal, config))
+        yield from items
+    except ParseError:
+        yield UnparsedTagNode(ast_node.literal)
 
 @t('HtmlInline')
 def t_HtmlInline(ast_node, config):
@@ -200,6 +204,9 @@ def maybe_parse_self_closing_tag(literal):
         return None
 
 
+class NoMatchingTagError(Exception): pass
+
+
 def fix_ignored_html(node):
     children = node.children
     left_i = None
@@ -223,35 +230,45 @@ def fix_ignored_html(node):
                     tag_contents_to_kwargs(ast.tag_contents))
                 break
 
-    if new_tag is None:
-        for child in node.children:
-            fix_ignored_html(child)
-        return
+    if new_tag is not None:
+        right_i = None
+        for i, child in reversed(list(enumerate(children))):
+            if i <= left_i:
+                raise NoMatchingTagError("Matching tag not found for {}".format(
+                    new_tag.name))
+            if isinstance(child, UnparsedTagNode):
+                tokens = list(lex_html(child.literal))
+                ast = parse_close_tag(tokens)
+                if ast:
+                    tag_name = ast.bbword.value
+                    if tag_name != new_tag.name:
+                        raise NoMatchingTagError("Mismatched closing tag: {} vs {}".format(
+                            new_tag.name, tag_name))
+                    right_i = i
+                    break
 
-    right_i = None
-    for i, child in reversed(list(enumerate(children))):
-        if i <= left_i:
-            raise ValueError("Matching tag not found for {}".format(
-                new_tag.name))
-        if isinstance(child, UnparsedTagNode):
-            tokens = list(lex_html(child.literal))
-            ast = parse_close_tag(tokens)
-            if ast:
-                tag_name = ast.bbword.value
-                if tag_name != new_tag.name:
-                    raise ValueError("Mismatched closing tag: {} vs {}".format(
-                        new_tag.name, tag_name))
-                right_i = i
-                break
+        sub_children = children[left_i+1:right_i]
+        del node.children[left_i+1:right_i+1]
+        node.children[left_i] = new_tag
+        new_tag.set_children(sub_children)
+        node.claim_children()
 
-    sub_children = children[left_i+1:right_i]
-    del node.children[left_i+1:right_i+1]
-    node.children[left_i] = new_tag
-    new_tag.set_children(sub_children)
-    node.claim_children()
-
-    for child in node.children:
-        fix_ignored_html(child)
+    i = 0
+    while i < len(node.children):
+        try:
+            fix_ignored_html(node.children[i])
+            i += 1
+        except NoMatchingTagError as e:
+            # this may have been caused by a tag being split across multiple
+            # paragraphs. Fix by just concatenating paragraphs together until
+            # it works.
+            # TODO: then serialize and re-parse
+            if i + 1 < len(node.children):
+                node.children[i + 1].children = node.children[i].children + node.children[i + 1].children
+                node.children.pop(i)
+                node.children[i].claim_children()
+            else:
+                raise e
 
 
 def _ast_node_to_cwdom(ast_node, config):

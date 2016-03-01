@@ -195,3 +195,10 @@ def parse_self_closing_tag(tokens, allowed_tags=None):
     config = ParserConfig(allowed_tags)
     result = call_parse_function('self_closing_tag', tokens, 0, config)
     return result[0] if result else None
+
+def parse_single_statement(tokens, allowed_tags=None):
+    if allowed_tags is None:
+        allowed_tags = set()
+    config = ParserConfig(allowed_tags)
+    result = call_parse_function('stmt', tokens, 0, config)
+    return result[0] if result else None

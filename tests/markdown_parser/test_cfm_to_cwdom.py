@@ -19,34 +19,40 @@ class IntegratedHTMLParsingTestCase(CWTestCase):
                   b(kwargs={})
                     'b'
                   ' c'
-            """)
-        )
+            """))
 
     def test_block_html_1(self):
         s = self.strip("""
             <x>some test
-            </x>
+            </x>abc
         """)
         root = CWDOMRootNode(cfm_to_cwdom(s, TAGS))
-        self.log_node(root)
         self.assertSequenceEqual(
             root.get_string_for_test_comparison(), self.strip("""
                 Root()
                   x(kwargs={})
                     'some test'
                     ' '
-            """)
-        )
+                  'abc'
+            """))
 
-    @unittest.skip("")
     def test_block_html_2(self):
         s = self.strip("""
             <x>some test
 
-            </x>
+            </x>abc
         """)
+        print('----------------------')
         root = CWDOMRootNode(cfm_to_cwdom(s, TAGS))
         self.log_node(root)
+        self.assertSequenceEqual(
+            root.get_string_for_test_comparison(), self.strip("""
+                Root()
+                  p(kwargs={})
+                    x(kwargs={})
+                      'some test'
+                    'abc'
+            """))
 
     @unittest.skip("")
     def test_block_html_3(self):

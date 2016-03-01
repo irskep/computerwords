@@ -1,7 +1,7 @@
 .PHONY: test watchtest demo docs docsdebug deploy-docs
 
 test:
-	python3 -m unittest discover tests
+	python3 -m unittest discover tests --failfast
 
 watchtest:
 	watch -n 0.2 make test
