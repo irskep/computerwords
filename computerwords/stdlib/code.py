@@ -20,9 +20,9 @@ def lang_graphviz_convert(node_store, node):
         ['dot', '-Tpng', '-o', str(output_path)], stdin=subprocess.PIPE)
     p.communicate(node.children[0].text.encode('UTF-8'), timeout=10)
     node_store.replace_subtree(
-        node.children[0], CWDOMTagNode('img', {'src': str(src)}))
-    node_store.replace_node(
-        node, CWDOMTagNode('div', {'class': 'graphviz-graph'}))
+        node, CWDOMTagNode('div', {'class': 'graphviz-graph'}, [
+            CWDOMTagNode('img', {'src': str(src)}),
+        ]))
 
 
 def add_code(library):

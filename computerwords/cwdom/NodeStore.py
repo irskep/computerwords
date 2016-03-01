@@ -162,16 +162,22 @@ class NodeStore:
             self._dirty_nodes.add(child)
 
     def replace_subtree(self, old_node, new_node):
-        if not self.get_is_descendant(old_node, self._active_node):
+        if (old_node is self._active_node or
+                self.get_is_descendant(old_node, self._active_node)):
+            parent = old_node.get_parent()
+            child_i = parent.children.index(old_node)
+            self._mark_subtree_removed(old_node)
+
+            parent.children[child_i] = new_node
+            new_node.set_parent(parent)
+            new_node.deep_set_document_id(parent.document_id)
+            self._mark_subtree_dirty(new_node)
+
+            if old_node is self._active_node:
+                self._traverser.replace_cursor(new_node)
+        else:
             raise NodeStoreConsistencyError(
                 "You may only replace subtrees inside the active node.")
-        parent = old_node.get_parent()
-        child_i = parent.children.index(old_node)
-        self._mark_subtree_removed(old_node)
-        parent.children[child_i] = new_node
-        new_node.set_parent(parent)
-        new_node.deep_set_document_id(parent.document_id)
-        self._mark_subtree_dirty(new_node)
 
     def insert_subtree(self, parent, i, child):
         if not (

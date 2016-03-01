@@ -67,6 +67,13 @@ class LibraryForTesting(Library):
         def replace_self(node_store, node):
             node_store.replace_node(node, CWDOMNode('replacement'))
 
+        self.processor('replace_self_subtree', record)
+        @self.processor('replace_self_subtree')
+        def replace_self_subtree(node_store, node):
+            node_store.replace_subtree(node, CWDOMNode('replacement', [
+                CWDOMNode('replacement')
+            ]))
+
 
 class TestNodeStoreTraversals(CWTestCase):
     def test_postorder(self):
@@ -264,7 +271,7 @@ class TestNodeStore(CWTestCase):
                   contents()
         """))
 
-    def test_replace_self_contents(self):
+    def test_replace_self(self):
         ns = NodeStore(CWDOMRootNode([
             CWDOMDocumentNode('doc', [
                 CWDOMNode('replace_self', [
@@ -281,4 +288,23 @@ class TestNodeStore(CWTestCase):
               Document(path='doc')
                 replacement()
                   a()
+        """))
+
+    def test_replace_self_subtree(self):
+        ns = NodeStore(CWDOMRootNode([
+            CWDOMDocumentNode('doc', [
+                CWDOMNode('replace_self_subtree', [
+                    CWDOMNode('a')
+                ])
+            ])
+        ]))
+        library = LibraryForTesting()
+        ns.apply_library(library)
+        self.assertEqual(library.visit_history, [
+            'a', 'replace_self_subtree', 'Document', 'Root', 'replacement', 'replacement'])
+        self.assertEqual(ns.root.get_string_for_test_comparison(), self.strip("""
+            Root()
+              Document(path='doc')
+                replacement()
+                  replacement()
         """))
