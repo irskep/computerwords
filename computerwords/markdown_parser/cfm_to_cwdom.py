@@ -68,15 +68,26 @@ def stmt_to_tag_or_text(stmt, config):
 
 
 class UnparsedTagNode(CWDOMNode):
-    def __init__(self, literal):
-        super().__init__('UnparsedTag')
+    def __init__(self, name, parse_tree, literal):
+        super().__init__(name)
+        self.parse_tree = parse_tree
         self.literal = literal
 
     def get_args_string_for_test_comparison(self):
         return repr(self.literal)
 
     def __repr__(self):
-        return "{}(literal={!r})".format(self.name, self.literal)
+        return "{}(parse_tree={!r})".format(self.name, self.parse_tree)
+
+
+class UnparsedOpenTagNode(UnparsedTagNode):
+    def __init__(self, parse_tree, literal):
+        super().__init__('UnparsedOpenTag', parse_tree, literal)
+
+
+class UnparsedCloseTagNode(UnparsedTagNode):
+    def __init__(self, parse_tree, literal):
+        super().__init__('UnparsedCloseTag', parse_tree, literal)
 
 
 def _dump(ast_node):
@@ -136,18 +147,32 @@ def t_List(ast_node, config):
 def t_Item(ast_node, config):
     yield CWDOMTagNode('li', {})
 
-i = 0
+def _do_your_best(literal):
+    self_closing_tag = maybe_parse_self_closing_tag(literal)
+    if self_closing_tag:
+        return self_closing_tag
+    else:
+        open_tag = maybe_parse_open_tag(literal)
+        if open_tag:
+            return open_tag
+        else:
+            close_tag = maybe_parse_close_tag(literal)
+            if close_tag:
+                return close_tag
+            else:
+                raise ValueError("HTML parser can't handle {!r}".format(literal))
+
 @t('HtmlBlock')
 def t_HtmlBlock(ast_node, config):
     try:
         items = list(html_string_to_cwdom(ast_node.literal, config))
         yield from items
     except ParseError:
-        yield UnparsedTagNode(ast_node.literal)
+        yield _do_your_best(ast_node.literal)
 
 @t('HtmlInline')
 def t_HtmlInline(ast_node, config):
-    yield UnparsedTagNode(ast_node.literal)
+    yield _do_your_best(ast_node.literal)
 
 @t('Emph')
 def t_Emph(ast_node, config):
@@ -204,6 +229,24 @@ def maybe_parse_self_closing_tag(literal):
         return None
 
 
+def maybe_parse_open_tag(literal):
+    tokens = list(lex_html(literal))
+    ast = parse_open_tag(tokens)
+    if ast:
+        return UnparsedOpenTagNode(ast, literal)
+    else:
+        return None
+
+
+def maybe_parse_close_tag(literal):
+    tokens = list(lex_html(literal))
+    ast = parse_close_tag(tokens)
+    if ast:
+        return UnparsedCloseTagNode(ast, literal)
+    else:
+        return None
+
+
 class NoMatchingTagError(Exception): pass
 
 
@@ -212,23 +255,13 @@ def fix_ignored_html(node):
     left_i = None
     new_tag = None
 
-    # replace self-closing tags
     for i, child in enumerate(children):
-        if isinstance(child, UnparsedTagNode):
-            self_closing_tag = maybe_parse_self_closing_tag(child.literal)
-            if self_closing_tag:
-                node.children[i] = self_closing_tag
-
-    for i, child in enumerate(children):
-        if isinstance(child, UnparsedTagNode):
-            tokens = list(lex_html(child.literal))
-            ast = parse_open_tag(tokens)
-            if ast:
-                left_i = i
-                new_tag = CWDOMTagNode(
-                    ast.tag_contents.bbword.value,
-                    tag_contents_to_kwargs(ast.tag_contents))
-                break
+        if isinstance(child, UnparsedOpenTagNode):
+            new_tag = CWDOMTagNode(
+                child.parse_tree.tag_contents.bbword.value,
+                tag_contents_to_kwargs(child.parse_tree.tag_contents))
+            left_i = i
+            break
 
     if new_tag is not None:
         right_i = None
@@ -236,16 +269,13 @@ def fix_ignored_html(node):
             if i <= left_i:
                 raise NoMatchingTagError("Matching tag not found for {}".format(
                     new_tag.name))
-            if isinstance(child, UnparsedTagNode):
-                tokens = list(lex_html(child.literal))
-                ast = parse_close_tag(tokens)
-                if ast:
-                    tag_name = ast.bbword.value
-                    if tag_name != new_tag.name:
-                        raise NoMatchingTagError("Mismatched closing tag: {} vs {}".format(
-                            new_tag.name, tag_name))
-                    right_i = i
-                    break
+            if isinstance(child, UnparsedCloseTagNode):
+                tag_name = child.parse_tree.bbword.value
+                if tag_name != new_tag.name:
+                    raise NoMatchingTagError("Mismatched closing tag: {} vs {}".format(
+                        new_tag.name, tag_name))
+                right_i = i
+                break
 
         sub_children = children[left_i+1:right_i]
         del node.children[left_i+1:right_i+1]
@@ -253,22 +283,24 @@ def fix_ignored_html(node):
         new_tag.set_children(sub_children)
         node.claim_children()
 
-    i = 0
-    while i < len(node.children):
-        try:
-            fix_ignored_html(node.children[i])
-            i += 1
-        except NoMatchingTagError as e:
-            # this may have been caused by a tag being split across multiple
-            # paragraphs. Fix by just concatenating paragraphs together until
-            # it works.
-            # TODO: then serialize and re-parse
-            if i + 1 < len(node.children):
-                node.children[i + 1].children = node.children[i].children + node.children[i + 1].children
-                node.children.pop(i)
-                node.children[i].claim_children()
-            else:
-                raise e
+    for child in node.children:
+        fix_ignored_html(child)
+    #i = 0
+    #while i < len(node.children):
+    #    try:
+    #        fix_ignored_html(node.children[i])
+    #        i += 1
+    #    except NoMatchingTagError as e:
+    #        # this may have been caused by a tag being split across multiple
+    #        # paragraphs. Fix by just concatenating paragraphs together until
+    #        # it works.
+    #        # TODO: then serialize and re-parse
+    #        if i + 1 < len(node.children):
+    #            node.children[i + 1].children = node.children[i].children + node.children[i + 1].children
+    #            node.children.pop(i)
+    #            node.children[i].claim_children()
+    #        else:
+    #            raise e
 
 
 def _ast_node_to_cwdom(ast_node, config):
@@ -293,12 +325,13 @@ def _replace_lone_p(nodes):
         return nodes
 
 
-def commonmark_to_cwdom(text, config):
+def commonmark_to_cwdom(text, config, fix_tags=True):
     parser = CommonMark.blocks.Parser()
     doc_node = list(_ast_node_to_cwdom(parser.parse(text), config))[0]
-    fix_ignored_html(doc_node)
+    if fix_tags:
+        fix_ignored_html(doc_node)
     return _replace_lone_p(doc_node.children)
 
 
-def cfm_to_cwdom(text, config):
-    return commonmark_to_cwdom(text, config)
+def cfm_to_cwdom(text, config, fix_tags=True):
+    return commonmark_to_cwdom(text, config, fix_tags)
