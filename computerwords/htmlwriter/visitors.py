@@ -8,6 +8,19 @@ from .util import (
 )
 
 
+def get_tag_to_visitor(library, stream, options):
+    tag_to_visitor = {
+        tag: TagVisitor(stream, tag)
+        for tag in library.HTML_TAGS | set(library.ALIAS_HTML_TAGS.keys())
+    }
+    tag_to_visitor['Root'] = NodeStoreVisitor()  # no-op
+    tag_to_visitor['Document'] = DocumentVisitor(stream)
+    tag_to_visitor['Text'] = TextVisitor(stream, 'Text')
+    tag_to_visitor['Anchor'] = AnchorVisitor(stream)
+    tag_to_visitor['Link'] = LinkVisitor(stream)
+    return tag_to_visitor
+
+
 class WritingVisitor(NodeStoreVisitor):
     def __init__(self, output_stream):
         super().__init__()

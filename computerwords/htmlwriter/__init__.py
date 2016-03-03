@@ -2,7 +2,7 @@ import pathlib
 from io import StringIO
 
 import computerwords
-from .visitors import *
+from .visitors import get_tag_to_visitor
 from .util import (
     SINGLE_PAGE_TEMPLATE_PATH,
     copy_files,
@@ -14,16 +14,7 @@ def write(config, input_dir, output_dir, library, node_store):
     options = read_htmlwriter_options(config, input_dir, output_dir)
 
     stream = StringIO()
-    tag_to_visitor = {
-        tag: TagVisitor(stream, tag)
-        for tag in library.HTML_TAGS | set(library.ALIAS_HTML_TAGS.keys())
-    }
-    tag_to_visitor['Root'] = NodeStoreVisitor()  # no-op
-    tag_to_visitor['Document'] = DocumentVisitor(stream)
-    tag_to_visitor['Text'] = TextVisitor(stream, 'Text')
-    tag_to_visitor['Anchor'] = AnchorVisitor(stream)
-    tag_to_visitor['Link'] = LinkVisitor(stream)
-    node_store.visit_all(tag_to_visitor)
+    node_store.visit_all(get_tag_to_visitor(library, stream, options))
 
     copy_files(options.files_to_copy)
 
