@@ -85,6 +85,13 @@ def _doc_tree_to_sorted_paths(doc_tree):
     return items
 
 
+def _preorder_traversal_of_nested_list(entries):
+    for (entry, children) in entries:
+        yield entry
+        for child in children:
+            yield from _preorder_traversal_of_nested_list(children)
+
+
 def add_table_of_contents(library):
     """
     Collects all `h1`, `h2`, etc. tags in a tree, which
@@ -152,21 +159,25 @@ def add_table_of_contents(library):
     def process_root(node_store, node):
         _add_toc_data_if_not_exists(node_store)
 
-        doc_to_entries = {
+        doc_path_to_entries = {
             doc_node.path: doc_node.data['toc_entries']
             for doc_node in node.children
             if doc_node.name == 'Document'
         }
 
+        ### compute TOC ###
+
         if node_store.env and 'doc_tree' in node_store.env:
             sorted_paths = _doc_tree_to_sorted_paths(
                 node_store.env['doc_tree'])
         else:
-            sorted_paths = sorted(doc_to_entries.keys())
+            sorted_paths = sorted(doc_path_to_entries.keys())
         top_level_entries = []
         for path in sorted_paths:
             top_level_entries.extend(
-                _entries_to_nested_list(doc_to_entries[path]))
+                _entries_to_nested_list(doc_path_to_entries[path]))
+
+        ### put TOC in tree ###
 
         entry_to_number = {}
         _store_entry_to_sequence(top_level_entries, entry_to_number, ())
@@ -177,6 +188,22 @@ def add_table_of_contents(library):
                 CWDOMTagNode('nav', {'class': 'table-of-contents'}, [
                     _nested_list_to_node(entry_to_number, top_level_entries),
                 ]))
+
+        ### add next/prev data to docs ###
+
+        path_to_doc = {
+            doc_node.path: doc_node
+            for doc_node in node.children
+            if doc_node.name == 'Document'
+        }
+
+        last_doc = None
+        for path in sorted_paths:
+            doc = path_to_doc[path]
+            if last_doc:
+                doc.data['nav_previous_entry'] = doc_path_to_entries[last_doc.path][0]
+                last_doc.data['nav_next_entry'] = doc_path_to_entries[doc.path][0]
+            last_doc = doc
 
         # optional: insert heading numbers
         # for heading_node in node_store.processor_data['toc_heading_nodes']:

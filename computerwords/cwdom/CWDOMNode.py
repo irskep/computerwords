@@ -70,6 +70,13 @@ class CWDOMNode:
         node_copy.set_children([child.deepcopy() for child in self.children])
         return node_copy
 
+    def deepcopy_children_from(self, node, at_end=False):
+        if at_end:
+            self.set_children(self.children + [child.deepcopy() for child in node.children])
+        else:
+            self.set_children([child.deepcopy() for child in node.children] + self.children)
+        return self
+
     def get_string_for_test_comparison(self, inner_indentation=2):
         elements = [
             "{}({})".format(
@@ -150,8 +157,9 @@ class CWDOMTagNode(CWDOMNode):
 
 
 class CWDOMTextNode(CWDOMNode):
-    def __init__(self, text, document_id=None):
+    def __init__(self, text, document_id=None, escape=True):
         super().__init__('Text', [], document_id=document_id)
+        self.escape = escape
         self.text = text
 
     def get_string_for_test_comparison(self, inner_indentation=2):

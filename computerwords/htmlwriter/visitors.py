@@ -47,7 +47,10 @@ class TextVisitor(WritingVisitor):
         self.tag_name = tag_name
 
     def before_children(self, node_store, node):
-        self.output_stream.write(html.escape(node.text))
+        if node.escape:
+            self.output_stream.write(html.escape(node.text))
+        else:
+            self.output_stream.write(node.text)
 
 
 class AnchorVisitor(WritingVisitor):
