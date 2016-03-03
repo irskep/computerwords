@@ -10,7 +10,12 @@ demo:
 	python3 -m computerwords --conf demo/conf.json
 
 docs:
+	# rm -rf docs/build/static/*
+	# rm -f docs/build/*.html docs/build/*.png docs/build/*.css
 	python3 -m computerwords --conf docs/conf.json
+
+watchdocs:
+	watch -n 0.2 make docs
 
 docsdebug:
 	python3 -m computerwords --conf docs/conf.json --debug
