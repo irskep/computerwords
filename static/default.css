@@ -63,6 +63,20 @@ header#pageheader h2 {
   border-bottom: 1px solid black;
 }
 
+/* footer */
+
+footer#pagefooter {
+  margin-bottom: 1rem;
+}
+
+nav.previous-page {
+  float: left;
+}
+
+nav.next-page {
+  float: right;
+}
+
 /* block-level semantic elements */
 
 pre {
