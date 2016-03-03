@@ -72,6 +72,10 @@ pre {
   background-color: #fafafa;
 }
 
+article img {
+  max-width: 100%;
+}
+
 /* inline elements */
 
 tt {
