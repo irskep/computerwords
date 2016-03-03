@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>Computer Words: A system for writing and publishing documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="static/normalize.css" type="text/css" /><link rel="stylesheet" href="static/default.css" type="text/css" /><link rel="stylesheet" href="style.css" type="text/css" />
+    </head>
+    <body>
+        <header id="pageheader">
+            <h1>Computer Words</h1>
+            <h2>A system for writing and publishing documentation</h2>
+        </header>
+        <main id="pagebody"><article><a name="How-it-works" class='header-anchor'><h1>How it works</h1></a><p>First, your files are parsed into a tree called the “Computer Words Document Object Model”, or <tt>CWDOM</tt>. So this:</p><pre language='markdown filename=readme.md'># Title
+
+some text
+</pre><p>becomes this:</p><figure class='image graphviz-graph'><img src='cca5f62f9def97a413d464ccfbf90ab96e458a163237860b7ac47f90c584fcae.png'></img></figure><p>Then we apply a processor library to the graph. A <i>library</i> is a mapping of <tt>node_name -&gt; [processor]</tt>. A <i>processor</i> is a function like this:</p><pre language='python'>@library.processor(&#x27;xxx&#x27;)  # operate on &#x27;xxx&#x27; nodes
+def process_xxx(node_store, node)
+    # you can mutate the node, its children, or its
+    # ancestors (but not its siblings).
+    # In this case, we are swapping the node in place for
+    # another node, which will have the original node&#x27;s
+    # parent and children.
+    node_store.replace_node(node, CWDOMNode(&#x27;yyy&#x27;))
+</pre><p>Each node will be processed at least once, in a <i>post-order tree traversal</i> (meaning that a node will be visited before its ancestors). If a node is mutated by another node&#x27;s processor, that node will be marked <i>dirty</i> and its processors will be run again.</p></article></main>
+        <footer id="pagefooter">
+        </footer>
+    </body>
+</html>

@@ -72,3 +72,7 @@ hr {
     line-height: 120%;
   }
 }
+
+figure.image {
+  text-align: center;
+}
