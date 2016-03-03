@@ -9,6 +9,7 @@ def add_html(library):
         'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
         'ol', 'ul', 'li',
         'blockquote', 'img',
+        'article', 'nav', 'figure', 'section', 'footer', 'header',
     } | library.SEMANTIC_HTML_TAGS
 
     library.ALIAS_HTML_TAGS = {
