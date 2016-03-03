@@ -86,7 +86,6 @@ class IntegratedHTMLParsingTestCase(CWTestCase):
         root = CWDOMRootNode(cfm_to_cwdom(s, TAGS))
         self.log_node(root)
 
-    @unittest.skip("")
     def test_block_html_4(self):
         s = self.strip("""
             <x>
@@ -94,7 +93,12 @@ class IntegratedHTMLParsingTestCase(CWTestCase):
             </x>
         """)
         root = CWDOMRootNode(cfm_to_cwdom(s, TAGS))
-        self.log_node(root)
+        self.assertMultiLineEqual(
+            root.get_string_for_test_comparison(), self.strip("""
+                Root()
+                  x(kwargs={})
+                    'some test'
+            """))
 
     def test_block_html_5(self):
         s = self.strip("""
