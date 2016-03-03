@@ -1,4 +1,5 @@
 import html
+import os
 import pathlib
 from collections import namedtuple
 
@@ -18,11 +19,26 @@ NORMALIZE_CSS_PATH = MODULE_DIR / "_css" / "normalize.css"
 SINGLE_PAGE_TEMPLATE_PATH = MODULE_DIR / "_html" / "single_page.html"
 
 
-def anchor_to_href(link_node, anchor_node):
-    # in a multi-page world, we can omit the document part
-    # if link_node.document_id == anchor_node.document_id.
-    return "{}-{}".format(
-        '/'.join(anchor_node.document_id), anchor_node.ref_id)
+def document_id_to_link_root(doc_id):
+    return os.path.splitext('/'.join(doc_id))[0] + '.html'
+
+
+def anchor_to_href(options, link_node, anchor_node):
+    if options.single_page:
+        name = "{}-{}".format(
+                '/'.join(anchor_node.document_id), anchor_node.ref_id)
+        if link_node is anchor_node:
+            return name
+        else:
+            return '#' + name
+    else:
+        name = anchor_node.ref_id
+        if link_node is anchor_node:
+            return name
+        else:
+            return "{}#{}".format(
+                document_id_to_link_root(anchor_node.document_id),
+                anchor_node.ref_id)
 
 
 def html_attrs_to_string(kwargs):
