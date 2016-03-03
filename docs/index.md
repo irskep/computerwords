@@ -1,5 +1,5 @@
 Computer Words is a tool and document processing API that helps you write
-documentation for your software library. It is conceptually similar to
+documentation for software. It is conceptually similar to
 [Sphinx](http://sphinx-doc.org/).
 
 The page you are reading was written in
