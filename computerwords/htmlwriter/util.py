@@ -6,6 +6,7 @@ import computerwords
 
 
 HTMLWriterOptions = namedtuple('HTMLWriterOptions', [
+    'single_page',
     'static_dir',
     'files_to_copy',
     'stylesheet_tag_strings',
@@ -41,18 +42,20 @@ def copy_files(in_out_path_pairs):
 
 
 def read_htmlwriter_options(config, input_dir, output_dir):
-    static_dir = output_dir / config['static_dir_name']
+    html_config = config.get('html', {})
+
+    static_dir = output_dir / html_config.get('static_dir_name', 'static')
     static_dir.mkdir(exist_ok=True)
 
-    css_theme = config['css_theme'] + ".css"
+    css_theme = html_config.get('css_theme', 'default') + ".css"
     css_files = [
         (NORMALIZE_CSS_PATH, static_dir / "normalize.css"),
         (MODULE_DIR / "_css" / css_theme, static_dir / css_theme),
     ]
 
-    if config['css_files']:
-        assert(isinstance(config['css_files'], list))
-        for path_str in config['css_files']:
+    if html_config['css_files']:
+        assert(isinstance(html_config['css_files'], list))
+        for path_str in html_config['css_files']:
             for path in input_dir.glob(path_str):
                 rel_path = path.relative_to(input_dir)
                 css_files.append((path, output_dir.joinpath(rel_path)))
@@ -66,6 +69,7 @@ def read_htmlwriter_options(config, input_dir, output_dir):
     ]
 
     return HTMLWriterOptions(
+        single_page=html_config.get('single_page', False),
         static_dir=static_dir,
         files_to_copy=files_to_copy,
         stylesheet_tag_strings=stylesheet_tag_strings)

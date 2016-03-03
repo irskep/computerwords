@@ -1,7 +1,10 @@
 {
     "site_title": "Computer Words",
     "site_subtitle": "A system for writing and publishing documentation",
-    "css_files": ["style.css"],
+    "html": {
+        "css_files": ["style.css"],
+        "single_page": false
+    },
     "file_hierarchy": [
         "index.md",
         "computer_flavored_markdown.md",
