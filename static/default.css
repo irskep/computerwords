@@ -60,10 +60,13 @@ header#pageheader h1 {
 }
 header#pageheader h2 {
   margin-top: 0.5em;
-  padding-bottom: 0.5em;
-  margin-bottom: 0;
   font-size: 1rem;
-  border-bottom: 1px solid black;
+}
+
+#navheader {
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+  color: black;
 }
 
 /* footer */

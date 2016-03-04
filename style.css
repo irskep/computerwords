@@ -66,6 +66,10 @@ hr {
   border: 0;
 }
 
+header#pageheader hr {
+  background: #000;
+}
+
 @media (max-width: 400px) {
   pre {
     font-size: 0.8em;
