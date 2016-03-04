@@ -26,6 +26,20 @@ def document_id_to_link_root(doc_id):
     return os.path.splitext('/'.join(doc_id))[0] + '.html'
 
 
+def find_path_between(a, b):
+    i = 0
+    while i < len(a) and i < len(b) and a[i] == b[i]:
+        i += 1
+    a = a[i:]
+    b = b[i:]
+    num_dots = len(a) - 1
+    path = '/'.join(['..'] * num_dots + list(b))
+    if path:
+        return path + '.html'
+    else:
+        return ''
+
+
 def anchor_to_href(options, link_node, anchor_node):
     if options.single_page:
         name = "{}-{}".format(
@@ -40,7 +54,7 @@ def anchor_to_href(options, link_node, anchor_node):
             return name
         else:
             return "{}#{}".format(
-                document_id_to_link_root(anchor_node.document_id),
+                find_path_between(link_node.document_id, anchor_node.document_id),
                 anchor_node.ref_id)
 
 

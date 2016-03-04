@@ -33,23 +33,24 @@ def _get_subtree_html(config, options, library, node_store, node=None):
 
 
 def _get_nav_html_part(
-        config, options, library, node_store, document_node,
-        entry_key, css_class, is_prev=False):
+        config, options, library, node_store, document_node, is_prev=False):
+    entry_key = 'nav_previous_entry' if is_prev else 'nav_next_entry'
     if entry_key in document_node.data:
         entry = document_node.data[entry_key]
         ref_id = entry.ref_id
         if is_prev:
-            node = CWTagNode('nav', {'class': css_class}, [
+            node = CWTagNode('nav', {'class': 'previous-page'}, [
                 CWLinkNode(ref_id, [
                     CWTextNode('&larr; ', escape=False)
                 ]).deepcopy_children_from(entry.heading_node, at_end=True)
             ])
         else:
-            node = CWTagNode('nav', {'class': css_class}, [
+            node = CWTagNode('nav', {'class': 'next-page'}, [
                 CWLinkNode(ref_id, [
                     CWTextNode(' &rarr;', escape=False)
                 ]).deepcopy_children_from(entry.heading_node)
             ])
+        node.deep_set_document_id(document_node.document_id)
         return _get_subtree_html(
             config, options, library, node_store, node)
     else:
@@ -67,11 +68,9 @@ def write_document(config, options, output_dir, library, node_store, document_no
 
     nav_html = (
         _get_nav_html_part(
-            config, options, library, node_store, document_node,
-            'nav_previous_entry', 'previous-page', is_prev=True) +
+            config, options, library, node_store, document_node, is_prev=True) +
         _get_nav_html_part(
-            config, options, library, node_store, document_node,
-            'nav_next_entry', 'next-page', is_prev=False))
+            config, options, library, node_store, document_node, is_prev=False))
 
     nav_next_node = None
     if 'nav_previous_entry' in document_node.data:

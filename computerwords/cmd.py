@@ -28,7 +28,6 @@ def run():
     def _get_doc_cwdom(subtree):
         with subtree.root_path.open() as f:
             return cfm_to_cwdom(f.read(), stdlib.get_allowed_tags())
-            # return string_to_cwdom(f.read(), stdlib.get_allowed_tags())
 
     doc_tree, document_nodes = read_doc_tree(
         files_root, conf['file_hierarchy'], _get_doc_cwdom)
