@@ -16,9 +16,14 @@ def add_code(library):
             lexer = get_lexer_by_name(node.kwargs.get('language', '').split()[0])
             assert(len(node.children) == 1)
             assert(isinstance(node.children[0], CWDOMTextNode))
-            node_store.replace_subtree(node, CWDOMTextNode(
-                pygments.highlight(node.children[0].text, lexer, HtmlFormatter()),
-                escape=False))
+            node_store.replace_subtree(
+                node,
+                CWDOMTagNode('figure', {'class': 'pygments'}, [
+                    CWDOMTextNode(
+                        pygments.highlight(
+                            node.children[0].text, lexer, HtmlFormatter()),
+                        escape=False)
+                ]))
         except ClassNotFound:
             pass
 
