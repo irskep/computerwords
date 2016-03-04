@@ -58,6 +58,7 @@ class Library:
                     " now this edge case simply throws an error.").format(
                         node.name))
             if node_store.get_was_node_removed(node):
+                return
                 raise UnhandledEdgeCaseError((
                     "Node {!r} has multiple processors, but an earlier"
                     " processor removed it before the later one could run."
