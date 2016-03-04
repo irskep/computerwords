@@ -54,7 +54,35 @@
   <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
-</figure><a href="#file_hierarchy" name="file_hierarchy" class='header-anchor'><h2><tt>file_hierarchy</tt></h2></a></article></main>
+</figure><a href="#Defining-table-of-contents-structure-with-file_hierarchy" name="Defining-table-of-contents-structure-with-file_hierarchy" class='header-anchor'><h2>Defining table of contents structure with <tt>file_hierarchy</tt></h2></a><p>The <tt>file_hierarchy</tt> option, in addition to collecting input files, determines the structure of the table of contents, and therefore the order in which the resulting documents are navigated.</p><p>The wording in this section might not be great. If something is confusing, please open a ticket.</p><a href="#Data-types" name="Data-types" class='header-anchor'><h3>Data types</h3></a><p>Each entry in <tt>file_hierarchy</tt> can be one of:</p><ul><li><p><tt>string</tt>: a relative path to a file (such as <tt>&quot;index.md&quot;</tt>) or a glob (such as `&quot;*.md&quot;)</p></li><li><p><tt>list</tt>: a list of strings specifying paths to be sorted together. For example, given files <tt>a.txt</tt>, <tt>c.txt</tt>, and <tt>b.md</tt>, the list <tt>[&quot;*.txt&quot;, &quot;*.md&quot;]</tt> would be expanded by Computer Words to <tt>[&quot;a.txt&quot;, &quot;b.md&quot;, &quot;c.txt&quot;]</tt>.</p></li><li><p><tt>dict</tt>: should have exactly one key, a file path. The value is a list of these data types.</p></li></ul><a href="#Sorting" name="Sorting" class='header-anchor'><h3>Sorting</h3></a><p>When you use a list and/or glob, multiple files often match. The order in which these files appear is based on two things:</p><ol><li><p>If two files are in the same directory and one file is called <tt>&quot;index.*&quot;</tt>, it will come before the other file.</p></li><li><p>Otherwise, sorting is alphabetical.</p></li></ol><a href="#Example-1-All-files-in-a-single-directory" name="Example-1-All-files-in-a-single-directory" class='header-anchor'><h3>Example 1: All files in a single directory</h3></a><p>You can use a single flat glob to collect every file in a directory.</p><figure class='code'><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;file_hierarchy&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;*.md&quot;</span><span class="p">]}</span>
+</pre></div>
+</figure><p>Example tree:</p><figure class='code'><div class="highlight"><pre><span></span><span class="k">* </span>index.md
+<span class="k">* </span>about.md
+<span class="k">* </span>computers.md
+</pre></div>
+</figure><a href="#Example-2-All-files-in-a-directory-and-its-subdirectories" name="Example-2-All-files-in-a-directory-and-its-subdirectories" class='header-anchor'><h3>Example 2: All files in a directory and its subdirectories</h3></a><figure class='code'><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;file_hierarchy&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;**/*.md&quot;</span><span class="p">]}</span>
+</pre></div>
+</figure><p>Note: <strong>this will not create subsections based on directories</strong>. Each document&#x27;s headings will be at the top level.</p><p>Example tree:</p><figure class='code'><div class="highlight"><pre><span></span><span class="k">* </span>index.md
+<span class="k">* </span>about.md
+<span class="k">* </span>computers.md
+<span class="k">* </span>examples/example_1.md
+<span class="k">* </span>examples/example_2.md
+</pre></div>
+</figure><a href="#Example-3-Explicit-ordering-with-nesting" name="Example-3-Explicit-ordering-with-nesting" class='header-anchor'><h3>Example 3: Explicit ordering with nesting</h3></a><figure class='code'><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;file_hierarchy&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;Readme.md&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Guide.md&quot;</span><span class="p">,</span>
+    <span class="p">{</span><span class="nt">&quot;Examples.md&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;examples/*.md&quot;</span><span class="p">]}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</figure><p>Example tree:</p><figure class='code'><div class="highlight"><pre><span></span><span class="k">* </span>Readme.md
+<span class="k">* </span>Guide.md
+<span class="k">* </span>Examples.md
+<span class="k">  * </span>examples/example_1.md
+<span class="k">  * </span>examples/example_2.md
+</pre></div>
+</figure></article></main>
         <footer id="pagefooter"><nav class='previous-page'><a href="computer_flavored_markdown.html#Computer-Flavored-Markdown">&larr; Computer Flavored Markdown</a></nav><nav class='next-page'><a href="how_it_works.html#How-it-works">How it works &rarr;</a></nav><div style="clear: both;"></div></footer>
     </body>
 </html>
