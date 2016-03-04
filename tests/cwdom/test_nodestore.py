@@ -4,7 +4,7 @@ from collections import defaultdict
 
 from tests.CWTestCase import CWTestCase
 from computerwords.cwdom.NodeStore import NodeStore, NodeStoreConsistencyError
-from computerwords.cwdom.CWDOMNode import *
+from computerwords.cwdom.nodes import *
 from computerwords.library import Library
 
 

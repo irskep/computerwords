@@ -5,7 +5,7 @@ from computerwords.markdown_parser.parse_tree_to_cwdom import (
     DuplicateArgumentsError,
 )
 from computerwords.markdown_parser import lex_and_parse_html
-from computerwords.cwdom.CWDOMNode import CWDOMDocumentNode
+from computerwords.cwdom.nodes import CWDOMDocumentNode
 from computerwords.cwdom.NodeStore import NodeStore
 
 

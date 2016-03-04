@@ -3,7 +3,7 @@ import pathlib
 
 from collections import OrderedDict
 
-from computerwords.cwdom.CWDOMNode import CWDOMDocumentNode
+from computerwords.cwdom.nodes import CWDOMDocumentNode
 from computerwords.read_doc_tree import (
     read_doc_tree,
     DocTree,

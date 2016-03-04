@@ -4,7 +4,7 @@ from collections import OrderedDict
 
 import CommonMark
 
-from computerwords.cwdom.CWDOMNode import *
+from computerwords.cwdom.nodes import *
 from .html_lexer import lex_html
 from .html_parser import (
     parse_open_tag,
@@ -29,7 +29,7 @@ def html_string_to_cwdom(string, config):
 
 from .ast import StmtsNode, TagArgsNode
 from .html_parser import ParseError
-from computerwords.cwdom.CWDOMNode import *
+from computerwords.cwdom.nodes import *
 from computerwords.cwdom.NodeStore import NodeStore
 from .parse_tree_to_cwdom_util import *
 

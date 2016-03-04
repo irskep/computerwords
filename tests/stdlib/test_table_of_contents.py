@@ -1,7 +1,7 @@
 import unittest
 
 from tests.CWTestCase import CWTestCase
-from computerwords.cwdom.CWDOMNode import *
+from computerwords.cwdom.nodes import *
 from computerwords.cwdom.NodeStore import NodeStore
 from computerwords.library import Library
 from computerwords.stdlib.basics import add_basics

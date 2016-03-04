@@ -2,7 +2,7 @@ import pathlib
 from io import StringIO
 
 import computerwords  # to get the module root path
-from computerwords.cwdom.CWDOMNode import CWDOMLinkNode, CWDOMTagNode, CWDOMTextNode
+from computerwords.cwdom.nodes import CWDOMLinkNode, CWDOMTagNode, CWDOMTextNode
 from .visitors import get_tag_to_visitor
 from .util import (
     SINGLE_PAGE_TEMPLATE_PATH,

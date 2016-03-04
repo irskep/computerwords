@@ -1,6 +1,6 @@
 import logging
 from collections import OrderedDict, namedtuple, deque
-from computerwords.cwdom.CWDOMNode import (
+from computerwords.cwdom.nodes import (
     CWDOMAnchorNode,
     CWDOMLinkNode,
     CWDOMTagNode,

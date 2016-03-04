@@ -1,6 +1,6 @@
 from .ast import TagArgsNode
 from .html_parser import ParseError
-from computerwords.cwdom.CWDOMNode import *
+from computerwords.cwdom.nodes import *
 
 
 class DuplicateArgumentsError(ParseError):

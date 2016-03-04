@@ -2,7 +2,7 @@ from collections import namedtuple, OrderedDict
 from functools import cmp_to_key
 from itertools import chain
 
-from computerwords.cwdom.CWDOMNode import CWDOMDocumentNode
+from computerwords.cwdom.nodes import CWDOMDocumentNode
 
 
 class DocTreeError(Exception): pass

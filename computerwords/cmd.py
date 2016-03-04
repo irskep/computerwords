@@ -5,7 +5,7 @@ import sys
 
 from computerwords import htmlwriter
 from computerwords.config import DictCascade, DEFAULT_CONFIG
-from computerwords.cwdom.CWDOMNode import CWDOMRootNode
+from computerwords.cwdom.nodes import CWDOMRootNode
 from computerwords.cwdom.NodeStore import NodeStore
 from computerwords.markdown_parser.cfm_to_cwdom import (
     cfm_to_cwdom,

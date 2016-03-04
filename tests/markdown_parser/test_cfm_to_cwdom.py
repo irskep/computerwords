@@ -1,6 +1,6 @@
 import unittest
 
-from computerwords.cwdom.CWDOMNode import *
+from computerwords.cwdom.nodes import *
 from computerwords.markdown_parser.cfm_to_cwdom import cfm_to_cwdom
 
 from tests.CWTestCase import CWTestCase

@@ -6,7 +6,7 @@ from pygments.formatters import HtmlFormatter
 from pygments.lexers import get_lexer_by_name
 from pygments.util import ClassNotFound
 
-from computerwords.cwdom.CWDOMNode import CWDOMTagNode, CWDOMTextNode
+from computerwords.cwdom.nodes import CWDOMTagNode, CWDOMTextNode
 
 
 def add_code(library):
