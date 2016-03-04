@@ -5,7 +5,7 @@ import sys
 
 from computerwords import htmlwriter
 from computerwords.config import DictCascade, DEFAULT_CONFIG
-from computerwords.cwdom.nodes import CWDOMRootNode
+from computerwords.cwdom.nodes import CWRootNode
 from computerwords.cwdom.NodeStore import NodeStore
 from computerwords.markdown_parser.cfm_to_cwdom import (
     cfm_to_cwdom,
@@ -32,7 +32,7 @@ def run():
 
     doc_tree, document_nodes = read_doc_tree(
         files_root, conf['file_hierarchy'], _get_doc_cwdom)
-    node_store = NodeStore(CWDOMRootNode(document_nodes), {
+    node_store = NodeStore(CWRootNode(document_nodes), {
         'doc_tree': doc_tree,
         'output_dir': output_root,
     })

@@ -18,7 +18,7 @@ class IDGenerator:
 id_generator = IDGenerator()
 
 
-class CWDOMNode:
+class CWNode:
     def __init__(self, name, children=None, document_id=None):
         super().__init__()
 
@@ -63,7 +63,7 @@ class CWDOMNode:
             child.deep_set_document_id(new_id)
 
     def copy(self):
-        return CWDOMNode(self.name, document_id=self.document_id)
+        return CWNode(self.name, document_id=self.document_id)
 
     def deepcopy(self):
         node_copy = self.copy()
@@ -103,15 +103,15 @@ class CWDOMNode:
         return hash(self.id)
 
 
-class CWDOMRootNode(CWDOMNode):
+class CWRootNode(CWNode):
     def __init__(self, children=None, document_id=None):
         super().__init__('Root', children, document_id=document_id)
 
     def copy(self):
-        return CWDOMRootNode(document_id=self.document_id)
+        return CWRootNode(document_id=self.document_id)
 
 
-class CWDOMDocumentNode(CWDOMNode):
+class CWDocumentNode(CWNode):
     def __init__(self, path, children=None, document_id=None):
         super().__init__('Document', children, document_id=document_id)
         self.path = path
@@ -124,17 +124,17 @@ class CWDOMDocumentNode(CWDOMNode):
             self.name, self.path, self.children)
 
     def copy(self):
-        return CWDOMDocumentNode(self.path, document_id=document_id)
+        return CWDocumentNode(self.path, document_id=document_id)
 
 
-class CWDOMTagNode(CWDOMNode):
+class CWTagNode(CWNode):
     def __init__(self, name, kwargs, children=None, document_id=None):
         super().__init__(name, children, document_id=document_id)
         assert isinstance(kwargs, dict)
         self.kwargs = kwargs
 
     def copy(self, name=None, kwargs=None):
-        return CWDOMTagNode(
+        return CWTagNode(
             name=name or self.name,
             kwargs=kwargs or self.kwargs,
             document_id=self.document_id)
@@ -156,7 +156,7 @@ class CWDOMTagNode(CWDOMNode):
         return self.kwargs[name]
 
 
-class CWDOMTextNode(CWDOMNode):
+class CWTextNode(CWNode):
     def __init__(self, text, document_id=None, escape=True):
         super().__init__('Text', [], document_id=document_id)
         self.escape = escape
@@ -166,7 +166,7 @@ class CWDOMTextNode(CWDOMNode):
         return repr(self.text)
 
     def copy(self):
-        return CWDOMTextNode(self.text)
+        return CWTextNode(self.text)
 
     def get_args_string_for_test_comparison(self):
         return repr(self.text)
@@ -175,7 +175,7 @@ class CWDOMTextNode(CWDOMNode):
         return "{}(text={!r})".format(self.name, self.text)
 
 
-class CWDOMAnchorNode(CWDOMTagNode):
+class CWAnchorNode(CWTagNode):
     def __init__(self, ref_id, kwargs=None, children=None, document_id=None):
         super().__init__(
             'Anchor', kwargs or {}, children, document_id=document_id)
@@ -185,7 +185,7 @@ class CWDOMAnchorNode(CWDOMTagNode):
         return "ref_id={!r}, kwargs={!r}".format(self.ref_id, self.kwargs)
 
     def copy(self):
-        return CWDOMAnchorNode(
+        return CWAnchorNode(
             self.ref_id, self.kwargs, document_id=document_id)
 
     def __repr__(self):
@@ -193,7 +193,7 @@ class CWDOMAnchorNode(CWDOMTagNode):
             self.name, self.ref_id, self.kwargs)
 
 
-class CWDOMLinkNode(CWDOMNode):
+class CWLinkNode(CWNode):
     def __init__(self, ref_id, children=None, document_id=None):
         super().__init__('Link', children, document_id=document_id)
         self.ref_id = ref_id
@@ -202,7 +202,7 @@ class CWDOMLinkNode(CWDOMNode):
         return "ref_id={!r}".format(self.ref_id)
 
     def copy(self):
-        return CWDOMAnchorNode(self.ref_id, document_id=self.document_id)
+        return CWAnchorNode(self.ref_id, document_id=self.document_id)
 
     def __repr__(self):
         return "{}(ref_id={!r})".format(self.name, self.ref_id)

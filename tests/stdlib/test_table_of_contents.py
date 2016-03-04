@@ -24,15 +24,15 @@ class TableOfContentsTestCase(CWTestCase):
         add_table_of_contents(self.library)
 
     def test_collect_entries(self):
-        header1 = CWDOMTagNode('h1', {}, [
-            CWDOMTextNode('Header 1 text')
+        header1 = CWTagNode('h1', {}, [
+            CWTextNode('Header 1 text')
         ])
-        header2 = CWDOMTagNode('h1', {}, [
-            CWDOMTextNode('Header 2 text')
+        header2 = CWTagNode('h1', {}, [
+            CWTextNode('Header 2 text')
         ])
-        ns = NodeStore(CWDOMRootNode([
-            CWDOMDocumentNode('doc 1', [header1]),
-            CWDOMDocumentNode('doc 2', [header2]),
+        ns = NodeStore(CWRootNode([
+            CWDocumentNode('doc 1', [header1]),
+            CWDocumentNode('doc 2', [header2]),
         ]))
         ns.apply_library(self.library)
         self.assertEqual(header1.get_parent().data, {
@@ -71,22 +71,22 @@ class TableOfContentsTestCase(CWTestCase):
         ])
 
     def test_make_toc(self):
-        ns = NodeStore(CWDOMRootNode([
-            CWDOMDocumentNode('doc 1', [
-                CWDOMTagNode('table-of-contents', {}, []),
-                CWDOMTagNode('h1', {}, [
-                    CWDOMTextNode('Header 1 text')
+        ns = NodeStore(CWRootNode([
+            CWDocumentNode('doc 1', [
+                CWTagNode('table-of-contents', {}, []),
+                CWTagNode('h1', {}, [
+                    CWTextNode('Header 1 text')
                 ]),
-                CWDOMTagNode('h2', {}, [
-                    CWDOMTextNode('Subheader 1 text')
+                CWTagNode('h2', {}, [
+                    CWTextNode('Subheader 1 text')
                 ]),
-                CWDOMTagNode('h2', {}, [
-                    CWDOMTextNode('Subheader 2 text')
+                CWTagNode('h2', {}, [
+                    CWTextNode('Subheader 2 text')
                 ]),
             ]),
-            CWDOMDocumentNode('doc 2', [
-                CWDOMTagNode('h1', {}, [
-                    CWDOMTextNode('Header 2 text')
+            CWDocumentNode('doc 2', [
+                CWTagNode('h1', {}, [
+                    CWTextNode('Header 2 text')
                 ]),
             ]),
         ]))

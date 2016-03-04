@@ -6,7 +6,7 @@ from pygments.formatters import HtmlFormatter
 from pygments.lexers import get_lexer_by_name
 from pygments.util import ClassNotFound
 
-from computerwords.cwdom.nodes import CWDOMTagNode, CWDOMTextNode
+from computerwords.cwdom.nodes import CWTagNode, CWTextNode
 
 
 def add_code(library):
@@ -15,11 +15,11 @@ def add_code(library):
         try:
             lexer = get_lexer_by_name(node.kwargs.get('language', '').split()[0])
             assert(len(node.children) == 1)
-            assert(isinstance(node.children[0], CWDOMTextNode))
+            assert(isinstance(node.children[0], CWTextNode))
             node_store.replace_subtree(
                 node,
-                CWDOMTagNode('figure', {'class': 'pygments'}, [
-                    CWDOMTextNode(
+                CWTagNode('figure', {'class': 'pygments'}, [
+                    CWTextNode(
                         pygments.highlight(
                             node.children[0].text, lexer, HtmlFormatter()),
                         escape=False)
@@ -43,6 +43,6 @@ def add_code(library):
             ['dot', '-Tpng', '-o', str(output_path)], stdin=subprocess.PIPE)
         p.communicate(code, timeout=10)
         node_store.replace_subtree(
-            node, CWDOMTagNode('figure', {'class': 'image graphviz-graph'}, [
-                CWDOMTagNode('img', {'src': str(src)}),
+            node, CWTagNode('figure', {'class': 'image graphviz-graph'}, [
+                CWTagNode('img', {'src': str(src)}),
             ]))

@@ -2,7 +2,7 @@ from collections import namedtuple, OrderedDict
 from functools import cmp_to_key
 from itertools import chain
 
-from computerwords.cwdom.nodes import CWDOMDocumentNode
+from computerwords.cwdom.nodes import CWDocumentNode
 
 
 class DocTreeError(Exception): pass
@@ -99,7 +99,7 @@ def doc_subtree_to_cwdom(subtree, get_doc_cwdom):
     """
     get_doc_cwdom(subtree)
     """
-    doc_node = CWDOMDocumentNode(
+    doc_node = CWDocumentNode(
         str(subtree.root_path), get_doc_cwdom(subtree))
     doc_node.deep_set_document_id(subtree.document_id)
 

@@ -26,11 +26,11 @@ class LibraryForTesting(Library):
 
 class TestHTML(CWTestCase):
     def test_aliases(self):
-        ns = NodeStore(CWDOMRootNode([
-            CWDOMDocumentNode('doc 1', [
-                CWDOMTagNode('strike', {}, []),
-                CWDOMTagNode('b', {}, []),
-                CWDOMTagNode('code', {}, []),
+        ns = NodeStore(CWRootNode([
+            CWDocumentNode('doc 1', [
+                CWTagNode('strike', {}, []),
+                CWTagNode('b', {}, []),
+                CWTagNode('code', {}, []),
             ]),
         ]))
         ns.apply_library(LibraryForTesting())

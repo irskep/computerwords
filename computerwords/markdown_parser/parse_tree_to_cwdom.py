@@ -18,17 +18,17 @@ def stmts_to_list(stmts):
 
 def stmt_to_tag_or_text(stmt):
     if stmt.form_num == 1:
-        return CWDOMTextNode(stmt.text.value)
+        return CWTextNode(stmt.text.value)
     else:
         tag_node = stmt.tag
         if tag_node.form_num == 1:
             tag_contents = tag_node.open_tag.tag_contents
-            return CWDOMTagNode(
+            return CWTagNode(
                 tag_contents.bbword.value,
                 tag_contents_to_kwargs(tag_contents),
                 stmts_to_list(tag_node.stmts))
         else:
             tag_contents = tag_node.self_closing_tag.tag_contents
-            return CWDOMTagNode(
+            return CWTagNode(
                 tag_contents.bbword.value,
                 tag_contents_to_kwargs(tag_contents))

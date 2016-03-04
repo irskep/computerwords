@@ -11,7 +11,7 @@ TAGS = {'a', 'b', 'c', 'x', 'y', 'z'}
 
 class IntegratedHTMLParsingTestCase(CWTestCase):
     def test_inline_html(self):
-        root = CWDOMRootNode(cfm_to_cwdom("a <b><c>b</c></b> c", TAGS))
+        root = CWRootNode(cfm_to_cwdom("a <b><c>b</c></b> c", TAGS))
         self.assertMultiLineEqual(
             root.get_string_for_test_comparison(), self.strip("""
                 Root()
@@ -23,7 +23,7 @@ class IntegratedHTMLParsingTestCase(CWTestCase):
             """))
 
     def test_self_closing_tag(self):
-        root = CWDOMRootNode(cfm_to_cwdom("<a />", TAGS))
+        root = CWRootNode(cfm_to_cwdom("<a />", TAGS))
         self.assertMultiLineEqual(
             root.get_string_for_test_comparison(), self.strip("""
                 Root()
@@ -37,7 +37,7 @@ class IntegratedHTMLParsingTestCase(CWTestCase):
 
             par
         """)
-        root = CWDOMRootNode(cfm_to_cwdom(s, TAGS))
+        root = CWRootNode(cfm_to_cwdom(s, TAGS))
         self.assertMultiLineEqual(
             root.get_string_for_test_comparison(), self.strip("""
                 Root()
@@ -60,8 +60,8 @@ class IntegratedHTMLParsingTestCase(CWTestCase):
             </x>abc
         """)
         print('----------------------')
-        self.log_node(CWDOMRootNode(cfm_to_cwdom(s, TAGS, fix_tags=False)))
-        root = CWDOMRootNode(cfm_to_cwdom(s, TAGS))
+        self.log_node(CWRootNode(cfm_to_cwdom(s, TAGS, fix_tags=False)))
+        root = CWRootNode(cfm_to_cwdom(s, TAGS))
         self.log_node(root)
         self.assertMultiLineEqual(
             root.get_string_for_test_comparison(), self.strip("""
@@ -83,7 +83,7 @@ class IntegratedHTMLParsingTestCase(CWTestCase):
 
             some test</x>
         """)
-        root = CWDOMRootNode(cfm_to_cwdom(s, TAGS))
+        root = CWRootNode(cfm_to_cwdom(s, TAGS))
         self.log_node(root)
 
     def test_block_html_4(self):
@@ -92,7 +92,7 @@ class IntegratedHTMLParsingTestCase(CWTestCase):
             some test
             </x>
         """)
-        root = CWDOMRootNode(cfm_to_cwdom(s, TAGS))
+        root = CWRootNode(cfm_to_cwdom(s, TAGS))
         self.assertMultiLineEqual(
             root.get_string_for_test_comparison(), self.strip("""
                 Root()
@@ -107,7 +107,7 @@ class IntegratedHTMLParsingTestCase(CWTestCase):
 
             </x>
         """)
-        root = CWDOMRootNode(cfm_to_cwdom(s, TAGS))
+        root = CWRootNode(cfm_to_cwdom(s, TAGS))
         self.assertMultiLineEqual(
             root.get_string_for_test_comparison(), self.strip("""
                 Root()
@@ -123,8 +123,8 @@ class IntegratedHTMLParsingTestCase(CWTestCase):
             some test
             </x>
         """)
-        self.log_node(CWDOMRootNode(cfm_to_cwdom(s, TAGS, fix_tags=False)))
-        root = CWDOMRootNode(cfm_to_cwdom(s, TAGS))
+        self.log_node(CWRootNode(cfm_to_cwdom(s, TAGS, fix_tags=False)))
+        root = CWRootNode(cfm_to_cwdom(s, TAGS))
         self.assertMultiLineEqual(
             root.get_string_for_test_comparison(), self.strip("""
                 Root()
@@ -141,7 +141,7 @@ class IntegratedHTMLParsingTestCase(CWTestCase):
 
             </x>
         """)
-        root = CWDOMRootNode(cfm_to_cwdom(s, TAGS))
+        root = CWRootNode(cfm_to_cwdom(s, TAGS))
         self.assertMultiLineEqual(
             root.get_string_for_test_comparison(), self.strip("""
                 Root()

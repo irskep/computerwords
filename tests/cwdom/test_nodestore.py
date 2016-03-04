@@ -11,7 +11,7 @@ from computerwords.library import Library
 log = logging.getLogger(__name__)
 
 
-class TestNode(CWDOMNode):
+class TestNode(CWNode):
     def __init__(self, name, **data):
         super().__init__(name)
         self.data = data
@@ -44,47 +44,47 @@ class LibraryForTesting(Library):
         self.processor('add_own_child', record)
         @self.processor('add_own_child')
         def add_own_child(node_store, node):
-            node_store.insert_subtree(node, 0, CWDOMNode('a_child'))
+            node_store.insert_subtree(node, 0, CWNode('a_child'))
 
         self.processor('wrap_self', record)
         @self.processor('wrap_self')
         def wrap_self(node_store, node):
-            node_store.wrap_node(node, CWDOMNode('wrapper'))
+            node_store.wrap_node(node, CWNode('wrapper'))
 
         self.processor('wrap_a', record)
         @self.processor('wrap_a')
         def wrap_self(node_store, node):
             for a in self.name_to_nodes['a']:
-                node_store.wrap_node(a, CWDOMNode('wrapper'))
+                node_store.wrap_node(a, CWNode('wrapper'))
 
         self.processor('replace_own_contents', record)
         @self.processor('replace_own_contents')
         def replace_own_contents(node_store, node):
-            node_store.replace_subtree(node.children[0], CWDOMNode('contents'))
+            node_store.replace_subtree(node.children[0], CWNode('contents'))
 
         self.processor('replace_self', record)
         @self.processor('replace_self')
         def replace_self(node_store, node):
-            node_store.replace_node(node, CWDOMNode('replacement'))
+            node_store.replace_node(node, CWNode('replacement'))
 
         self.processor('replace_self_subtree', record)
         @self.processor('replace_self_subtree')
         def replace_self_subtree(node_store, node):
-            node_store.replace_subtree(node, CWDOMNode('replacement', [
-                CWDOMNode('replacement')
+            node_store.replace_subtree(node, CWNode('replacement', [
+                CWNode('replacement')
             ]))
 
 
 class TestNodeStoreTraversals(CWTestCase):
     def test_postorder(self):
-        ns = NodeStore(CWDOMRootNode([
-            CWDOMDocumentNode('doc', [
-                CWDOMNode('a'),
-                CWDOMNode('b', [
-                    CWDOMNode('x'),
-                    CWDOMNode('y'),
+        ns = NodeStore(CWRootNode([
+            CWDocumentNode('doc', [
+                CWNode('a'),
+                CWNode('b', [
+                    CWNode('x'),
+                    CWNode('y'),
                 ]),
-                CWDOMNode('c'),
+                CWNode('c'),
             ])
         ]))
         self.assertEqual(
@@ -96,15 +96,15 @@ class TestNodeStoreTraversals(CWTestCase):
             ['a', 'x', 'y', 'b', 'c', 'Document', 'Root'])
 
     def test_postorder_2(self):
-        header1 = CWDOMTagNode('h1', {}, [
-            CWDOMTextNode('Header 1 text')
+        header1 = CWTagNode('h1', {}, [
+            CWTextNode('Header 1 text')
         ])
-        header2 = CWDOMTagNode('h1', {}, [
-            CWDOMTextNode('Header 2 text')
+        header2 = CWTagNode('h1', {}, [
+            CWTextNode('Header 2 text')
         ])
-        ns = NodeStore(CWDOMRootNode([
-            CWDOMDocumentNode('doc 1', [header1]),
-            CWDOMDocumentNode('doc 2', [header2]),
+        ns = NodeStore(CWRootNode([
+            CWDocumentNode('doc 1', [header1]),
+            CWDocumentNode('doc 2', [header2]),
         ]))
         self.assertEqual(
             [node.name for node in
@@ -112,14 +112,14 @@ class TestNodeStoreTraversals(CWTestCase):
             ['Text', 'h1', 'Document', 'Text', 'h1', 'Document', 'Root'])
 
     def test_preorder(self):
-        ns = NodeStore(CWDOMRootNode([
-            CWDOMDocumentNode('doc', [
-                CWDOMNode('a'),
-                CWDOMNode('b', [
-                    CWDOMNode('x'),
-                    CWDOMNode('y'),
+        ns = NodeStore(CWRootNode([
+            CWDocumentNode('doc', [
+                CWNode('a'),
+                CWNode('b', [
+                    CWNode('x'),
+                    CWNode('y'),
                 ]),
-                CWDOMNode('c'),
+                CWNode('c'),
             ])
         ]))
         self.assertEqual(
@@ -134,11 +134,11 @@ class TestNodeStore(CWTestCase):
             self.assertTreeIsConsistent(child)
 
     def test_mark_dirty(self):
-        ns = NodeStore(CWDOMRootNode([
-            CWDOMDocumentNode('doc', [
-                CWDOMNode('a'),
-                CWDOMNode('b'),
-                CWDOMNode('dirty_a')
+        ns = NodeStore(CWRootNode([
+            CWDocumentNode('doc', [
+                CWNode('a'),
+                CWNode('b'),
+                CWNode('dirty_a')
             ])
         ]))
         library = LibraryForTesting()
@@ -149,19 +149,19 @@ class TestNodeStore(CWTestCase):
         ])
 
     def test_get_is_descendant(self):
-        a = CWDOMNode('a')
-        root = CWDOMRootNode([a])
+        a = CWNode('a')
+        root = CWRootNode([a])
         ns = NodeStore(root)
         self.assertTrue(ns.get_is_descendant(a, root))
         self.assertFalse(ns.get_is_descendant(a, a))
         self.assertFalse(ns.get_is_descendant(root, a))
 
     def test_add_own_child(self):
-        ns = NodeStore(CWDOMRootNode([
-            CWDOMDocumentNode('doc', [
-                CWDOMNode('a'),
-                CWDOMNode('b'),
-                CWDOMNode('add_own_child')
+        ns = NodeStore(CWRootNode([
+            CWDocumentNode('doc', [
+                CWNode('a'),
+                CWNode('b'),
+                CWNode('add_own_child')
             ])
         ]))
         library = LibraryForTesting()
@@ -179,42 +179,42 @@ class TestNodeStore(CWTestCase):
         """))
 
     def test_add_root_child_fails(self):
-        ns = NodeStore(CWDOMRootNode([
-            CWDOMDocumentNode('doc', [
-                CWDOMNode('a'),
-                CWDOMNode('b'),
-                CWDOMNode('add_root_child')
+        ns = NodeStore(CWRootNode([
+            CWDocumentNode('doc', [
+                CWNode('a'),
+                CWNode('b'),
+                CWNode('add_root_child')
             ])
         ]))
         library = LibraryForTesting()
         @library.processor('add_root_child')
         def add_root_child(node_store, node):
-            node_store.insert_subtree(node_store.root, 0, CWDOMNode('a_child'))
+            node_store.insert_subtree(node_store.root, 0, CWNode('a_child'))
         with self.assertRaises(NodeStoreConsistencyError):
             ns.apply_library(library)
 
     def test_add_sibling_child_fails(self):
-        a = CWDOMNode('a')
-        ns = NodeStore(CWDOMRootNode([
-            CWDOMDocumentNode('doc', [
+        a = CWNode('a')
+        ns = NodeStore(CWRootNode([
+            CWDocumentNode('doc', [
                 a,
-                CWDOMNode('b'),
+                CWNode('b'),
                 TestNode('add_sibling_child')
             ])
         ]))
         library = LibraryForTesting()
         @library.processor('add_sibling_child')
         def add_root_child(node_store, node):
-            node_store.insert_subtree(a, 0, CWDOMNode('a_child'))
+            node_store.insert_subtree(a, 0, CWNode('a_child'))
         with self.assertRaises(NodeStoreConsistencyError):
             ns.apply_library(library)
 
     def test_wrap_self(self):
-        ns = NodeStore(CWDOMRootNode([
-            CWDOMDocumentNode('doc', [
-                CWDOMNode('a'),
-                CWDOMNode('b'),
-                CWDOMNode('wrap_self')
+        ns = NodeStore(CWRootNode([
+            CWDocumentNode('doc', [
+                CWNode('a'),
+                CWNode('b'),
+                CWNode('wrap_self')
             ])
         ]))
         library = LibraryForTesting()
@@ -231,11 +231,11 @@ class TestNodeStore(CWTestCase):
         """))
 
     def test_wrap_child(self):
-        ns = NodeStore(CWDOMRootNode([
-            CWDOMDocumentNode('doc', [
-                CWDOMNode('b'),
-                CWDOMNode('wrap_a', [
-                    CWDOMNode('a'),
+        ns = NodeStore(CWRootNode([
+            CWDocumentNode('doc', [
+                CWNode('b'),
+                CWNode('wrap_a', [
+                    CWNode('a'),
                 ])
             ])
         ]))
@@ -253,10 +253,10 @@ class TestNodeStore(CWTestCase):
         """))
 
     def test_replace_own_contents(self):
-        ns = NodeStore(CWDOMRootNode([
-            CWDOMDocumentNode('doc', [
-                CWDOMNode('replace_own_contents', [
-                    CWDOMNode('a')
+        ns = NodeStore(CWRootNode([
+            CWDocumentNode('doc', [
+                CWNode('replace_own_contents', [
+                    CWNode('a')
                 ])
             ])
         ]))
@@ -272,10 +272,10 @@ class TestNodeStore(CWTestCase):
         """))
 
     def test_replace_self(self):
-        ns = NodeStore(CWDOMRootNode([
-            CWDOMDocumentNode('doc', [
-                CWDOMNode('replace_self', [
-                    CWDOMNode('a')
+        ns = NodeStore(CWRootNode([
+            CWDocumentNode('doc', [
+                CWNode('replace_self', [
+                    CWNode('a')
                 ])
             ])
         ]))
@@ -291,10 +291,10 @@ class TestNodeStore(CWTestCase):
         """))
 
     def test_replace_self_subtree(self):
-        ns = NodeStore(CWDOMRootNode([
-            CWDOMDocumentNode('doc', [
-                CWDOMNode('replace_self_subtree', [
-                    CWDOMNode('a')
+        ns = NodeStore(CWRootNode([
+            CWDocumentNode('doc', [
+                CWNode('replace_self_subtree', [
+                    CWNode('a')
                 ])
             ])
         ]))

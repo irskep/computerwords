@@ -2,7 +2,7 @@ import pathlib
 from io import StringIO
 
 import computerwords  # to get the module root path
-from computerwords.cwdom.nodes import CWDOMLinkNode, CWDOMTagNode, CWDOMTextNode
+from computerwords.cwdom.nodes import CWLinkNode, CWTagNode, CWTextNode
 from .visitors import get_tag_to_visitor
 from .util import (
     SINGLE_PAGE_TEMPLATE_PATH,
@@ -39,15 +39,15 @@ def _get_nav_html_part(
         entry = document_node.data[entry_key]
         ref_id = entry.ref_id
         if is_prev:
-            node = CWDOMTagNode('nav', {'class': css_class}, [
-                CWDOMLinkNode(ref_id, [
-                    CWDOMTextNode('&larr; ', escape=False)
+            node = CWTagNode('nav', {'class': css_class}, [
+                CWLinkNode(ref_id, [
+                    CWTextNode('&larr; ', escape=False)
                 ]).deepcopy_children_from(entry.heading_node, at_end=True)
             ])
         else:
-            node = CWDOMTagNode('nav', {'class': css_class}, [
-                CWDOMLinkNode(ref_id, [
-                    CWDOMTextNode(' &rarr;', escape=False)
+            node = CWTagNode('nav', {'class': css_class}, [
+                CWLinkNode(ref_id, [
+                    CWTextNode(' &rarr;', escape=False)
                 ]).deepcopy_children_from(entry.heading_node)
             ])
         return _get_subtree_html(
@@ -77,7 +77,7 @@ def write_document(config, options, output_dir, library, node_store, document_no
     if 'nav_previous_entry' in document_node.data:
         entry = document_node.data['nav_previous_entry']
         ref_id = entry.ref_id
-        nav_prev_node = CWDOMLinkNode(ref_id).deepcopy_children_from(entry.heading_node)
+        nav_prev_node = CWLinkNode(ref_id).deepcopy_children_from(entry.heading_node)
     with SINGLE_PAGE_TEMPLATE_PATH.open('r') as template_stream:
         with output_path.open('w') as output_stream:
             output_stream.write(template_stream.read().format(

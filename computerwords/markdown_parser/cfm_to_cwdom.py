@@ -54,20 +54,20 @@ def stmt_to_tag_or_text(stmt, config):
         tag_node = stmt.tag
         if tag_node.form_num == 1:
             tag_contents = tag_node.open_tag.tag_contents
-            yield CWDOMTagNode(
+            yield CWTagNode(
                 tag_contents.bbword.value,
                 tag_contents_to_kwargs(tag_contents),
                 list(stmts_to_list(tag_node.stmts, config)))
         else:
             tag_contents = tag_node.self_closing_tag.tag_contents
-            yield CWDOMTagNode(
+            yield CWTagNode(
                 tag_contents.bbword.value,
                 tag_contents_to_kwargs(tag_contents))
 
 ### end parse_tree_to_cwdom ###
 
 
-class UnparsedTagNode(CWDOMNode):
+class UnparsedTagNode(CWNode):
     def __init__(self, name, parse_tree, literal):
         super().__init__(name)
         self.parse_tree = parse_tree
@@ -97,55 +97,55 @@ def _dump(ast_node):
         print("{}: {!r}".format(k, v))
 
 
-AST_TYPE_TO_CWDOM = {}
+AST_TYPE_TO_CW = {}
 def t(name):
     def dec(f):
-        AST_TYPE_TO_CWDOM[name] = f
+        AST_TYPE_TO_CW[name] = f
         return f
     return dec
 
 
-AST_TYPE_TO_CWDOM_POST = {}
+AST_TYPE_TO_CW_POST = {}
 def post(name):
     def dec(f):
-        AST_TYPE_TO_CWDOM_POST[name] = f
+        AST_TYPE_TO_CW_POST[name] = f
         return f
     return dec
 
 
 @t('Text')
 def t_Text(ast_node, config):
-    yield CWDOMTextNode(ast_node.literal)
+    yield CWTextNode(ast_node.literal)
 
 @t('Document')
 def t_Document(ast_node, config):
-    yield CWDOMDocumentNode('PATH')
+    yield CWDocumentNode('PATH')
 
 @t('Heading')
 def t_Header(ast_node, config):
-    yield CWDOMTagNode('h{}'.format(ast_node.level), {})
+    yield CWTagNode('h{}'.format(ast_node.level), {})
 
 @t('Paragraph')
 def t_Paragraph(ast_node, config):
-    yield CWDOMTagNode('p', {})
+    yield CWTagNode('p', {})
 
 @t('Link')
 def t_Link(ast_node, config):
-    yield CWDOMTagNode('a', {'href': ast_node.destination})
+    yield CWTagNode('a', {'href': ast_node.destination})
 
 @t('List')
 def t_List(ast_node, config):
     if ast_node.list_data['type'] == 'Bullet':
-        yield CWDOMTagNode('ul', {})
+        yield CWTagNode('ul', {})
     elif ast_node.list_data['type'] == 'Ordered': 
-        yield CWDOMTagNode('ol', {})
+        yield CWTagNode('ol', {})
     else:
         raise ValueError("Unknown list type: {}".format(
             ast_node.list_data['type']))
 
 @t('Item')
 def t_Item(ast_node, config):
-    yield CWDOMTagNode('li', {})
+    yield CWTagNode('li', {})
 
 @t('HtmlBlock')
 def t_HtmlBlock(ast_node, config):
@@ -161,41 +161,41 @@ def t_HtmlInline(ast_node, config):
 
 @t('Emph')
 def t_Emph(ast_node, config):
-    yield CWDOMTagNode('i', {})
+    yield CWTagNode('i', {})
 
 @t('Strong')
 def t_Strong(ast_node, config):
-    yield CWDOMTagNode('strong', {})
+    yield CWTagNode('strong', {})
 
 @t('BlockQuote')
 def t_BlockQuote(ast_node, config):
-    yield CWDOMTagNode('blockquote', {})
+    yield CWTagNode('blockquote', {})
 
 @t('ThematicBreak')
 def t_ThematicBreak(ast_node, config):
-    yield CWDOMTagNode('hr', {})
+    yield CWTagNode('hr', {})
 
 @t('CodeBlock')
 def t_CodeBlock(ast_node, config):
-    yield CWDOMTagNode(
-        'pre', {'language': ast_node.info}, [CWDOMTextNode(ast_node.literal)])
+    yield CWTagNode(
+        'pre', {'language': ast_node.info}, [CWTextNode(ast_node.literal)])
 
 @t('Code')
 def t_Code(ast_node, config):
-    yield CWDOMTagNode('tt', {}, [CWDOMTextNode(ast_node.literal)])
+    yield CWTagNode('tt', {}, [CWTextNode(ast_node.literal)])
 
 @t('Hardbreak')
 def t_Hardbreak(ast_node, config):
-    yield CWDOMTagNode('br', {})
+    yield CWTagNode('br', {})
 
 @t('Softbreak')
 def t_Softbreak(ast_node, config):
     # optionally insert br here
-    yield CWDOMTextNode(' ')
+    yield CWTextNode(' ')
 
 @t('Image')
 def t_Image(ast_node, config):
-    yield CWDOMTagNode('img', {'src': ast_node.destination})
+    yield CWTagNode('img', {'src': ast_node.destination})
 
 @post('Image')
 def post_Image(node, config):
@@ -232,14 +232,14 @@ def _do_your_best(literal):
 def _yield_nodes(literal, tokens, i, node):
     yield node
     if i < len(tokens) - 1:
-        yield CWDOMTextNode(literal[tokens[i].pos:])
+        yield CWTextNode(literal[tokens[i].pos:])
 
 
 def maybe_parse_self_closing_tag(literal):
     tokens = list(lex_html(literal))
     result = parse_self_closing_tag(tokens)
     if result:
-        yield from _yield_nodes(literal, tokens, result[1], CWDOMTagNode(
+        yield from _yield_nodes(literal, tokens, result[1], CWTagNode(
             result[0].tag_contents.bbword.value,
             tag_contents_to_kwargs(result[0].tag_contents)))
     else:
@@ -276,7 +276,7 @@ def fix_ignored_html(node):
 
     for i, child in enumerate(children):
         if isinstance(child, UnparsedOpenTagNode):
-            new_tag = CWDOMTagNode(
+            new_tag = CWTagNode(
                 child.parse_tree.tag_contents.bbword.value,
                 tag_contents_to_kwargs(child.parse_tree.tag_contents))
             left_i = i
@@ -323,7 +323,7 @@ def fix_ignored_html(node):
 
 
 def _ast_node_to_cwdom(ast_node, config):
-    for cwdom_node in AST_TYPE_TO_CWDOM[ast_node.t](ast_node, config):
+    for cwdom_node in AST_TYPE_TO_CW[ast_node.t](ast_node, config):
         children = []
         ast_child = ast_node.first_child
         while ast_child:
@@ -332,8 +332,8 @@ def _ast_node_to_cwdom(ast_node, config):
             ast_child = ast_child.nxt
         # node might have added its own children (see Code)
         cwdom_node.set_children(cwdom_node.children + children)
-        if ast_node.t in AST_TYPE_TO_CWDOM_POST:
-            AST_TYPE_TO_CWDOM_POST[ast_node.t](cwdom_node)
+        if ast_node.t in AST_TYPE_TO_CW_POST:
+            AST_TYPE_TO_CW_POST[ast_node.t](cwdom_node)
         yield cwdom_node
 
 

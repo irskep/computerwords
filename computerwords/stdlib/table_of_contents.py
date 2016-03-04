@@ -1,10 +1,10 @@
 import logging
 from collections import OrderedDict, namedtuple, deque
 from computerwords.cwdom.nodes import (
-    CWDOMAnchorNode,
-    CWDOMLinkNode,
-    CWDOMTagNode,
-    CWDOMTextNode,
+    CWAnchorNode,
+    CWLinkNode,
+    CWTagNode,
+    CWTextNode,
 )
 
 
@@ -46,12 +46,12 @@ def _format_entry_number(entry_to_number, entry):
 def _nested_list_to_node(entry_to_number, entry_children_pairs):
     def make_li(entry, children):
         li_contents = [
-            CWDOMLinkNode(entry.ref_id, entry.heading_node.deepcopy().children)
+            CWLinkNode(entry.ref_id, entry.heading_node.deepcopy().children)
         ]
         if children:
             li_contents.append(_nested_list_to_node(entry_to_number, children))
-        return CWDOMTagNode('li', {}, li_contents)
-    return CWDOMTagNode('ol', {}, [
+        return CWTagNode('li', {}, li_contents)
+    return CWTagNode('ol', {}, [
         make_li(entry, children) for entry, children in entry_children_pairs
     ])
 
@@ -133,7 +133,7 @@ def add_table_of_contents(library):
         _add_toc_data_if_not_exists(node_store)
         node_store.processor_data['toc_heading_nodes'].append(node)
         entry = _node_to_toc_entry(node_store, node)
-        anchor = CWDOMAnchorNode(
+        anchor = CWAnchorNode(
             entry.ref_id, kwargs={'class': 'header-anchor'})
         node_store.wrap_node(node, anchor)
 
@@ -185,7 +185,7 @@ def add_table_of_contents(library):
         for toc_node in node_store.processor_data['toc_nodes']:
             node_store.replace_subtree(
                 toc_node,
-                CWDOMTagNode('nav', {'class': 'table-of-contents'}, [
+                CWTagNode('nav', {'class': 'table-of-contents'}, [
                     _nested_list_to_node(entry_to_number, top_level_entries),
                 ]))
 
@@ -212,4 +212,4 @@ def add_table_of_contents(library):
         #     node_store.insert_subtree(
         #         heading_node,
         #         0,
-        #         CWDOMTextNode(number + ' '))
+        #         CWTextNode(number + ' '))
