@@ -7,9 +7,9 @@ class DuplicateArgumentsError(ParseError):
     pass
 
 
-def tag_contents_to_kwargs(tag_contents):
+def tag_args_to_dict(tag_args):
     kwargs = {}
-    for tag_arg in tag_args_to_list(tag_contents.tag_args):
+    for tag_arg in tag_args_to_list(tag_args):
         key = tag_arg.bbword.value
         if key in kwargs:
             raise DuplicateArgumentsError(

@@ -175,27 +175,15 @@ def parse_html(tokens, allowed_tags=None):
     return call_parse_function('stmts_b', tokens, 0, config)[0]
 
 
-def parse_open_tag(tokens, allowed_tags=None):
-    if allowed_tags is None:
-        allowed_tags = set()
-    config = ParserConfig(allowed_tags)
-    return call_parse_function('open_tag', tokens, 0, config)
+def parser_shortcut(name):
+    def parse_fn(tokens, allowed_tags=None):
+        if allowed_tags is None:
+            allowed_tags = set()
+        config = ParserConfig(allowed_tags)
+        return call_parse_function(name, tokens, 0, config)
+    return parse_fn
 
-def parse_close_tag(tokens, allowed_tags=None):
-    if allowed_tags is None:
-        allowed_tags = set()
-    config = ParserConfig(allowed_tags)
-    return call_parse_function('close_tag', tokens, 0, config)
-
-def parse_self_closing_tag(tokens, allowed_tags=None):
-    if allowed_tags is None:
-        allowed_tags = set()
-    config = ParserConfig(allowed_tags)
-    return call_parse_function('self_closing_tag', tokens, 0, config)
-
-def parse_single_statement(tokens, allowed_tags=None):
-    if allowed_tags is None:
-        allowed_tags = set()
-    config = ParserConfig(allowed_tags)
-    result = call_parse_function('stmt', tokens, 0, config)
-    return result[0] if result else None
+parse_open_tag = parser_shortcut('open_tag')
+parse_close_tag = parser_shortcut('close_tag')
+parse_self_closing_tag = parser_shortcut('self_closing_tag')
+parse_single_statement = parser_shortcut('stmt')

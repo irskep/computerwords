@@ -9,13 +9,27 @@ from pygments.util import ClassNotFound
 from computerwords.cwdom.nodes import CWTagNode, CWTextNode
 
 
+def _dumb_parse_args(s):
+    d = {}
+    for pair in s.split():
+        kv = pair.split('=', maxsplit=1)
+        if len(kv) == 2:
+            k, v = kv
+            d[k] = v
+    return d
+
+
 def add_code(library):
     @library.processor('pre')
     def lang_pygments_convert(node_store, node):
         try:
-            lexer = get_lexer_by_name(node.kwargs.get('language', '').split()[0])
-            assert(len(node.children) == 1)
-            assert(isinstance(node.children[0], CWTextNode))
+            split = node.kwargs.get('language', '').split(maxsplit=1)
+            language = split[0]
+            lexer = get_lexer_by_name(language)
+
+            args = split[1] if len(split) > 1 else ''
+            kwargs = _dumb_parse_args(args)
+
             node_store.replace_subtree(
                 node,
                 CWTagNode('figure', {'class': 'pygments'}, [

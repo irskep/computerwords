@@ -56,13 +56,13 @@ def stmt_to_tag_or_text(stmt, config):
             tag_contents = tag_node.open_tag.tag_contents
             yield CWTagNode(
                 tag_contents.bbword.value,
-                tag_contents_to_kwargs(tag_contents),
+                tag_args_to_dict(tag_contents.tag_args),
                 list(stmts_to_list(tag_node.stmts, config)))
         else:
             tag_contents = tag_node.self_closing_tag.tag_contents
             yield CWTagNode(
                 tag_contents.bbword.value,
-                tag_contents_to_kwargs(tag_contents))
+                tag_args_to_dict(tag_contents.tag_args))
 
 ### end parse_tree_to_cwdom ###
 
@@ -241,7 +241,7 @@ def maybe_parse_self_closing_tag(literal):
     if result:
         yield from _yield_nodes(literal, tokens, result[1], CWTagNode(
             result[0].tag_contents.bbword.value,
-            tag_contents_to_kwargs(result[0].tag_contents)))
+            tag_args_to_dict(result[0].tag_contents.tag_args)))
     else:
         raise NonFatalParseError()
 
@@ -278,7 +278,7 @@ def fix_ignored_html(node):
         if isinstance(child, UnparsedOpenTagNode):
             new_tag = CWTagNode(
                 child.parse_tree.tag_contents.bbword.value,
-                tag_contents_to_kwargs(child.parse_tree.tag_contents))
+                tag_args_to_dict(child.parse_tree.tag_contents.tag_args))
             left_i = i
             break
 
