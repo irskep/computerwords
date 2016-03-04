@@ -30,14 +30,22 @@ def add_code(library):
             args = split[1] if len(split) > 1 else ''
             kwargs = _dumb_parse_args(args)
 
+            figure_children = []
+
+            if kwargs.get('filename', None):
+                figure_children.append(
+                    CWTagNode('div', {'class': 'filename'}, [
+                        CWTextNode(kwargs['filename'])
+                    ]))
+
+            figure_children.append(CWTextNode(
+                pygments.highlight(
+                    node.children[0].text, lexer, HtmlFormatter()),
+                escape=False))
+
             node_store.replace_subtree(
                 node,
-                CWTagNode('figure', {'class': 'pygments'}, [
-                    CWTextNode(
-                        pygments.highlight(
-                            node.children[0].text, lexer, HtmlFormatter()),
-                        escape=False)
-                ]))
+                CWTagNode('figure', {'class': 'code'}, figure_children))
         except ClassNotFound:
             pass
 

@@ -21,15 +21,11 @@ First, install Python 3.5. (Yes, I'm serious. See
 (that's right, I haven't released it yet) and install the requirements.
 Now you're ready to run! You just need to write a Markdown file and a config.
 
-`docs/index.md`:
-
 ```markdown filename=docs/index.md
 # My Cool Project
 
 Hello world!
 ```
-
-`docs/conf.json`:
 
 ```json filename=docs/conf.json
 {
@@ -40,7 +36,6 @@ Hello world!
 }
 ```
 
-command:
 ```sh
 > python3 -m computerwords --conf docs/conf.json
 ```
