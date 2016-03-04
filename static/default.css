@@ -84,6 +84,7 @@ pre {
   border-radius: 3px;
   padding: 0.5rem;
   background-color: #fafafa;
+  font-family: Menlo,Consolas,monaco,monospace;
 }
 
 article img {
