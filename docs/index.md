@@ -1,6 +1,6 @@
-Computer Words is a tool and document processing API that helps you write
-documentation for software. It is conceptually similar to
-[Sphinx](http://sphinx-doc.org/).
+Computer Words is a tool that helps you write documentation for software. It
+is extensible and you can write Markdown. Computer Words is conceptually
+similar to [Sphinx](http://sphinx-doc.org/).
 
 The page you are reading was written in
 [Computer Flavored Markdown](#computer-flavored-markdown) and compiled
