@@ -56,9 +56,10 @@ class TextVisitor(WritingVisitor):
 class AnchorVisitor(WritingVisitor):
     def before_children(self, node_store, node):
         # just relative to itself
-        href = anchor_to_href(self.options, node, node)
-        self.output_stream.write('<a name="{}"{}>'.format(
-            href, html_attrs_to_string(node.kwargs)))
+        name = anchor_to_href(self.options, node, node)
+        fmt = '<a href="#{name}" name="{name}"{attrs}>'
+        self.output_stream.write(fmt.format(
+            name=name, attrs=html_attrs_to_string(node.kwargs)))
 
     def after_children(self, node_store, node):
         self.output_stream.write('</a>')

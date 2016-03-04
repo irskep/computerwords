@@ -71,8 +71,7 @@ def write_document(config, options, output_dir, library, node_store, document_no
             'nav_previous_entry', 'previous-page', is_prev=True) +
         _get_nav_html_part(
             config, options, library, node_store, document_node,
-            'nav_next_entry', 'next-page', is_prev=False) +
-        '<div style="clear: both;"></div>')
+            'nav_next_entry', 'next-page', is_prev=False))
 
     nav_next_node = None
     if 'nav_previous_entry' in document_node.data:
@@ -85,6 +84,7 @@ def write_document(config, options, output_dir, library, node_store, document_no
                 stylesheet_tags="".join(options.stylesheet_tag_strings),
                 body=body,
                 nav_html=nav_html,
+                html_options=options,
                 **config,
             ))
 

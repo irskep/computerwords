@@ -11,10 +11,10 @@
     </head>
     <body>
         <header id="pageheader">
-            <h1>{site_title}</h1>
+            <a class="header-link" href="{html_options.site_url}"><h1>{site_title}</h1></a>
             <h2>{site_subtitle}</h2>
         </header>
         <main id="pagebody">{body}</main>
-        <footer id="pagefooter">{nav_html}</footer>
+        <footer id="pagefooter">{nav_html}<div style="clear: both;"></div></footer>
     </body>
 </html>

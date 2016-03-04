@@ -9,10 +9,13 @@ DEFAULT_CONFIG = {
     'site_title': 'My Cool Web Site',
     'author': 'Docs McGee',
     'output_dir': './build',
-    'static_dir_name': 'static',
+    'html': {
+        'site_url': '/',
+        'css_files': None,
+        'css_theme': 'default',
+        'static_dir_name': 'static',
+    },
     'meta_description': '',
-    'css_files': None,
-    'css_theme': 'default',
 }
 
 

@@ -3,7 +3,8 @@
     "site_subtitle": "A system for writing and publishing documentation",
     "html": {
         "css_files": ["style.css"],
-        "single_page": false
+        "single_page": false,
+        "site_url": "http://steveasleep.com/computerwords/"
     },
     "file_hierarchy": [
         "index.md",
