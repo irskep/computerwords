@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>Computer Words: A system for writing and publishing documentation</title>
+        <meta name="description" content="/">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="static/normalize.css" type="text/css" /><link rel="stylesheet" href="static/default.css" type="text/css" /><link rel="stylesheet" href="style.css" type="text/css" /><link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    </head>
+    <body>
+        <header id="pageheader">
+            <a class="header-link" href="http://steveasleep.com/computerwords/"><h1>Computer Words</h1></a>
+            <h2>A system for writing and publishing documentation</h2>
+            <div id="navheader"><nav class='previous-page'><a href="computer_flavored_markdown.html#Computer-Flavored-Markdown">&larr; Computer Flavored Markdown</a></nav><nav class='next-page'><a href="how_it_works.html#How-it-works">How it works &rarr;</a></nav><div style="clear: both;"></div></div>
+            <hr>
+        </header>
+        <main id="pagebody"><article><a href="#Configuration" name="Configuration" class='header-anchor'><h1>Configuration</h1></a><p>All configuration lives in a JSON file that we&#x27;ll call <tt>conf.json</tt>. Every path is relative to the directory in which this file lives.</p><a href="#Complete-example" name="Complete-example" class='header-anchor'><h2>Complete example</h2></a><p>Note: JSON cannot contain comments, so this isn&#x27;t copy-pasteable.</p><figure class='code'><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="cm">/* Include all Markdown files in this directory,</span>
+<span class="cm">     ordered alphabetically, but with index.md first</span>
+<span class="cm">     if present */</span>
+  <span class="s2">&quot;file_hierarchy&quot;</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;*.md&quot;</span><span class="p">],</span>
+
+  <span class="c1">// Name of the project or web site</span>
+  <span class="s2">&quot;site_title&quot;</span><span class="o">:</span> <span class="s2">&quot;My Cool Web Site&quot;</span><span class="p">,</span>
+
+  <span class="c1">// Tag line or whatever</span>
+  <span class="s2">&quot;site_subtitle&quot;</span><span class="o">:</span> <span class="s2">&quot;It&#39;s very cool.&quot;</span><span class="p">,</span>
+
+  <span class="c1">// Your name</span>
+  <span class="s2">&quot;author&quot;</span><span class="o">:</span> <span class="s2">&quot;Docs McGee&quot;</span><span class="p">,</span>
+
+  <span class="c1">// Place to put HTML files, relative to this file</span>
+  <span class="s2">&quot;output_dir&quot;</span><span class="o">:</span> <span class="s2">&quot;./build&quot;</span><span class="p">,</span>
+
+  <span class="c1">// HTML output options</span>
+  <span class="s2">&quot;html&quot;</span><span class="o">:</span> <span class="p">{</span>
+
+      <span class="c1">// Absolute URL of where the site will be uploaded</span>
+      <span class="s2">&quot;site_url&quot;</span><span class="o">:</span> <span class="s2">&quot;http://example.com&quot;</span><span class="p">,</span>
+
+      <span class="c1">// Stylesheets to add</span>
+      <span class="s2">&quot;css_files&quot;</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;style.css&quot;</span><span class="p">],</span>
+
+      <span class="c1">// Built-in theme to use (can be null)</span>
+      <span class="s2">&quot;css_theme&quot;</span><span class="o">:</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+
+      <span class="c1">// Where to keep stylesheets, images, etc</span>
+      <span class="s2">&quot;static_dir_name&quot;</span><span class="o">:</span> <span class="s2">&quot;static&quot;</span><span class="p">,</span>
+
+      <span class="c1">// What to put in the &lt;meta name=&quot;description&quot;&gt; tag</span>
+      <span class="s2">&quot;meta_description&quot;</span><span class="o">:</span> <span class="s2">&quot;&quot;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</figure><a href="#file_hierarchy" name="file_hierarchy" class='header-anchor'><h2><tt>file_hierarchy</tt></h2></a></article></main>
+        <footer id="pagefooter"><nav class='previous-page'><a href="computer_flavored_markdown.html#Computer-Flavored-Markdown">&larr; Computer Flavored Markdown</a></nav><nav class='next-page'><a href="how_it_works.html#How-it-works">How it works &rarr;</a></nav><div style="clear: both;"></div></footer>
+    </body>
+</html>
