@@ -34,8 +34,11 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 0.5em;
   line-height: 135%;
 }
-a.header-anchor {
+a.header-anchor, a.header-link {
   color: black;
+}
+a.header-link {
+  text-decoration: none;
 }
 
 header#pageheader, footer#pagefooter, main#pagebody {
