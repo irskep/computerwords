@@ -16,9 +16,19 @@ with Computer Words.
 
 # Basics
 
-First, install Python 3.5. (Yes, I'm serious. See
-[Why Python 3.5?](#why-python-3.5)) Then get the source code of this project
-(that's right, I haven't released it yet) and install the requirements.
+```sh
+# if necessary, install Python 3.5:
+brew install python3.5  # or whatever
+
+# this project is unreleased, so you need the source:
+git clone https://github.com/irskep/computerwords.git
+cd computerwords
+
+# make a virtualenv and install everything:
+python3.5 -m pip install -r requirements.txt
+python3.5 setup.py install
+```
+
 Now you're ready to run! You just need to write a Markdown file and a config.
 
 ```markdown filename=docs/index.md
@@ -31,7 +41,6 @@ Hello world!
 {
   "site_title": "My Cool Project",
   "site_subtitle": "The coolest project ever",
-  "css_files": ["style.css"],
   "file_hierarchy": ["*.md"]
 }
 ```
