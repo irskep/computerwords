@@ -3,6 +3,8 @@ import os
 import pathlib
 from collections import namedtuple
 
+from pygments.formatters import HtmlFormatter
+
 import computerwords
 
 
@@ -76,7 +78,13 @@ def read_htmlwriter_options(config, input_dir, output_dir):
                 rel_path = path.relative_to(input_dir)
                 css_files.append((path, output_dir.joinpath(rel_path)))
 
-    files_to_copy = css_files
+    files_to_copy = [f for f in css_files]
+
+    pygments_css_path = static_dir / "pygments.css"
+    with pygments_css_path.open('w') as f:
+        f.write(HtmlFormatter(style='tango').get_style_defs())
+
+    css_files.append((None, pygments_css_path))
 
     stylesheet_tag_strings = [
         '<link rel="stylesheet" href="{}" type="text/css" />'.format(

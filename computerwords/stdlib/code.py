@@ -1,9 +1,27 @@
 import hashlib
 import subprocess
-from computerwords.cwdom.CWDOMNode import CWDOMTagNode
+
+import pygments
+from pygments.formatters import HtmlFormatter
+from pygments.lexers import get_lexer_by_name
+from pygments.util import ClassNotFound
+
+from computerwords.cwdom.CWDOMNode import CWDOMTagNode, CWDOMTextNode
 
 
 def add_code(library):
+    @library.processor('pre')
+    def lang_pygments_convert(node_store, node):
+        try:
+            lexer = get_lexer_by_name(node.kwargs.get('language', '').split()[0])
+            assert(len(node.children) == 1)
+            assert(isinstance(node.children[0], CWDOMTextNode))
+            node_store.replace_subtree(node, CWDOMTextNode(
+                pygments.highlight(node.children[0].text, lexer, HtmlFormatter()),
+                escape=False))
+        except ClassNotFound:
+            pass
+
 
     @library.processor('pre')
     def lang_graphviz_convert(node_store, node):
