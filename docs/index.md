@@ -24,7 +24,7 @@ brew install python3.5  # or whatever
 git clone https://github.com/irskep/computerwords.git
 cd computerwords
 
-# make a virtualenv and install everything:
+# install everything:
 python3.5 -m pip install -r requirements.txt
 python3.5 setup.py install
 ```
