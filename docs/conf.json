@@ -9,6 +9,7 @@
     "file_hierarchy": [
         "index.md",
         "computer_flavored_markdown.md",
+        "configuration.md",
         "how_it_works.md",
         "about.md",
         "roadmap.md",

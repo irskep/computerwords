@@ -14,6 +14,7 @@ HTMLWriterOptions = namedtuple('HTMLWriterOptions', [
     'files_to_copy',
     'stylesheet_tag_strings',
     'site_url',
+    'meta_description',
 ])
 
 
@@ -112,4 +113,6 @@ def read_htmlwriter_options(config, input_dir, output_dir):
         static_dir=static_dir,
         files_to_copy=files_to_copy,
         stylesheet_tag_strings=stylesheet_tag_strings,
-        site_url=html_config.get('site_url', '/'))
+        site_url=html_config.get('site_url', '/'),
+        meta_description=html_config.get('meta_description', '/'),
+    )

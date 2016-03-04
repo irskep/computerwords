@@ -2,20 +2,20 @@ from collections.abc import Mapping
 
 
 DEFAULT_CONFIG = {
-    # TODO: auto directory-reading version?
-    'file_hierarchy': [
-        {'**/*.txt', '**/*.md'},
+    "file_hierarchy": [
+        {"**/*.txt", "**/*.md"},
     ],
-    'site_title': 'My Cool Web Site',
-    'author': 'Docs McGee',
-    'output_dir': './build',
-    'html': {
-        'site_url': '/',
-        'css_files': None,
-        'css_theme': 'default',
-        'static_dir_name': 'static',
+    "site_title": "My Cool Web Site",
+    "site_subtitle": "",
+    "author": "Docs McGee",
+    "output_dir": "./build",
+    "html": {
+        "site_url": "/",
+        "css_files": None,
+        "css_theme": "default",
+        "static_dir_name": "static",
+        "meta_description": "",
     },
-    'meta_description': '',
 }
 
 
