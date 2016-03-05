@@ -1,7 +1,10 @@
 import argparse
 import json
+import logging
 import pathlib
 import sys
+
+logging.basicConfig(level=logging.DEBUG)
 
 from computerwords import htmlwriter
 from computerwords.config import DictCascade, DEFAULT_CONFIG
@@ -12,6 +15,8 @@ from computerwords.markdown_parser.cfm_to_cwdom import (
 )
 from computerwords.read_doc_tree import read_doc_tree
 from computerwords.stdlib import stdlib
+
+log = logging.getLogger(__name__)
 
 
 def run():

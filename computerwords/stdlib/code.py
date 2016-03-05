@@ -23,8 +23,8 @@ def add_code(library):
     @library.processor('pre')
     def lang_pygments_convert(node_store, node):
         try:
-            split = node.kwargs.get('language', '').split(maxsplit=1)
-            language = split[0]
+            split = (node.kwargs.get('language', '') or '').split(maxsplit=1)
+            language = split[0] if split else None
             lexer = get_lexer_by_name(language)
 
             args = split[1] if len(split) > 1 else ''

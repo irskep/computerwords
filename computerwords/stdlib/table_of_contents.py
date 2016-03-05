@@ -201,8 +201,10 @@ def add_table_of_contents(library):
         for path in sorted_paths:
             doc = path_to_doc[path]
             if last_doc:
-                doc.data['nav_previous_entry'] = doc_path_to_entries[last_doc.path][0]
-                last_doc.data['nav_next_entry'] = doc_path_to_entries[doc.path][0]
+                if doc_path_to_entries[last_doc.path]:
+                    doc.data['nav_previous_entry'] = doc_path_to_entries[last_doc.path][0]
+                if doc_path_to_entries[doc.path]:
+                    last_doc.data['nav_next_entry'] = doc_path_to_entries[doc.path][0]
             last_doc = doc
 
         # optional: insert heading numbers

@@ -199,7 +199,8 @@ def t_Image(ast_node, config):
 
 @post('Image')
 def post_Image(node, config):
-    node.kwargs['alt'] = node.children[0].text
+    if node.children:
+        node.kwargs['alt'] = node.children[0].text
     node.set_children([])
 
 
@@ -333,7 +334,7 @@ def _ast_node_to_cwdom(ast_node, config):
         # node might have added its own children (see Code)
         cwdom_node.set_children(cwdom_node.children + children)
         if ast_node.t in AST_TYPE_TO_CW_POST:
-            AST_TYPE_TO_CW_POST[ast_node.t](cwdom_node)
+            AST_TYPE_TO_CW_POST[ast_node.t](cwdom_node, config)
         yield cwdom_node
 
 
