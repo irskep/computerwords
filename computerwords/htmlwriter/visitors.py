@@ -4,6 +4,8 @@ from computerwords.cwdom.NodeStore import NodeStoreVisitor
 
 from .util import (
     anchor_to_href,
+    doc_id_to_single_page_anchor_name,
+    doc_to_href,
     html_attrs_to_string,
 )
 
@@ -18,6 +20,7 @@ def get_tag_to_visitor(library, stream, options):
     tag_to_visitor['Text'] = TextVisitor(options, stream, 'Text')
     tag_to_visitor['Anchor'] = AnchorVisitor(options, stream)
     tag_to_visitor['Link'] = LinkVisitor(options, stream)
+    tag_to_visitor['DocumentLink'] = DocumentLinkVisitor(options, stream)
     return tag_to_visitor
 
 
@@ -77,12 +80,26 @@ class LinkVisitor(WritingVisitor):
         self.output_stream.write('</a>')
 
 
+class DocumentLinkVisitor(WritingVisitor):
+    def before_children(self, node_store, node):
+        href = doc_to_href(self.options, node, node.target_document_id)
+        self.output_stream.write('<a href="{}">'.format(href))
+
+    def after_children(self, node_store, node):
+        self.output_stream.write('</a>')
+
+
 class DocumentVisitor(WritingVisitor):
     def before_children(self, node_store, node):
+        if self.options.single_page:
+            self.output_stream.write('<a name="{}">'.format(
+                doc_id_to_single_page_anchor_name(node.document_id)))
         self.output_stream.write('<article>')
 
     def after_children(self, node_store, node):
         if self.options.single_page:
-            self.output_stream.write('<hr />')
+            self.output_stream.write('<hr>')
         self.output_stream.write('</article>')
+        if self.options.single_page:
+            self.output_stream.write('</a>')
 

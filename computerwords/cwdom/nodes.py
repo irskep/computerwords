@@ -202,7 +202,24 @@ class CWLinkNode(CWNode):
         return "ref_id={!r}".format(self.ref_id)
 
     def copy(self):
-        return CWAnchorNode(self.ref_id, document_id=self.document_id)
+        return CWLinkNode(self.ref_id, document_id=self.document_id)
 
     def __repr__(self):
         return "{}(ref_id={!r})".format(self.name, self.ref_id)
+
+
+class CWDocumentLinkNode(CWNode):
+    def __init__(self, target_document_id, children=None, document_id=None):
+        super().__init__('DocumentLink', children, document_id=document_id)
+        self.target_document_id = target_document_id
+
+    def get_args_string_for_test_comparison(self):
+        return "target_document_id={!r}".format(self.target_document_id)
+
+    def copy(self):
+        return CWDocumentLinkNode(
+            self.target_document_id, document_id=self.document_id)
+
+    def __repr__(self):
+        return "{}(target_document_id={!r})".format(
+            self.name, self.target_document_id)

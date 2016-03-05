@@ -41,6 +41,13 @@ def find_path_between(a, b):
         return ''
 
 
+def doc_to_href(options, link_node, target_doc_id):
+    if options.single_page: return ''  # probably not used...
+    if link_node.document_id == target_doc_id: return ''
+
+    return find_path_between(link_node.document_id, target_doc_id)
+
+
 def anchor_to_href(options, link_node, anchor_node):
     if options.single_page:
         name = "{}-{}".format(
@@ -57,6 +64,10 @@ def anchor_to_href(options, link_node, anchor_node):
             return "{}#{}".format(
                 find_path_between(link_node.document_id, anchor_node.document_id),
                 anchor_node.ref_id)
+
+
+def doc_id_to_single_page_anchor_name(doc_id):
+    return 'doc-' + '-'.join(doc_id)
 
 
 def html_attrs_to_string(kwargs):
