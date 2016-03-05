@@ -4,7 +4,6 @@
 
 * Tag reference documentation
 * Cross-referencing sections without having to repeat the full name
-* Syntax highlighting in code blocks
 * Reasonable error messages (do you like 50 line stack traces???)
 
 ## Planned features
