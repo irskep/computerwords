@@ -177,6 +177,8 @@ def add_table_of_contents(library):
             top_level_entries.extend(
                 _entries_to_nested_list(doc_path_to_entries[path]))
 
+        node_store.processor_data['toc'] = top_level_entries
+
         ### put TOC in tree ###
 
         entry_to_number = {}

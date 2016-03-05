@@ -11,6 +11,7 @@ from .visitors import get_tag_to_visitor
 from .util import (
     SINGLE_PAGE_TEMPLATE_PATH,
     copy_files,
+    doc_to_href,
     read_htmlwriter_options,
 )
 
@@ -60,6 +61,16 @@ def write_document(config, options, output_dir, library, node_store, document_no
         _get_nav_html_part(
             config, options, library, node_store, document_node, is_prev=False))
 
+
+    ctx = {k: v for k, v in config.items()}
+    if not options.single_page:
+        relative_site_url = doc_to_href(
+            options,
+            document_node,
+            node_store.processor_data['toc'][0][0].heading_node.document_id)
+        ctx['title_url'] = relative_site_url
+    else:
+        ctx['title_url'] = options.site_url
     with SINGLE_PAGE_TEMPLATE_PATH.open('r') as template_stream:
         with output_path.open('w') as output_stream:
             output_stream.write(template_stream.read().format(
@@ -67,7 +78,7 @@ def write_document(config, options, output_dir, library, node_store, document_no
                 body=body,
                 nav_html=nav_html,
                 html_options=options,
-                **config,
+                **ctx,
             ))
 
 
