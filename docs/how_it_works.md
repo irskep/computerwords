@@ -1,5 +1,7 @@
 # How it works
 
+## Input
+
 First, your files are parsed into a tree called the “Computer Words Document
 Object Model”, or `CWDOM`. So this:
 
@@ -13,16 +15,22 @@ becomes this:
 
 ```graphviz-dot-convert
 strict digraph {
-    Document [label="Document(path='readme.md')"]
-    TitleText [label="Text(text='Title')"]
-    BodyText [label="Text(text='some text')"]
+    Root [label="Root" fontname="Helvetica" fontsize=10 shape="box"]
+    Document [label="Document(path='readme.md')" fontname="Helvetica" fontsize=10 shape="box"]
+    TitleText [label="Text(text='Title')" fontname="Helvetica" fontsize=10 shape="box"]
+    BodyText [label="Text(text='some text')" fontname="Helvetica" fontsize=10 shape="box"]
+    h1 [fontname="Helvetica" fontsize=10 shape="box"]
+    p [fontname="Helvetica" fontsize=10 shape="box"]
 
+    Root -> Document
     Document -> h1
     h1 -> TitleText
     Document -> p
     p -> BodyText
 }
 ```
+
+## Processing
 
 Then we apply a processor library to the graph. A *library* is a mapping of
 `node_name -> [processor]`. A *processor* is a function like this:
@@ -42,3 +50,7 @@ Each node will be processed at least once, in a *post-order tree traversal*
 (meaning that a node will be visited before its ancestors). If a node is
 mutated by another node's processor, that node will be marked *dirty* and
 its processors will be run again.
+
+## Output
+
+The *html writer* walks the tree and writes HTML.

@@ -59,10 +59,13 @@ def add_code(library):
         h = hashlib.sha256()
         h.update(code)
 
-        output_path = node_store.env['output_dir'] / "{}.png".format(h.hexdigest())
+        # output_path = node_store.env['output_dir'] / "{}.png".format(h.hexdigest())
+        output_path = node_store.env['output_dir'] / "{}.svg".format(h.hexdigest())
         src = output_path.relative_to(node_store.env['output_dir'])
+        # p = subprocess.Popen(
+        #     ['dot', '-Tpng', '-Gdpi=192', '-o', str(output_path)], stdin=subprocess.PIPE)
         p = subprocess.Popen(
-            ['dot', '-Tpng', '-o', str(output_path)], stdin=subprocess.PIPE)
+            ['dot', '-Tsvg', '-o', str(output_path)], stdin=subprocess.PIPE)
         p.communicate(code, timeout=10)
         node_store.replace_subtree(
             node, CWTagNode('figure', {'class': 'image graphviz-graph'}, [
