@@ -31,7 +31,7 @@ organizing power to bring it together.
 
 The output uses semantic HTML5 markup. That's kind of nice.
 
-It's really to include CSS stylesheets. You might think, “I'm making a web
+It's really easy to include CSS stylesheets. You might think, “I'm making a web
 site, so of course I can style it with CSS!” But if you were using
 [another tool](http://sphinx-doc.org), you would find this task to be more
 trouble than you were expecting. Computer Words makes it really, really simple
