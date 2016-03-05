@@ -12,7 +12,7 @@ with Computer Words.
 
 <h1 skip_toc=True>Table of Contents</h1>
 
-<table-of-contents />
+<table-of-contents maxdepth=2 />
 
 # Basics
 

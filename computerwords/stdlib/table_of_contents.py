@@ -43,13 +43,14 @@ def _node_to_toc_entry(node_store, node):
 def _format_entry_number(entry_to_number, entry):
     return '.'.join(str(n) for n in entry_to_number[entry])
 
-def _nested_list_to_node(entry_to_number, entry_children_pairs):
+def _nested_list_to_node(entry_to_number, entry_children_pairs, max_depth=3):
     def make_li(entry, children):
         li_contents = [
             CWLinkNode(entry.ref_id, entry.heading_node.deepcopy().children)
         ]
-        if children:
-            li_contents.append(_nested_list_to_node(entry_to_number, children))
+        if children and max_depth > 1:
+            li_contents.append(
+                _nested_list_to_node(entry_to_number, children, max_depth - 1))
         return CWTagNode('li', {}, li_contents)
     return CWTagNode('ol', {}, [
         make_li(entry, children) for entry, children in entry_children_pairs
@@ -185,10 +186,18 @@ def add_table_of_contents(library):
         _store_entry_to_sequence(top_level_entries, entry_to_number, ())
 
         for toc_node in node_store.processor_data['toc_nodes']:
+            max_depth = 3
+            try:
+                max_depth = int(toc_node.kwargs.get('maxdepth', '3'))
+            except ValueError:
+                pass
+            assert(max_depth > 0)
+
             node_store.replace_subtree(
                 toc_node,
                 CWTagNode('nav', {'class': 'table-of-contents'}, [
-                    _nested_list_to_node(entry_to_number, top_level_entries),
+                    _nested_list_to_node(
+                        entry_to_number, top_level_entries, max_depth),
                 ]))
 
         ### add next/prev data to docs ###
