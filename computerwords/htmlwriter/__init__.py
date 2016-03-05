@@ -11,21 +11,6 @@ from .util import (
 )
 
 
-def write_single_page(config, options, output_dir, library, node_store):
-    body = _get_subtree_html(config, options, library, node_store)
-
-    output_path = output_dir / "index.html"
-    output_path.touch()
-    with SINGLE_PAGE_TEMPLATE_PATH.open('r') as template_stream:
-        with output_path.open('w') as output_stream:
-            output_stream.write(template_stream.read().format(
-                nav_html='',
-                stylesheet_tags="".join(options.stylesheet_tag_strings),
-                body=body,
-                **config,
-            ))
-
-
 def _get_subtree_html(config, options, library, node_store, node=None):
     stream = StringIO()
     node_store.visit_all(get_tag_to_visitor(library, stream, options), node)
@@ -91,6 +76,22 @@ def write_document(config, options, output_dir, library, node_store, document_no
 def write_multi_page(config, options, output_dir, library, node_store):
     for document_node in node_store.root.children:
         write_document(config, options, output_dir, library, node_store, document_node)
+
+
+def write_single_page(config, options, output_dir, library, node_store):
+    body = _get_subtree_html(config, options, library, node_store)
+
+    output_path = output_dir / "index.html"
+    output_path.touch()
+    with SINGLE_PAGE_TEMPLATE_PATH.open('r') as template_stream:
+        with output_path.open('w') as output_stream:
+            output_stream.write(template_stream.read().format(
+                nav_html='',
+                stylesheet_tags="".join(options.stylesheet_tag_strings),
+                body=body,
+                html_options=options,
+                **config,
+            ))
 
 
 def write(config, input_dir, output_dir, library, node_store):
