@@ -20,13 +20,8 @@ with Computer Words.
 # if necessary, install Python 3.5:
 brew install python3.5  # or whatever
 
-# this project is unreleased, so you need the source:
-git clone https://github.com/irskep/computerwords.git
-cd computerwords
-
-# install everything:
-python3.5 -m pip install -r requirements.txt
-python3.5 setup.py install
+# then install Computer Words
+pip install -e git+https://github.com/irskep/computerwords.git@master#egg=computerwords
 ```
 
 Now you're ready to run! You just need to write a Markdown file and a config.

@@ -15,6 +15,8 @@ becomes this:
 
 ```graphviz-dot-convert
 strict digraph {
+    rankdir="LR";
+
     Root [label="Root" fontname="Helvetica" fontsize=10 shape="box"]
     Document [label="Document(path='readme.md')" fontname="Helvetica" fontsize=10 shape="box"]
     TitleText [label="Text(text='Title')" fontname="Helvetica" fontsize=10 shape="box"]
