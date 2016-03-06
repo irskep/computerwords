@@ -1,3 +1,6 @@
 *.pyc
 *.sublime-workspace
 docs/thinking.txt
+build/
+dist/
+*.egg-info/

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
+from setuptools import setup, find_packages
 
 setup(
     name='Computer Words',
@@ -9,8 +9,10 @@ setup(
     author='Steve Johnson',
     author_email='steve@steveasleep.com',
     url='https://computerwords.net/',
-    packages=['computerwords'],
+    packages=find_packages(exclude=['tests.*']),
+    include_package_data=True,
     requires=[
         "CommonMark (>=0.6, <0.7)",
+        "Pygments (>=2.1, <3.0)",
     ],
 )

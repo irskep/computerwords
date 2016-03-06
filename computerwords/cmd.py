@@ -6,13 +6,11 @@ import sys
 
 logging.basicConfig(level=logging.DEBUG)
 
-from computerwords import htmlwriter
+from computerwords.htmlwriter import write as write_html
 from computerwords.config import DictCascade, DEFAULT_CONFIG
 from computerwords.cwdom.nodes import CWRootNode
 from computerwords.cwdom.NodeStore import NodeStore
-from computerwords.markdown_parser.cfm_to_cwdom import (
-    cfm_to_cwdom,
-)
+from computerwords.markdown_parser.cfm_to_cwdom import cfm_to_cwdom
 from computerwords.read_doc_tree import read_doc_tree
 from computerwords.stdlib import stdlib
 
@@ -45,4 +43,4 @@ def run():
     node_store.apply_library(stdlib)
 
 
-    htmlwriter.write(conf, files_root, output_root, stdlib, node_store)
+    write_html(conf, files_root, output_root, stdlib, node_store)
