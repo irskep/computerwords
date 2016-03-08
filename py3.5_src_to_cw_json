@@ -13,17 +13,35 @@ def get_next_id():
     return next_id
 
 
+MODULE_NAME_TO_ID = {}
+
+
 def parse_data(root, path):
-    module_name = '.'.join(path.relative_to(root).parts)
+    parts = path.relative_to(root).parts
+    if parts and parts[-1] == '__init__.py':
+        parts = parts[:-1]
+
+    if parts[-1].endswith('.py'):
+        parts = parts[:-1] + (parts[-1][:-3],)
+    module_name = '.'.join(parts)
+    module_id = get_next_id()
+
+    MODULE_NAME_TO_ID[module_name] = module_id
+
+    module_parent_id = None
+    if len(parts) > 1:
+        module_parent_id = MODULE_NAME_TO_ID.get('.'.join(parts[:-1]), None)
+    else:
+        module_parent_id = None
+
     with path.open('r') as f:
         module = ast.parse(f.read())
-        module_id = get_next_id()
         yield {
             'id': module_id,
             'type': 'module',
             'name': module_name,
             'docstring': ast.get_docstring(module),
-            'parent': None,
+            'parent': module_parent_id,
         }
         for node in module.body:
             if isinstance(node, ast.FunctionDef):
