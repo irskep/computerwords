@@ -1,0 +1,63 @@
+#!/usr/bin/env python3.5
+import argparse
+import ast
+import json
+import pathlib
+import sys
+
+
+next_id = 0
+def get_next_id():
+    global next_id
+    next_id += 1
+    return next_id
+
+
+def parse_data(root, path):
+    module_name = '.'.join(path.relative_to(root).parts)
+    with path.open('r') as f:
+        module = ast.parse(f.read())
+        module_id = get_next_id()
+        yield {
+            'id': module_id,
+            'type': 'module',
+            'name': module_name,
+            'docstring': ast.get_docstring(module),
+            'parent': None,
+        }
+        for node in module.body:
+            if isinstance(node, ast.FunctionDef):
+                yield {
+                    'id': get_next_id(),
+                    'type': 'function',
+                    'name': node.name,
+                    'docstring': ast.get_docstring(node),
+                    'parent': module_id,
+                }
+
+
+def main():
+    p = argparse.ArgumentParser()
+    p.add_argument('root', default=None, action='store')
+    p.add_argument('module', default=None, action='store')
+    p.add_argument('output_file', type=argparse.FileType('w'))
+    args = p.parse_args()
+
+    root_path = pathlib.Path(args.root).resolve()
+    module_root = root_path / args.module
+
+    data = {
+        'language': 'python3.5',
+        'entries': []
+    }
+    for py_file_path in module_root.glob('**/*.py'):
+        for item in list(parse_data(root_path, py_file_path)):
+            # sys.stderr.write(repr(item))
+            # sys.stderr.write('\n')
+            data['entries'].append(item)
+        # data['entries'].extend(list(parse_data(module_root, py_file_path)))
+
+    sys.stdout.write(json.dumps(data))
+
+if __name__ == '__main__':
+    main()
