@@ -12,6 +12,7 @@ demo:
 docs:
 	# rm -rf docs/build/static/*
 	# rm -f docs/build/*.html docs/build/*.png docs/build/*.css
+	computerwords/source_parsers/python-3.5 . computerwords > docs/build/computerwords_src.json
 	python3 -m computerwords --conf docs/conf.json
 
 watchdocs:
