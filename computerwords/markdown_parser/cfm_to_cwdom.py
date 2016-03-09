@@ -30,7 +30,7 @@ def html_string_to_cwdom(string, config):
 from .ast import StmtsNode, TagArgsNode
 from .html_parser import ParseError
 from computerwords.cwdom.nodes import *
-from computerwords.cwdom.NodeStore import NodeStore
+from computerwords.cwdom.CWTree import CWTree
 from .parse_tree_to_cwdom_util import *
 
 

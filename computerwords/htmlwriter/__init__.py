@@ -16,14 +16,14 @@ from .util import (
 )
 
 
-def _get_subtree_html(config, options, library, node_store, node=None):
+def _get_subtree_html(config, options, library, tree, node=None):
     stream = StringIO()
-    node_store.visit_all(get_tag_to_visitor(library, stream, options), node)
+    tree.visit_all(get_tag_to_visitor(library, stream, options), node)
     return stream.getvalue()
 
 
 def _get_nav_html_part(
-        config, options, library, node_store, document_node, is_prev=False):
+        config, options, library, tree, document_node, is_prev=False):
     entry_key = 'nav_previous_entry' if is_prev else 'nav_next_entry'
     if entry_key not in document_node.data:
         return ''
@@ -43,11 +43,11 @@ def _get_nav_html_part(
         ]).deepcopy_children_from(entry.heading_node, at_end=is_prev)
     ])
     node.deep_set_document_id(document_node.document_id)
-    return _get_subtree_html(config, options, library, node_store, node)
+    return _get_subtree_html(config, options, library, tree, node)
 
 
-def write_document(config, options, output_dir, library, node_store, document_node):
-    body = _get_subtree_html(config, options, library, node_store, document_node)
+def write_document(config, options, output_dir, library, tree, document_node):
+    body = _get_subtree_html(config, options, library, tree, document_node)
 
     output_path = output_dir
     for directory in document_node.document_id[:-1]:
@@ -57,9 +57,9 @@ def write_document(config, options, output_dir, library, node_store, document_no
 
     nav_html = (
         _get_nav_html_part(
-            config, options, library, node_store, document_node, is_prev=True) +
+            config, options, library, tree, document_node, is_prev=True) +
         _get_nav_html_part(
-            config, options, library, node_store, document_node, is_prev=False))
+            config, options, library, tree, document_node, is_prev=False))
 
 
     ctx = {k: v for k, v in config.items()}
@@ -67,7 +67,7 @@ def write_document(config, options, output_dir, library, node_store, document_no
         relative_site_url = doc_to_href(
             options,
             document_node,
-            node_store.processor_data['toc'][0][0].heading_node.document_id)
+            tree.processor_data['toc'][0][0].heading_node.document_id)
         ctx['title_url'] = relative_site_url
     else:
         ctx['title_url'] = options.site_url
@@ -82,13 +82,13 @@ def write_document(config, options, output_dir, library, node_store, document_no
             ))
 
 
-def write_multi_page(config, options, output_dir, library, node_store):
-    for document_node in node_store.root.children:
-        write_document(config, options, output_dir, library, node_store, document_node)
+def write_multi_page(config, options, output_dir, library, tree):
+    for document_node in tree.root.children:
+        write_document(config, options, output_dir, library, tree, document_node)
 
 
-def write_single_page(config, options, output_dir, library, node_store):
-    body = _get_subtree_html(config, options, library, node_store)
+def write_single_page(config, options, output_dir, library, tree):
+    body = _get_subtree_html(config, options, library, tree)
 
     output_path = output_dir / "index.html"
     output_path.touch()
@@ -103,12 +103,12 @@ def write_single_page(config, options, output_dir, library, node_store):
             ))
 
 
-def write(config, input_dir, output_dir, library, node_store):
+def write(config, input_dir, output_dir, library, tree):
     options = read_htmlwriter_options(config, input_dir, output_dir)
 
     copy_files(options.files_to_copy)
 
     if options.single_page:
-        write_single_page(config, options, output_dir, library, node_store)
+        write_single_page(config, options, output_dir, library, tree)
     else:
-        write_multi_page(config, options, output_dir, library, node_store)
+        write_multi_page(config, options, output_dir, library, tree)

@@ -2,7 +2,7 @@ import unittest
 
 from tests.CWTestCase import CWTestCase
 from computerwords.cwdom.nodes import *
-from computerwords.cwdom.NodeStore import NodeStore
+from computerwords.cwdom.CWTree import CWTree
 from computerwords.library import Library
 from computerwords.stdlib.basics import add_basics
 from computerwords.stdlib.html import add_html
@@ -30,11 +30,11 @@ class TableOfContentsTestCase(CWTestCase):
         header2 = CWTagNode('h1', {}, [
             CWTextNode('Header 2 text')
         ])
-        ns = NodeStore(CWRootNode([
+        tree = CWTree(CWRootNode([
             CWDocumentNode('doc 1', [header1]),
             CWDocumentNode('doc 2', [header2]),
         ]))
-        ns.apply_library(self.library)
+        tree.apply_library(self.library)
         self.assertEqual(header1.get_parent().data, {
             'toc_entry': TOCEntry(
                 level=1, heading_node=header1, ref_id='Header-1-text')
@@ -71,7 +71,7 @@ class TableOfContentsTestCase(CWTestCase):
         ])
 
     def test_make_toc(self):
-        ns = NodeStore(CWRootNode([
+        tree = CWTree(CWRootNode([
             CWDocumentNode('doc 1', [
                 CWTagNode('table-of-contents', {}, []),
                 CWTagNode('h1', {}, [
@@ -90,8 +90,8 @@ class TableOfContentsTestCase(CWTestCase):
                 ]),
             ]),
         ]))
-        ns.apply_library(self.library)
-        self.assertEqual(ns.root.get_string_for_test_comparison(), self.strip("""
+        tree.apply_library(self.library)
+        self.assertEqual(tree.root.get_string_for_test_comparison(), self.strip("""
             Root()
               Document(path='doc 1')
                 nav(kwargs={'class': 'table-of-contents'})

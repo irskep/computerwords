@@ -48,16 +48,16 @@ class Library:
     def get_allowed_tags(self):
         return set(self.tag_name_to_processors.keys())
 
-    def run_processors(self, node_store, node):
+    def run_processors(self, tree, node):
         for p in self.get_processors(node.name):
-            if node_store.get_is_node_dirty(node):
+            if tree.get_is_node_dirty(node):
                 raise UnhandledEdgeCaseError((
                     "Node {!r} has multiple processors, but an earlier"
                     " processor dirtied it before the later one could run."
                     " I haven't decided if this is a problem or not, so for"
                     " now this edge case simply throws an error.").format(
                         node.name))
-            if node_store.get_was_node_removed(node):
+            if tree.get_was_node_removed(node):
                 return
                 raise UnhandledEdgeCaseError((
                     "Node {!r} has multiple processors, but an earlier"
@@ -65,4 +65,4 @@ class Library:
                     " I haven't decided if this is a problem or not, so for"
                     " now this edge case simply throws an error.").format(
                         node.name))
-            p(node_store, node)
+            p(tree, node)

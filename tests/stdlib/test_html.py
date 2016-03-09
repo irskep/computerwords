@@ -2,7 +2,7 @@ import unittest
 
 from tests.CWTestCase import CWTestCase
 from computerwords.cwdom.nodes import *
-from computerwords.cwdom.NodeStore import NodeStore
+from computerwords.cwdom.CWTree import CWTree
 from computerwords.library import Library
 from computerwords.stdlib.basics import add_basics
 from computerwords.stdlib.html import add_html
@@ -15,7 +15,7 @@ class LibraryForTesting(Library):
         add_html(self)
 
         self.visit_history = []
-        def record(node_store, node):
+        def record(tree, node):
             self.visit_history.append(node.name)
 
         for tag in self.HTML_TAGS:
@@ -26,15 +26,15 @@ class LibraryForTesting(Library):
 
 class TestHTML(CWTestCase):
     def test_aliases(self):
-        ns = NodeStore(CWRootNode([
+        tree = CWTree(CWRootNode([
             CWDocumentNode('doc 1', [
                 CWTagNode('strike', {}, []),
                 CWTagNode('b', {}, []),
                 CWTagNode('code', {}, []),
             ]),
         ]))
-        ns.apply_library(LibraryForTesting())
-        self.assertEqual(ns.root.get_string_for_test_comparison(), self.strip("""
+        tree.apply_library(LibraryForTesting())
+        self.assertEqual(tree.root.get_string_for_test_comparison(), self.strip("""
             Root()
               Document(path='doc 1')
                 s(kwargs={})

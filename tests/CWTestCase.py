@@ -14,8 +14,8 @@ class CWTestCase(unittest.TestCase):
     def strip(self, s):
         return dedent(s)[1:-1]
 
-    def log_tree(self, ns):
-        self.log_node(ns.root)
+    def log_tree(self, tree):
+        self.log_node(tree.root)
 
     def log_node(self, node):
         logging.basicConfig(level=logging.DEBUG)

@@ -17,9 +17,9 @@ TOC_TAG_NAME = 'table-of-contents'
 TOCEntry = namedtuple('TOCEntry', ['level', 'heading_node', 'ref_id'])
 
 
-def tree_to_text(node_store, node):
+def tree_to_text(tree, node):
     segments = []
-    for n in node_store.preorder_traversal(node):
+    for n in tree.preorder_traversal(node):
         if n.name == 'Text':
             segments.append(n.text)
     return ''.join(segments)
@@ -28,14 +28,14 @@ def tree_to_text(node_store, node):
 ### helpers ###
 
 
-def _add_toc_data_if_not_exists(node_store):
-    node_store.processor_data.setdefault('toc_nodes', [])
-    node_store.processor_data.setdefault('toc_heading_nodes', [])
+def _add_toc_data_if_not_exists(tree):
+    tree.processor_data.setdefault('toc_nodes', [])
+    tree.processor_data.setdefault('toc_heading_nodes', [])
 
 
-def _node_to_toc_entry(node_store, node):
-    text = tree_to_text(node_store, node)
-    ref_id = node_store.text_to_ref_id(text)  # might be identical
+def _node_to_toc_entry(tree, node):
+    text = tree_to_text(tree, node)
+    ref_id = tree.text_to_ref_id(text)  # might be identical
     return TOCEntry(NAME_TO_LEVEL[node.name], node, ref_id)
 
 
@@ -128,23 +128,23 @@ def add_table_of_contents(library):
     @library.processor('h4')
     @library.processor('h5')
     @library.processor('h6')
-    def process_header(node_store, node):
+    def process_header(tree, node):
         if node.kwargs.get('skip_toc', '').lower() == 'true':
             return
-        _add_toc_data_if_not_exists(node_store)
-        node_store.processor_data['toc_heading_nodes'].append(node)
-        entry = _node_to_toc_entry(node_store, node)
+        _add_toc_data_if_not_exists(tree)
+        tree.processor_data['toc_heading_nodes'].append(node)
+        entry = _node_to_toc_entry(tree, node)
         anchor = CWAnchorNode(
             entry.ref_id, kwargs={'class': 'header-anchor'})
-        node_store.wrap_node(node, anchor)
+        tree.wrap_node(node, anchor)
 
         # associate this entry with both nodes for convenience
         node.data['toc_entry'] = entry
         anchor.data['toc_entry'] = entry
 
     @library.processor('Document')
-    def process_document(node_store, node):
-        _add_toc_data_if_not_exists(node_store)
+    def process_document(tree, node):
+        _add_toc_data_if_not_exists(tree)
         node.data['toc_entries'] = [
             child.data['toc_entry']
             for child in node.children
@@ -152,13 +152,13 @@ def add_table_of_contents(library):
         ]
 
     @library.processor(TOC_TAG_NAME)
-    def process_toc(node_store, node):
-        _add_toc_data_if_not_exists(node_store)
-        node_store.processor_data['toc_nodes'].append(node)
+    def process_toc(tree, node):
+        _add_toc_data_if_not_exists(tree)
+        tree.processor_data['toc_nodes'].append(node)
 
     @library.processor('Root')
-    def process_root(node_store, node):
-        _add_toc_data_if_not_exists(node_store)
+    def process_root(tree, node):
+        _add_toc_data_if_not_exists(tree)
 
         doc_path_to_entries = {
             doc_node.path: doc_node.data['toc_entries']
@@ -168,9 +168,9 @@ def add_table_of_contents(library):
 
         ### compute TOC ###
 
-        if node_store.env and 'doc_tree' in node_store.env:
+        if tree.env and 'doc_tree' in tree.env:
             sorted_paths = _doc_tree_to_sorted_paths(
-                node_store.env['doc_tree'])
+                tree.env['doc_tree'])
         else:
             sorted_paths = sorted(doc_path_to_entries.keys())
         top_level_entries = []
@@ -178,14 +178,14 @@ def add_table_of_contents(library):
             top_level_entries.extend(
                 _entries_to_nested_list(doc_path_to_entries[path]))
 
-        node_store.processor_data['toc'] = top_level_entries
+        tree.processor_data['toc'] = top_level_entries
 
         ### put TOC in tree ###
 
         entry_to_number = {}
         _store_entry_to_sequence(top_level_entries, entry_to_number, ())
 
-        for toc_node in node_store.processor_data['toc_nodes']:
+        for toc_node in tree.processor_data['toc_nodes']:
             max_depth = 3
             try:
                 max_depth = int(toc_node.kwargs.get('maxdepth', '3'))
@@ -193,7 +193,7 @@ def add_table_of_contents(library):
                 pass
             assert(max_depth > 0)
 
-            node_store.replace_subtree(
+            tree.replace_subtree(
                 toc_node,
                 CWTagNode('nav', {'class': 'table-of-contents'}, [
                     _nested_list_to_node(
@@ -219,10 +219,10 @@ def add_table_of_contents(library):
             last_doc = doc
 
         # optional: insert heading numbers
-        # for heading_node in node_store.processor_data['toc_heading_nodes']:
+        # for heading_node in tree.processor_data['toc_heading_nodes']:
         #     number = _format_entry_number(
         #         entry_to_number, heading_node.data['toc_entry'])
-        #     node_store.insert_subtree(
+        #     tree.insert_subtree(
         #         heading_node,
         #         0,
         #         CWTextNode(number + ' '))

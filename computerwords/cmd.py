@@ -9,7 +9,7 @@ logging.basicConfig(level=logging.DEBUG)
 from computerwords.htmlwriter import write as write_html
 from computerwords.config import DictCascade, DEFAULT_CONFIG
 from computerwords.cwdom.nodes import CWRootNode
-from computerwords.cwdom.NodeStore import NodeStore
+from computerwords.cwdom.CWTree import CWTree
 from computerwords.markdown_parser.cfm_to_cwdom import cfm_to_cwdom
 from computerwords.read_doc_tree import read_doc_tree
 from computerwords.stdlib import stdlib
@@ -34,13 +34,13 @@ def run():
 
     doc_tree, document_nodes = read_doc_tree(
         files_root, conf['file_hierarchy'], _get_doc_cwdom)
-    node_store = NodeStore(CWRootNode(document_nodes), {
+    tree = CWTree(CWRootNode(document_nodes), {
         'doc_tree': doc_tree,
         'output_dir': output_root,
     })
     if args.debug:
-        print(node_store.root.get_string_for_test_comparison())
-    node_store.apply_library(stdlib)
+        print(tree.root.get_string_for_test_comparison())
+    tree.apply_library(stdlib)
 
 
-    write_html(conf, files_root, output_root, stdlib, node_store)
+    write_html(conf, files_root, output_root, stdlib, tree)

@@ -17,10 +17,10 @@ NodeAndTraversalKey = namedtuple(
 
 
 class MissingVisitorError(Exception): pass
-class NodeStoreConsistencyError(Exception): pass
+class CWTreeConsistencyError(Exception): pass
 
 
-class NodeStore:
+class CWTree:
     def __init__(self, root, env=None):
         super().__init__()
         self.root = root
@@ -29,7 +29,7 @@ class NodeStore:
     ### operators and builtins ###
 
     def __repr__(self):
-        return 'NodeStore(root={!r})'.format(self.root)
+        return 'CWTree(root={!r})'.format(self.root)
 
     def __eq__(self, other):
         return type(self) is type(other) and self.root == other.root
@@ -75,7 +75,7 @@ class NodeStore:
             self._dirty_nodes.remove(node)
         # the algorithm shouldn't let this happen. it's a bug if you see it.
         if self._active_node in self._removed_nodes:
-            raise NodeStoreConsistencyError("This can't happen")
+            raise CWTreeConsistencyError("This can't happen")
         library.run_processors(self, self._active_node)
 
         # keep re-processing current node as long as it keeps replacing
@@ -143,7 +143,7 @@ class NodeStore:
 
     def wrap_node(self, inner_node, outer_node):
         if outer_node.children:
-            raise NodeStoreConsistencyError(
+            raise CWTreeConsistencyError(
                 "When wrapping a node, outer node must have no existing"
                 " children")
         if self.get_is_descendant(inner_node, self._active_node):
@@ -176,14 +176,14 @@ class NodeStore:
             if old_node is self._active_node:
                 self._traverser.replace_cursor(new_node)
         else:
-            raise NodeStoreConsistencyError(
+            raise CWTreeConsistencyError(
                 "You may only replace subtrees inside the active node.")
 
     def insert_subtree(self, parent, i, child):
         if not (
                 self.get_is_descendant(parent, self._active_node) or
                 parent == self._active_node):
-            raise NodeStoreConsistencyError(
+            raise CWTreeConsistencyError(
                 "You may only insert subtrees inside the active node.")
         parent.children.insert(i, child)
         child.set_parent(parent)
@@ -192,7 +192,7 @@ class NodeStore:
 
     def replace_node(self, old_node, new_node):
         if old_node != self._active_node:
-            raise NodeStoreConsistencyError(
+            raise CWTreeConsistencyError(
                 "You may only replace the active node.")
         parent = old_node.get_parent()
         child_i = parent.children.index(old_node)
@@ -231,7 +231,7 @@ class NodeStore:
 
     def visit_all(self, node_name_to_visitor, node=None):
         """
-        Recursively call the NodeStoreVisitor for each node. If a node
+        Recursively call the CWTreeVisitor for each node. If a node
         is encountered that has no corresponding visitor, an error is thrown.
         """
         node = node or self.root
@@ -246,9 +246,9 @@ class NodeStore:
         visitor.after_children(self, node)
 
 
-class NodeStoreVisitor:
-    def before_children(self, node_store, node):
+class CWTreeVisitor:
+    def before_children(self, tree, node):
         pass
 
-    def after_children(self, node_store, node):
+    def after_children(self, tree, node):
         pass

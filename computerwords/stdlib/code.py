@@ -21,7 +21,7 @@ def _dumb_parse_args(s):
 
 def add_code(library):
     @library.processor('pre')
-    def lang_pygments_convert(node_store, node):
+    def lang_pygments_convert(tree, node):
         try:
             split = (node.kwargs.get('language', '') or '').split(maxsplit=1)
             language = split[0] if split else None
@@ -43,7 +43,7 @@ def add_code(library):
                     node.children[0].text, lexer, HtmlFormatter()),
                 escape=False))
 
-            node_store.replace_subtree(
+            tree.replace_subtree(
                 node,
                 CWTagNode('figure', {'class': 'code'}, figure_children))
         except ClassNotFound:
@@ -51,7 +51,7 @@ def add_code(library):
 
 
     @library.processor('pre')
-    def lang_graphviz_convert(node_store, node):
+    def lang_graphviz_convert(tree, node):
         if node.kwargs.get('language', None) != 'graphviz-dot-convert':
             return
 
@@ -59,15 +59,15 @@ def add_code(library):
         h = hashlib.sha256()
         h.update(code)
 
-        # output_path = node_store.env['output_dir'] / "{}.png".format(h.hexdigest())
-        output_path = node_store.env['output_dir'] / "{}.svg".format(h.hexdigest())
-        src = output_path.relative_to(node_store.env['output_dir'])
+        # output_path = tree.env['output_dir'] / "{}.png".format(h.hexdigest())
+        output_path = tree.env['output_dir'] / "{}.svg".format(h.hexdigest())
+        src = output_path.relative_to(tree.env['output_dir'])
         # p = subprocess.Popen(
         #     ['dot', '-Tpng', '-Gdpi=192', '-o', str(output_path)], stdin=subprocess.PIPE)
         p = subprocess.Popen(
             ['dot', '-Tsvg', '-o', str(output_path)], stdin=subprocess.PIPE)
         p.communicate(code, timeout=10)
-        node_store.replace_subtree(
+        tree.replace_subtree(
             node, CWTagNode('figure', {'class': 'image graphviz-graph'}, [
                 CWTagNode('img', {'src': str(src)}),
             ]))
