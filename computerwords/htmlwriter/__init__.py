@@ -7,6 +7,7 @@ from computerwords.cwdom.nodes import (
     CWTagNode,
     CWTextNode,
 )
+from computerwords.cwdom.traversal import visit_tree
 from .visitors import get_tag_to_visitor
 from .util import (
     SINGLE_PAGE_TEMPLATE_PATH,
@@ -18,7 +19,7 @@ from .util import (
 
 def _get_subtree_html(config, options, library, tree, node=None):
     stream = StringIO()
-    tree.visit_all(get_tag_to_visitor(library, stream, options), node)
+    visit_tree(tree, get_tag_to_visitor(library, stream, options), node)
     return stream.getvalue()
 
 

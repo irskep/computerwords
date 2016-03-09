@@ -67,3 +67,31 @@ class PostorderTraverser:
     def _descend(self):
         while self.cursor.children:
             self.cursor = self.cursor.children[0]
+
+
+class MissingVisitorError(Exception): pass
+
+
+def visit_tree(tree, node_name_to_visitor, node=None):
+    """
+    Recursively call the CWTreeVisitor for each node. If a node
+    is encountered that has no corresponding visitor, an error is thrown.
+    """
+    node = node or tree.root
+    try:
+        visitor = node_name_to_visitor[node.name]
+    except KeyError:
+        raise MissingVisitorError(
+            "No visitor registered for {!r}".format(node.name))
+    visitor.before_children(tree, node)
+    for child in node.children:
+        visit_tree(tree, node_name_to_visitor, child)
+    visitor.after_children(tree, node)
+
+
+class CWTreeVisitor:
+    def before_children(self, tree, node):
+        pass
+
+    def after_children(self, tree, node):
+        pass

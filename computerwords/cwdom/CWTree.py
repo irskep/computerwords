@@ -12,11 +12,6 @@ from .traversal import (
 log = logging.getLogger(__name__)
 
 
-NodeAndTraversalKey = namedtuple(
-    'NodeAndTraversalKey', ['node', 'traversal_key'])
-
-
-class MissingVisitorError(Exception): pass
 class CWTreeConsistencyError(Exception): pass
 
 
@@ -226,29 +221,3 @@ class CWTree:
         ref_id = ref_id_base + '-' + str(i)
         self._known_ref_ids.add(ref_id)
         return ref_id
-
-    ### Methods used primarily by output step ###
-
-    def visit_all(self, node_name_to_visitor, node=None):
-        """
-        Recursively call the CWTreeVisitor for each node. If a node
-        is encountered that has no corresponding visitor, an error is thrown.
-        """
-        node = node or self.root
-        try:
-            visitor = node_name_to_visitor[node.name]
-        except KeyError:
-            raise MissingVisitorError(
-                "No visitor registered for {!r}".format(node.name))
-        visitor.before_children(self, node)
-        for child in node.children:
-            self.visit_all(node_name_to_visitor, child)
-        visitor.after_children(self, node)
-
-
-class CWTreeVisitor:
-    def before_children(self, tree, node):
-        pass
-
-    def after_children(self, tree, node):
-        pass

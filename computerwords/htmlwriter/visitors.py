@@ -1,6 +1,6 @@
 import html
 
-from computerwords.cwdom.CWTree import CWTreeVisitor
+from computerwords.cwdom.traversal import CWTreeVisitor
 
 from .util import (
     anchor_to_href,
