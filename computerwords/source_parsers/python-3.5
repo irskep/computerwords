@@ -77,9 +77,13 @@ def parse_data(root, path):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument('root', default=None, action='store')
-    p.add_argument('module', default=None, action='store')
-    p.add_argument('output_file', type=argparse.FileType('w'))
+    p.add_argument('root', default=None, action='store', help=(
+        'Directory in which to search for the module'))
+    p.add_argument('module', default=None, action='store', help=(
+        'Name of the module to parse'))
+    p.add_argument('output_file', type=argparse.FileType('w'), help=(
+        'Where to write the output'
+        ))
     args = p.parse_args()
 
     root_path = pathlib.Path(args.root).resolve()
@@ -91,12 +95,9 @@ def main():
     }
     for py_file_path in module_root.glob('**/*.py'):
         for item in list(parse_data(root_path, py_file_path)):
-            # sys.stderr.write(repr(item))
-            # sys.stderr.write('\n')
-            data['entries'].append(item)
-        # data['entries'].extend(list(parse_data(module_root, py_file_path)))
+            sys.stdout.write(json.dumps(item))
+            sys.stdout.write('\n')
 
-    sys.stdout.write(json.dumps(data))
 
 if __name__ == '__main__':
     main()

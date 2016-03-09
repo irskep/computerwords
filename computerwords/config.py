@@ -16,6 +16,10 @@ DEFAULT_CONFIG = {
         "static_dir_name": "static",
         "meta_description": "",
     },
+
+    "python": {
+        "module_dir": ".",
+    },
 }
 
 

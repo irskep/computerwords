@@ -14,5 +14,8 @@
         "about.md",
         "roadmap.md",
         "related_work.md"
-    ]
+    ],
+    "python": {
+        "module_dir": ".."
+    }
 }
