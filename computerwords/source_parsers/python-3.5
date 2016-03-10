@@ -42,7 +42,7 @@ def parse_data(root, path):
             'type': 'module',
             'name': module_display_name,
             'docstring': ast.get_docstring(module),
-            'parent': module_parent_id,
+            'parent_id': module_parent_id,
         }
         for node in module.body:
             if isinstance(node, ast.FunctionDef):
@@ -51,7 +51,7 @@ def parse_data(root, path):
                     'type': 'function',
                     'name': node.name,
                     'docstring': ast.get_docstring(node),
-                    'parent': module_id,
+                    'parent_id': module_id,
                 }
             elif isinstance(node, ast.ClassDef):
                 class_id = get_next_id()
@@ -60,7 +60,7 @@ def parse_data(root, path):
                     'type': 'class',
                     'name': node.name,
                     'docstring': ast.get_docstring(node),
-                    'parent': module_id,
+                    'parent_id': module_id,
                 }
                 # sys.stderr.write(repr(node._fields))
                 # sys.stderr.write('\n')
@@ -71,7 +71,7 @@ def parse_data(root, path):
                             'type': 'method',
                             'name': class_node.name,
                             'docstring': ast.get_docstring(class_node),
-                            'parent': class_id,
+                            'parent_id': class_id,
                         }
 
 
