@@ -18,7 +18,7 @@ DEFAULT_CONFIG = {
     },
 
     "python": {
-        "module_dir": ".",
+        "symbols_path": "symbols.json",
     },
 }
 
@@ -29,10 +29,15 @@ class DictCascade(Mapping):
         self.dicts = list(reversed(dicts))
 
     def __getitem__(self, k):
-        for d in self.dicts:
-            if k in d:
-                return d[k]
-        raise KeyError(k)
+        matching_dicts = [d for d in self.dicts if k in d]
+        matching_values = [d[k] for d in matching_dicts]
+        if matching_values:
+            if isinstance(matching_values[0], dict):
+                return dict(DictCascade(*reversed(matching_values)))
+            else:
+                return matching_dicts[0][k]
+        else:
+            raise KeyError(k)
 
     def keys(self):
         keys = set()

@@ -16,6 +16,6 @@
         "related_work.md"
     ],
     "python": {
-        "module_dir": ".."
+        "symbols_path": "./build/symbols.json"
     }
 }
