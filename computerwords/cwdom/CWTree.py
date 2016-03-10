@@ -1,3 +1,6 @@
+"""
+Documentation for the `CWTree` module.
+"""
 import logging
 import re
 

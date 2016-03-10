@@ -3,6 +3,7 @@ import pathlib
 from collections import namedtuple
 
 from computerwords.cwdom.nodes import CWTagNode, CWTextNode
+from computerwords.markdown_parser.cfm_to_cwdom import cfm_to_cwdom
 
 
 SymbolDef = namedtuple(
@@ -38,9 +39,6 @@ def _debug_print_tree(t, i=0):
 
 
 def _get_symbol_at_path(t, parts):
-    print(parts)
-    for child in t.children:
-        print(child.name)
     next_symbol = [s for s in t.children if s.name == parts[0]][0]
     if len(parts) == 1:
         return next_symbol
@@ -67,4 +65,17 @@ def add_src_py(library):
                 tree.processor_data['autodoc_symbol_tree'] = symbol_tree
 
         symbol_tree = tree.processor_data['autodoc_symbol_tree']
-        tree.replace_subtree(node, CWTextNode("YOU DID A THING"))
+
+        if 'module' in node.kwargs:
+            symbol = get_symbol_at_path(symbol_tree, node.kwargs['module'])
+            children = [
+                CWTagNode('h1', {}, [
+                    CWTagNode('tt', {}, [
+                        CWTextNode(node.kwargs['module'])
+                    ])
+                ])
+            ]
+            if symbol.docstring:
+                children += cfm_to_cwdom(symbol.docstring, library.get_allowed_tags())
+            tree.replace_subtree(node, CWTagNode(
+                'div', kwargs={'class': 'autodoc-module'}, children=children))
