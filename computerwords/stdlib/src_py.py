@@ -55,15 +55,21 @@ def get_symbol_at_path(root, path):
 
 
 def _get_symbol_node(library, path, symbol, h_level=2, full_path=True):
+    prefix = {
+        'class': 'class ',
+        'function': 'function ',
+    }.get(symbol.type, '')
+    text = path if full_path else symbol.name
+    suffix = '()' if symbol.type in {'class', 'function', 'method'} else ''
     tag_node = CWTagNode('h{}'.format(h_level), {}, [
-        CWTagNode('tt', {}, [
-            CWTextNode(path if full_path else symbol.name)
-        ])
+        CWTagNode('tt', {}, [CWTextNode(prefix + text + suffix)])
     ])
     tag_node.data['ref_id_override'] = path
     children = [tag_node]
     if symbol.docstring:
-        children += cfm_to_cwdom(symbol.docstring, library.get_allowed_tags())
+        children.append(CWTagNode(
+            'div', {'class': 'autodoc-docstring-body'},
+            children=cfm_to_cwdom(symbol.docstring, library.get_allowed_tags())))
     return CWTagNode(
         'div', kwargs={'class': 'autodoc-{}'.format(symbol.type)},
         children=children)

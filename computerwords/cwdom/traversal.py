@@ -6,7 +6,10 @@ from collections import deque
 
 
 def preorder_traversal(node):
-    """Yields every node in the tree in pre-order"""
+    """
+    Yields every node in the tree. Each node is yielded before its descendants.
+    Mutation is disallowed.
+    """
     stack = deque([node])
     while len(stack) > 0:
         node = stack.pop()
@@ -16,7 +19,8 @@ def preorder_traversal(node):
 
 def postorder_traversal(node):
     """
-    Yields every node in the tree in post-order. Mutation is disallowed.
+    Yields every node in the tree. Each node is yielded after its descendants.
+    Mutation is disallowed.
     """
     root = node
     stack = deque([(root, 'yield'), (root, 'add_children')])
@@ -32,12 +36,19 @@ def postorder_traversal(node):
 
 class PostorderTraverser:
     """
-    A fancy iterator that lets you replace the "cursor", mostly so you
-    can mutate the current node while iterating over the tree.
+    A class that lets you iterate over a tree while mutating it.
 
-    Also allows mutation of the cursor's ancestors, since they haven't been
+    Keeps track of a *cursor* representing the last visited node. Each time
+    the next node is requested, the iterator looks at the cursor and walks
+    up the tree to find the cursor's next sibling or parent.
+
+    You may replace the cursor if you want to replace the node currently being
+    visited.
+
+    You may safely mutate the cursor's ancestors, since they haven't been
     visited yet.
     """
+
     def __init__(self, node):
         super().__init__()
         self.cursor = node

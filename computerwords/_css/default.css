@@ -25,7 +25,7 @@ a:hover {
   cursor: pointer;
 }
 
-p {
+p, .autodoc-docstring-body {
   margin: 1rem 0;
 }
 
@@ -112,4 +112,10 @@ article img {
 
 tt {
   font-family: Menlo,Consolas,monaco,monospace;
+}
+
+/* fancy things */
+
+.autodoc-docstring-body {
+  margin-left: 2rem;
 }
