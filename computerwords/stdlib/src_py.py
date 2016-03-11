@@ -3,6 +3,7 @@ import pathlib
 from collections import namedtuple
 
 from computerwords.cwdom.nodes import CWTagNode, CWTextNode
+from computerwords.cwdom.traversal import find_ancestor
 from computerwords.markdown_parser.cfm_to_cwdom import cfm_to_cwdom
 
 
@@ -77,5 +78,4 @@ def add_src_py(library):
             ]
             if symbol.docstring:
                 children += cfm_to_cwdom(symbol.docstring, library.get_allowed_tags())
-            tree.replace_subtree(node, CWTagNode(
-                'div', kwargs={'class': 'autodoc-module'}, children=children))
+            tree.replace_subtree(node, CWTagNode(                'div', kwargs={'class': 'autodoc-module'}, children=children))

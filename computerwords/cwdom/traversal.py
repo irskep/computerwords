@@ -69,6 +69,19 @@ class PostorderTraverser:
             self.cursor = self.cursor.children[0]
 
 
+def iterate_parents(node):
+    node = node.get_parent()
+    while node:
+        yield node
+        node = node.get_parent()
+
+
+def find_ancestor(node, predicate):
+    for ancestor in iterate_parents(node):
+        if predicate(ancestor):
+            return ancestor
+
+
 class MissingVisitorError(Exception): pass
 
 

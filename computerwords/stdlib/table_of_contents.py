@@ -2,10 +2,12 @@ import logging
 from collections import OrderedDict, namedtuple, deque
 from computerwords.cwdom.nodes import (
     CWAnchorNode,
+    CWDocumentNode,
     CWLinkNode,
     CWTagNode,
     CWTextNode,
 )
+from computerwords.cwdom.traversal import iterate_parents
 
 
 log = logging.getLogger(__name__)
@@ -134,13 +136,18 @@ def add_table_of_contents(library):
         _add_toc_data_if_not_exists(tree)
         tree.processor_data['toc_heading_nodes'].append(node)
         entry = _node_to_toc_entry(tree, node)
-        anchor = CWAnchorNode(
-            entry.ref_id, kwargs={'class': 'header-anchor'})
+        anchor = CWAnchorNode(entry.ref_id, kwargs={'class': 'header-anchor'})
         tree.wrap_node(node, anchor)
 
         # associate this entry with both nodes for convenience
         node.data['toc_entry'] = entry
-        anchor.data['toc_entry'] = entry
+
+        for parent in iterate_parents(node):
+            if isinstance(parent, CWDocumentNode):
+                break
+            parent.data['toc_entry'] = entry
+
+        tree.mark_ancestors_dirty(node)
 
     @library.processor('Document')
     def process_document(tree, node):
@@ -193,12 +200,14 @@ def add_table_of_contents(library):
                 pass
             assert(max_depth > 0)
 
-            tree.replace_subtree(
-                toc_node,
-                CWTagNode('nav', {'class': 'table-of-contents'}, [
-                    _nested_list_to_node(
-                        entry_to_number, top_level_entries, max_depth),
-                ]))
+            node_to_replace = toc_node.data.get('node_in_tree', toc_node)
+            replacement = CWTagNode('nav', {'class': 'table-of-contents'}, [
+                _nested_list_to_node(
+                    entry_to_number, top_level_entries, max_depth),
+            ])
+            toc_node.data['node_in_tree'] = replacement
+
+            tree.replace_subtree(node_to_replace, replacement)
 
         ### add next/prev data to docs ###
 

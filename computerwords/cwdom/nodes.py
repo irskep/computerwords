@@ -96,6 +96,9 @@ class CWNode:
     def __repr__(self):
         return '{}({!r})'.format(self.name, self.children)
 
+    def shallow_repr(self):
+        return '{}()'.format(self.name)
+
     def __eq__(self, other):
         return (type(self) is type(other) and self.id == other.id)
 
@@ -110,6 +113,9 @@ class CWRootNode(CWNode):
     def copy(self):
         return CWRootNode(document_id=self.document_id)
 
+    def shallow_repr(self):
+        return '{}()'.format(self.name)
+
 
 class CWDocumentNode(CWNode):
     def __init__(self, path, children=None, document_id=None):
@@ -122,6 +128,9 @@ class CWDocumentNode(CWNode):
     def __repr__(self):
         return '{}(path={!r}, children={!r})'.format(
             self.name, self.path, self.children)
+
+    def shallow_repr(self):
+        return '{}(path={!r})'.format(self.name, self.path)
 
     def copy(self):
         return CWDocumentNode(self.path, document_id=document_id)
@@ -145,6 +154,9 @@ class CWTagNode(CWNode):
     def __repr__(self):
         return '{}(kwargs={!r}, children={!r})'.format(
             self.name, self.kwargs, self.children)
+
+    def shallow_repr(self):
+        return '{}(kwargs={!r})'.format(self.name, self.kwargs)
 
     def __eq__(self, other):
         return super().__eq__(other) and self.kwargs == other.kwargs
@@ -189,6 +201,10 @@ class CWAnchorNode(CWTagNode):
             self.ref_id, self.kwargs, document_id=document_id)
 
     def __repr__(self):
+        return "{}(ref_id={!r}, kwargs={!r}, children={!r})".format(
+            self.name, self.ref_id, self.kwargs, self.children)
+
+    def shallow_repr(self):
         return "{}(ref_id={!r}, kwargs={!r})".format(
             self.name, self.ref_id, self.kwargs)
 
@@ -205,6 +221,10 @@ class CWLinkNode(CWNode):
         return CWLinkNode(self.ref_id, document_id=self.document_id)
 
     def __repr__(self):
+        return "{}(ref_id={!r}, children={!r})".format(
+            self.name, self.ref_id, self.children)
+
+    def shallow_repr(self):
         return "{}(ref_id={!r})".format(self.name, self.ref_id)
 
 
@@ -221,5 +241,9 @@ class CWDocumentLinkNode(CWNode):
             self.target_document_id, document_id=self.document_id)
 
     def __repr__(self):
+        return "{}(target_document_id={!r}, children={!r})".format(
+            self.name, self.target_document_id, self.children)
+
+    def shallow_repr(self):
         return "{}(target_document_id={!r})".format(
             self.name, self.target_document_id)

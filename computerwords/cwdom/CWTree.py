@@ -9,6 +9,7 @@ from .traversal import (
     preorder_traversal,
     postorder_traversal,
     PostorderTraverser,
+    iterate_parents,
 )
 
 
@@ -87,12 +88,13 @@ class CWTree:
         # by that instead of doing another full pass.
         dirty_nodes = self._dirty_nodes
         self._dirty_nodes = set()
-        self._replacement_node = None
         while dirty_nodes:
             self._traverser = PostorderTraverser(self.root)
             for node in self._traverser:
                 if node not in dirty_nodes: continue
                 if node in self._removed_nodes: continue
+                if node in self._dirty_nodes:
+                    self._dirty_nodes.remove(node)
                 self._process_node_for_second_pass(library, node)
             dirty_nodes = self._dirty_nodes
             self._dirty_nodes = set()
@@ -102,7 +104,11 @@ class CWTree:
         self._replacement_node = None
         library.run_processors(self, self._active_node)
         while self._replacement_node: 
-            self._process_node_for_first_pass(library, self._replacement_node)
+            self._process_node_for_second_pass(library, self._replacement_node)
+
+    def _replace_cursor(self, new_node):
+        self._traverser.replace_cursor(new_node)
+        self._replacement_node = new_node
 
     def apply_library(self, library, initial_data=None):
         self.processor_data = initial_data or {}
@@ -115,8 +121,20 @@ class CWTree:
         self._step = 2  # keep going over any dirty nodes
         self._second_pass(library)
 
-    def mark_node_dirty(self, node):
+    def _mark_node_dirty(self, node):
         self._dirty_nodes.add(node)
+
+    def mark_node_dirty(self, node):
+        self._mark_node_dirty(node)
+
+    def mark_ancestors_dirty(self, node):
+        for parent in iterate_parents(node):
+            self._mark_node_dirty(parent)
+
+    def _mark_subtree_dirty(self, node):
+        self.mark_node_dirty(node)
+        for child in node.children:
+            self._mark_node_dirty(child)
 
     def get_is_node_dirty(self, node):
         return node in self._dirty_nodes
@@ -154,11 +172,6 @@ class CWTree:
         for child in node.children:
             self._mark_subtree_removed(child)
 
-    def _mark_subtree_dirty(self, node):
-        self._dirty_nodes.add(node)
-        for child in node.children:
-            self._dirty_nodes.add(child)
-
     def replace_subtree(self, old_node, new_node):
         if (old_node is self._active_node or
                 self.get_is_descendant(old_node, self._active_node)):
@@ -172,7 +185,7 @@ class CWTree:
             self._mark_subtree_dirty(new_node)
 
             if old_node is self._active_node:
-                self._traverser.replace_cursor(new_node)
+                self._replace_cursor(new_node)
         else:
             raise CWTreeConsistencyError(
                 "You may only replace subtrees inside the active node.")
@@ -201,7 +214,7 @@ class CWTree:
 
         self._removed_nodes.add(old_node)
         self._dirty_nodes.add(new_node)
-        self._traverser.replace_cursor(new_node)
+        self._replace_cursor(new_node)
 
     def get_is_descendant(self, maybe_descendant, maybe_ancestor):
         parent = maybe_descendant.get_parent()
