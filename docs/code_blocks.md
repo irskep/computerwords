@@ -90,3 +90,13 @@ strict digraph {
         p -> BodyText
     }
     ```
+
+There's also a "simple" version that you can use like this:
+
+    ```graphviz-simple
+    A -> B -> C; B -> D;
+    ```
+    
+```graphviz-simple
+A -> B -> C; B -> D;
+```
