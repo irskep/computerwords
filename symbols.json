@@ -1,0 +1,344 @@
+{"parent_id": null, "id": 1, "type": "module", "docstring": null, "name": "computerwords", "string_inside_parens": null, "return_value": null}
+{"parent_id": 1, "id": 2, "type": "module", "docstring": null, "name": "__main__", "string_inside_parens": null, "return_value": null}
+{"parent_id": 1, "id": 3, "type": "module", "docstring": null, "name": "cmd", "string_inside_parens": null, "return_value": null}
+{"parent_id": 3, "id": 4, "type": "function", "docstring": null, "name": "run", "string_inside_parens": "", "return_value": null}
+{"parent_id": 1, "id": 5, "type": "module", "docstring": null, "name": "config", "string_inside_parens": null, "return_value": null}
+{"parent_id": 5, "id": 6, "type": "class", "docstring": null, "name": "DictCascade", "string_inside_parens": "Mapping", "return_value": null}
+{"parent_id": 6, "id": 7, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "*dicts", "return_value": null}
+{"parent_id": 6, "id": 8, "type": "method", "docstring": null, "name": "__getitem__", "string_inside_parens": "k", "return_value": null}
+{"parent_id": 6, "id": 9, "type": "method", "docstring": null, "name": "keys", "string_inside_parens": "", "return_value": null}
+{"parent_id": 6, "id": 10, "type": "method", "docstring": null, "name": "__iter__", "string_inside_parens": "", "return_value": null}
+{"parent_id": 6, "id": 11, "type": "method", "docstring": null, "name": "__repr__", "string_inside_parens": "", "return_value": null}
+{"parent_id": 6, "id": 12, "type": "method", "docstring": null, "name": "__len__", "string_inside_parens": "", "return_value": null}
+{"parent_id": 1, "id": 13, "type": "module", "docstring": null, "name": "library", "string_inside_parens": null, "return_value": null}
+{"parent_id": 13, "id": 14, "type": "class", "docstring": null, "name": "UnhandledEdgeCaseError", "string_inside_parens": "Exception", "return_value": null}
+{"parent_id": 13, "id": 15, "type": "class", "docstring": null, "name": "UnknownNodeNameError", "string_inside_parens": "Exception", "return_value": null}
+{"parent_id": 13, "id": 16, "type": "class", "docstring": null, "name": "Library", "string_inside_parens": "", "return_value": null}
+{"parent_id": 16, "id": 17, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "", "return_value": null}
+{"parent_id": 16, "id": 18, "type": "method", "docstring": null, "name": "_set_processor", "string_inside_parens": "tag_name, p, before_others=False", "return_value": null}
+{"parent_id": 16, "id": 19, "type": "method", "docstring": null, "name": "processor", "string_inside_parens": "tag_name, p=None, before_others=False", "return_value": null}
+{"parent_id": 16, "id": 20, "type": "method", "docstring": null, "name": "get_processors", "string_inside_parens": "tag_name, strict=True", "return_value": null}
+{"parent_id": 16, "id": 21, "type": "method", "docstring": null, "name": "get_allowed_tags", "string_inside_parens": "", "return_value": null}
+{"parent_id": 16, "id": 22, "type": "method", "docstring": null, "name": "run_processors", "string_inside_parens": "tree, node", "return_value": null}
+{"parent_id": 1, "id": 23, "type": "module", "docstring": null, "name": "read_doc_tree", "string_inside_parens": null, "return_value": null}
+{"parent_id": 23, "id": 24, "type": "class", "docstring": null, "name": "DocTreeError", "string_inside_parens": "Exception", "return_value": null}
+{"parent_id": 23, "id": 25, "type": "function", "docstring": null, "name": "chain_list", "string_inside_parens": "lists", "return_value": null}
+{"parent_id": 23, "id": 26, "type": "class", "docstring": null, "name": "DocTree", "string_inside_parens": "", "return_value": null}
+{"parent_id": 26, "id": 27, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "entries", "return_value": null}
+{"parent_id": 26, "id": 28, "type": "method", "docstring": null, "name": "__repr__", "string_inside_parens": "", "return_value": null}
+{"parent_id": 26, "id": 29, "type": "method", "docstring": null, "name": "__iter__", "string_inside_parens": "", "return_value": null}
+{"parent_id": 26, "id": 30, "type": "method", "docstring": null, "name": "__eq__", "string_inside_parens": "other", "return_value": null}
+{"parent_id": 23, "id": 31, "type": "function", "docstring": null, "name": "is_name_top", "string_inside_parens": "name", "return_value": null}
+{"parent_id": 23, "id": 32, "type": "function", "docstring": null, "name": "_path_sort_key", "string_inside_parens": "a, b", "return_value": null}
+{"parent_id": 23, "id": 33, "type": "function", "docstring": null, "name": "_get_doc_id", "string_inside_parens": "files_root, path", "return_value": null}
+{"parent_id": 23, "id": 34, "type": "function", "docstring": null, "name": "_dict_to_doc_subtree", "string_inside_parens": "files_root, entry", "return_value": null}
+{"parent_id": 23, "id": 35, "type": "function", "docstring": null, "name": "_conf_entry_to_doc_subtree", "string_inside_parens": "files_root, entry", "return_value": null}
+{"parent_id": 23, "id": 36, "type": "function", "docstring": "get_doc_cwdom(subtree)", "name": "doc_subtree_to_cwdom", "string_inside_parens": "subtree, get_doc_cwdom", "return_value": null}
+{"parent_id": 23, "id": 37, "type": "function", "docstring": null, "name": "read_doc_tree", "string_inside_parens": "root_path, file_hierarchy_conf, get_doc_cwdom", "return_value": null}
+{"parent_id": 1, "id": 38, "type": "module", "docstring": null, "name": "_css", "string_inside_parens": null, "return_value": null}
+{"parent_id": 1, "id": 39, "type": "module", "docstring": null, "name": "_html", "string_inside_parens": null, "return_value": null}
+{"parent_id": 1, "id": 40, "type": "module", "docstring": null, "name": "cwdom", "string_inside_parens": null, "return_value": null}
+{"parent_id": 40, "id": 41, "type": "module", "docstring": "Documentation for the `CWTree` module.", "name": "CWTree", "string_inside_parens": null, "return_value": null}
+{"parent_id": 41, "id": 42, "type": "class", "docstring": null, "name": "CWTreeConsistencyError", "string_inside_parens": "Exception", "return_value": null}
+{"parent_id": 41, "id": 43, "type": "class", "docstring": null, "name": "CWTree", "string_inside_parens": "", "return_value": null}
+{"parent_id": 43, "id": 44, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "root, env=None", "return_value": null}
+{"parent_id": 43, "id": 45, "type": "method", "docstring": null, "name": "__repr__", "string_inside_parens": "", "return_value": null}
+{"parent_id": 43, "id": 46, "type": "method", "docstring": null, "name": "__eq__", "string_inside_parens": "other", "return_value": null}
+{"parent_id": 43, "id": 47, "type": "method", "docstring": "Yields every node in the tree in pre-order", "name": "preorder_traversal", "string_inside_parens": "node=None", "return_value": null}
+{"parent_id": 43, "id": 48, "type": "method", "docstring": "Yields every node in the tree in post-order. Mutation is disallowed.", "name": "postorder_traversal", "string_inside_parens": "node=None", "return_value": null}
+{"parent_id": 43, "id": 49, "type": "method", "docstring": "Yields every node in the tree in post-order.\n\nWhile running, you may modify, replace, or add ancestors of a node.", "name": "postorder_traversal_allowing_ancestor_mutations", "string_inside_parens": "node=None", "return_value": null}
+{"parent_id": 43, "id": 50, "type": "method", "docstring": null, "name": "copy_tree", "string_inside_parens": "node", "return_value": null}
+{"parent_id": 43, "id": 51, "type": "method", "docstring": null, "name": "_first_pass", "string_inside_parens": "library", "return_value": null}
+{"parent_id": 43, "id": 52, "type": "method", "docstring": null, "name": "_process_node_for_first_pass", "string_inside_parens": "library, node", "return_value": null}
+{"parent_id": 43, "id": 53, "type": "method", "docstring": null, "name": "_second_pass", "string_inside_parens": "library", "return_value": null}
+{"parent_id": 43, "id": 54, "type": "method", "docstring": null, "name": "_process_node_for_second_pass", "string_inside_parens": "library, node", "return_value": null}
+{"parent_id": 43, "id": 55, "type": "method", "docstring": null, "name": "_replace_cursor", "string_inside_parens": "new_node", "return_value": null}
+{"parent_id": 43, "id": 56, "type": "method", "docstring": null, "name": "apply_library", "string_inside_parens": "library, initial_data=None", "return_value": null}
+{"parent_id": 43, "id": 57, "type": "method", "docstring": null, "name": "_mark_node_dirty", "string_inside_parens": "node", "return_value": null}
+{"parent_id": 43, "id": 58, "type": "method", "docstring": null, "name": "mark_node_dirty", "string_inside_parens": "node", "return_value": null}
+{"parent_id": 43, "id": 59, "type": "method", "docstring": null, "name": "mark_ancestors_dirty", "string_inside_parens": "node", "return_value": null}
+{"parent_id": 43, "id": 60, "type": "method", "docstring": null, "name": "_mark_subtree_dirty", "string_inside_parens": "node", "return_value": null}
+{"parent_id": 43, "id": 61, "type": "method", "docstring": null, "name": "get_is_node_dirty", "string_inside_parens": "node", "return_value": null}
+{"parent_id": 43, "id": 62, "type": "method", "docstring": null, "name": "get_was_node_removed", "string_inside_parens": "node", "return_value": null}
+{"parent_id": 43, "id": 63, "type": "method", "docstring": null, "name": "_simple_wrap", "string_inside_parens": "inner_node, outer_node", "return_value": null}
+{"parent_id": 43, "id": 64, "type": "method", "docstring": null, "name": "_wrap_descendant_of_active_node", "string_inside_parens": "inner_node, outer_node", "return_value": null}
+{"parent_id": 43, "id": 65, "type": "method", "docstring": null, "name": "wrap_node", "string_inside_parens": "inner_node, outer_node", "return_value": null}
+{"parent_id": 43, "id": 66, "type": "method", "docstring": null, "name": "_mark_subtree_removed", "string_inside_parens": "node", "return_value": null}
+{"parent_id": 43, "id": 67, "type": "method", "docstring": null, "name": "replace_subtree", "string_inside_parens": "old_node, new_node", "return_value": null}
+{"parent_id": 43, "id": 68, "type": "method", "docstring": null, "name": "insert_subtree", "string_inside_parens": "parent, i, child", "return_value": null}
+{"parent_id": 43, "id": 69, "type": "method", "docstring": null, "name": "add_siblings_ahead", "string_inside_parens": "new_siblings", "return_value": null}
+{"parent_id": 43, "id": 70, "type": "method", "docstring": null, "name": "replace_node", "string_inside_parens": "old_node, new_node", "return_value": null}
+{"parent_id": 43, "id": 71, "type": "method", "docstring": null, "name": "get_is_descendant", "string_inside_parens": "maybe_descendant, maybe_ancestor", "return_value": null}
+{"parent_id": 43, "id": 72, "type": "method", "docstring": "Returns a ref_id that is unique against all other ref_ids returned\nby this function", "name": "text_to_ref_id", "string_inside_parens": "text", "return_value": null}
+{"parent_id": 40, "id": 73, "type": "module", "docstring": null, "name": "nodes", "string_inside_parens": null, "return_value": null}
+{"parent_id": 73, "id": 74, "type": "class", "docstring": null, "name": "IDGenerator", "string_inside_parens": "", "return_value": null}
+{"parent_id": 74, "id": 75, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "", "return_value": null}
+{"parent_id": 74, "id": 76, "type": "method", "docstring": null, "name": "get_id", "string_inside_parens": "", "return_value": null}
+{"parent_id": 73, "id": 77, "type": "class", "docstring": null, "name": "CWNode", "string_inside_parens": "", "return_value": null}
+{"parent_id": 77, "id": 78, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "name, children=None, document_id=None", "return_value": null}
+{"parent_id": 77, "id": 79, "type": "method", "docstring": null, "name": "claim_children", "string_inside_parens": "", "return_value": null}
+{"parent_id": 77, "id": 80, "type": "method", "docstring": null, "name": "set_children", "string_inside_parens": "children", "return_value": null}
+{"parent_id": 77, "id": 81, "type": "method", "docstring": null, "name": "get_parent", "string_inside_parens": "", "return_value": null}
+{"parent_id": 77, "id": 82, "type": "method", "docstring": null, "name": "set_parent", "string_inside_parens": "new_parent", "return_value": null}
+{"parent_id": 77, "id": 83, "type": "method", "docstring": null, "name": "deep_set_document_id", "string_inside_parens": "new_id", "return_value": null}
+{"parent_id": 77, "id": 84, "type": "method", "docstring": null, "name": "copy", "string_inside_parens": "", "return_value": null}
+{"parent_id": 77, "id": 85, "type": "method", "docstring": null, "name": "deepcopy", "string_inside_parens": "", "return_value": null}
+{"parent_id": 77, "id": 86, "type": "method", "docstring": null, "name": "deepcopy_children_from", "string_inside_parens": "node, at_end=False", "return_value": null}
+{"parent_id": 77, "id": 87, "type": "method", "docstring": null, "name": "get_string_for_test_comparison", "string_inside_parens": "inner_indentation=2", "return_value": null}
+{"parent_id": 77, "id": 88, "type": "method", "docstring": null, "name": "get_args_string_for_test_comparison", "string_inside_parens": "", "return_value": null}
+{"parent_id": 77, "id": 89, "type": "method", "docstring": null, "name": "__repr__", "string_inside_parens": "", "return_value": null}
+{"parent_id": 77, "id": 90, "type": "method", "docstring": null, "name": "shallow_repr", "string_inside_parens": "", "return_value": null}
+{"parent_id": 77, "id": 91, "type": "method", "docstring": null, "name": "__eq__", "string_inside_parens": "other", "return_value": null}
+{"parent_id": 77, "id": 92, "type": "method", "docstring": null, "name": "__hash__", "string_inside_parens": "", "return_value": null}
+{"parent_id": 73, "id": 93, "type": "class", "docstring": null, "name": "CWRootNode", "string_inside_parens": "CWNode", "return_value": null}
+{"parent_id": 93, "id": 94, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "children=None, document_id=None", "return_value": null}
+{"parent_id": 93, "id": 95, "type": "method", "docstring": null, "name": "copy", "string_inside_parens": "", "return_value": null}
+{"parent_id": 93, "id": 96, "type": "method", "docstring": null, "name": "shallow_repr", "string_inside_parens": "", "return_value": null}
+{"parent_id": 73, "id": 97, "type": "class", "docstring": null, "name": "CWDocumentNode", "string_inside_parens": "CWNode", "return_value": null}
+{"parent_id": 97, "id": 98, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "path, children=None, document_id=None", "return_value": null}
+{"parent_id": 97, "id": 99, "type": "method", "docstring": null, "name": "get_args_string_for_test_comparison", "string_inside_parens": "", "return_value": null}
+{"parent_id": 97, "id": 100, "type": "method", "docstring": null, "name": "__repr__", "string_inside_parens": "", "return_value": null}
+{"parent_id": 97, "id": 101, "type": "method", "docstring": null, "name": "shallow_repr", "string_inside_parens": "", "return_value": null}
+{"parent_id": 97, "id": 102, "type": "method", "docstring": null, "name": "copy", "string_inside_parens": "", "return_value": null}
+{"parent_id": 73, "id": 103, "type": "class", "docstring": null, "name": "CWTagNode", "string_inside_parens": "CWNode", "return_value": null}
+{"parent_id": 103, "id": 104, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "name, kwargs, children=None, document_id=None", "return_value": null}
+{"parent_id": 103, "id": 105, "type": "method", "docstring": null, "name": "copy", "string_inside_parens": "name=None, kwargs=None", "return_value": null}
+{"parent_id": 103, "id": 106, "type": "method", "docstring": null, "name": "get_args_string_for_test_comparison", "string_inside_parens": "", "return_value": null}
+{"parent_id": 103, "id": 107, "type": "method", "docstring": null, "name": "__repr__", "string_inside_parens": "", "return_value": null}
+{"parent_id": 103, "id": 108, "type": "method", "docstring": null, "name": "shallow_repr", "string_inside_parens": "", "return_value": null}
+{"parent_id": 103, "id": 109, "type": "method", "docstring": null, "name": "__eq__", "string_inside_parens": "other", "return_value": null}
+{"parent_id": 103, "id": 110, "type": "method", "docstring": null, "name": "__hash__", "string_inside_parens": "", "return_value": null}
+{"parent_id": 103, "id": 111, "type": "method", "docstring": null, "name": "get_arg", "string_inside_parens": "name", "return_value": null}
+{"parent_id": 73, "id": 112, "type": "class", "docstring": null, "name": "CWTextNode", "string_inside_parens": "CWNode", "return_value": null}
+{"parent_id": 112, "id": 113, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "text, document_id=None, escape=True", "return_value": null}
+{"parent_id": 112, "id": 114, "type": "method", "docstring": null, "name": "get_string_for_test_comparison", "string_inside_parens": "inner_indentation=2", "return_value": null}
+{"parent_id": 112, "id": 115, "type": "method", "docstring": null, "name": "copy", "string_inside_parens": "", "return_value": null}
+{"parent_id": 112, "id": 116, "type": "method", "docstring": null, "name": "get_args_string_for_test_comparison", "string_inside_parens": "", "return_value": null}
+{"parent_id": 112, "id": 117, "type": "method", "docstring": null, "name": "__repr__", "string_inside_parens": "", "return_value": null}
+{"parent_id": 73, "id": 118, "type": "class", "docstring": null, "name": "CWAnchorNode", "string_inside_parens": "CWTagNode", "return_value": null}
+{"parent_id": 118, "id": 119, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "ref_id, kwargs=None, children=None, document_id=None", "return_value": null}
+{"parent_id": 118, "id": 120, "type": "method", "docstring": null, "name": "get_args_string_for_test_comparison", "string_inside_parens": "", "return_value": null}
+{"parent_id": 118, "id": 121, "type": "method", "docstring": null, "name": "copy", "string_inside_parens": "", "return_value": null}
+{"parent_id": 118, "id": 122, "type": "method", "docstring": null, "name": "__repr__", "string_inside_parens": "", "return_value": null}
+{"parent_id": 118, "id": 123, "type": "method", "docstring": null, "name": "shallow_repr", "string_inside_parens": "", "return_value": null}
+{"parent_id": 73, "id": 124, "type": "class", "docstring": null, "name": "CWLinkNode", "string_inside_parens": "CWNode", "return_value": null}
+{"parent_id": 124, "id": 125, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "ref_id, children=None, document_id=None", "return_value": null}
+{"parent_id": 124, "id": 126, "type": "method", "docstring": null, "name": "get_args_string_for_test_comparison", "string_inside_parens": "", "return_value": null}
+{"parent_id": 124, "id": 127, "type": "method", "docstring": null, "name": "copy", "string_inside_parens": "", "return_value": null}
+{"parent_id": 124, "id": 128, "type": "method", "docstring": null, "name": "__repr__", "string_inside_parens": "", "return_value": null}
+{"parent_id": 124, "id": 129, "type": "method", "docstring": null, "name": "shallow_repr", "string_inside_parens": "", "return_value": null}
+{"parent_id": 73, "id": 130, "type": "class", "docstring": null, "name": "CWDocumentLinkNode", "string_inside_parens": "CWNode", "return_value": null}
+{"parent_id": 130, "id": 131, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "target_document_id, children=None, document_id=None", "return_value": null}
+{"parent_id": 130, "id": 132, "type": "method", "docstring": null, "name": "get_args_string_for_test_comparison", "string_inside_parens": "", "return_value": null}
+{"parent_id": 130, "id": 133, "type": "method", "docstring": null, "name": "copy", "string_inside_parens": "", "return_value": null}
+{"parent_id": 130, "id": 134, "type": "method", "docstring": null, "name": "__repr__", "string_inside_parens": "", "return_value": null}
+{"parent_id": 130, "id": 135, "type": "method", "docstring": null, "name": "shallow_repr", "string_inside_parens": "", "return_value": null}
+{"parent_id": 40, "id": 136, "type": "module", "docstring": "Utilities for traversing `CWNode` trees.", "name": "traversal", "string_inside_parens": null, "return_value": null}
+{"parent_id": 136, "id": 137, "type": "function", "docstring": "Yields every node in the tree. Each node is yielded before its descendants.\nMutation is disallowed.", "name": "preorder_traversal", "string_inside_parens": "node", "return_value": "iterator(CWNode)"}
+{"parent_id": 136, "id": 138, "type": "function", "docstring": "Yields every node in the tree. Each node is yielded after its descendants.\nMutation is disallowed.", "name": "postorder_traversal", "string_inside_parens": "node", "return_value": "iterator(CWNode)"}
+{"parent_id": 136, "id": 139, "type": "function", "docstring": "Yields every ancestor of a node, starting with its immediate parent.\n\n```python\nfrom computerwords.cwdom.nodes import CWNode\nfrom computerwords.cwdom.traversal import iterate_ancestors\nnode_c = CWNode('c', [])\ntree = CWNode('a', [\n    CWNode('b', [node_c]),\n    CWNode('d', []),\n])\nassert ([node.name for node in iterate_ancestors(node_c)] ==\n        ['b', 'a'])\n```", "name": "iterate_ancestors", "string_inside_parens": "node", "return_value": null}
+{"parent_id": 136, "id": 140, "type": "function", "docstring": "Returns the closest ancestor of a node matching the given predicate.\n\n```python\nfrom computerwords.cwdom.traversal import find_ancestor\ndocument_node = find_ancestor(node, lambda n: n.name == 'Document')\n```", "name": "find_ancestor", "string_inside_parens": "node, predicate", "return_value": null}
+{"parent_id": 136, "id": 141, "type": "function", "docstring": "Recursively call the `CWTreeVisitor` for each node. If a node\nis encountered that has no corresponding visitor, `MissingVisitorError` is\nthrown.\n\n```python\nfrom computerwords.cwdom.CWTree import CWTree\nfrom computerwords.cwdom.traversal import (\n    visit_tree,\n    CWTreeVisitor\n)\n\nvisits = []\nclass SimpleVisitor(CWTreeVisitor):\n    def before_children(self, tree, node):\n        visits.append('pre-{}'.format(node.name))\n\n    def after_children(self, tree, node):\n        visits.append('post-{}'.format(node.name))\n\ntree = CWTree(CWNode('x', [CWNode('y', [])]))\nvisit_tree(tree, {\n    'x': SimpleVisitor(),\n    'y': SimpleVisitor(),\n})\nassert visits == ['pre-x', 'pre-y', 'post-y', 'post-x']\n```", "name": "visit_tree", "string_inside_parens": "tree, node_name_to_visitor, node=None", "return_value": null}
+{"parent_id": 136, "id": 142, "type": "class", "docstring": "Error thrown when trying to visit a node for which no visitor is available.", "name": "MissingVisitorError", "string_inside_parens": "Exception", "return_value": null}
+{"parent_id": 136, "id": 143, "type": "class", "docstring": null, "name": "CWTreeVisitor", "string_inside_parens": "", "return_value": null}
+{"parent_id": 143, "id": 144, "type": "method", "docstring": "Called before the node's children are visited.", "name": "before_children", "string_inside_parens": "tree, node", "return_value": null}
+{"parent_id": 143, "id": 145, "type": "method", "docstring": "Called after the node's children are visited.", "name": "after_children", "string_inside_parens": "tree, node", "return_value": null}
+{"parent_id": 136, "id": 146, "type": "class", "docstring": "A class that lets you iterate over a tree while mutating it.\n\nKeeps track of a *cursor* representing the last visited node. Each time\nthe next node is requested, the iterator looks at the cursor and walks\nup the tree to find the cursor's next sibling or parent.\n\nYou may replace the cursor if you want to replace the node currently being\nvisited.\n\nYou may safely mutate the cursor's ancestors, since they haven't been\nvisited yet.", "name": "PostorderTraverser", "string_inside_parens": "", "return_value": null}
+{"parent_id": 146, "id": 147, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "node", "return_value": null}
+{"parent_id": 146, "id": 148, "type": "method", "docstring": "Only use this if you really know what you are doing.", "name": "replace_cursor", "string_inside_parens": "new_cursor", "return_value": null}
+{"parent_id": 146, "id": 149, "type": "method", "docstring": null, "name": "__iter__", "string_inside_parens": "", "return_value": null}
+{"parent_id": 146, "id": 150, "type": "method", "docstring": null, "name": "__next__", "string_inside_parens": "", "return_value": "CWNode"}
+{"parent_id": 146, "id": 151, "type": "method", "docstring": null, "name": "_descend", "string_inside_parens": "", "return_value": null}
+{"parent_id": 1, "id": 152, "type": "module", "docstring": null, "name": "htmlwriter", "string_inside_parens": null, "return_value": null}
+{"parent_id": 152, "id": 153, "type": "function", "docstring": null, "name": "_get_subtree_html", "string_inside_parens": "config, options, library, tree, node=None", "return_value": null}
+{"parent_id": 152, "id": 154, "type": "function", "docstring": null, "name": "_get_nav_html_part", "string_inside_parens": "config, options, library, tree, document_node, is_prev=False", "return_value": null}
+{"parent_id": 152, "id": 155, "type": "function", "docstring": null, "name": "write_document", "string_inside_parens": "config, options, output_dir, library, tree, document_node", "return_value": null}
+{"parent_id": 152, "id": 156, "type": "function", "docstring": null, "name": "write_multi_page", "string_inside_parens": "config, options, output_dir, library, tree", "return_value": null}
+{"parent_id": 152, "id": 157, "type": "function", "docstring": null, "name": "write_single_page", "string_inside_parens": "config, options, output_dir, library, tree", "return_value": null}
+{"parent_id": 152, "id": 158, "type": "function", "docstring": null, "name": "write", "string_inside_parens": "config, input_dir, output_dir, library, tree", "return_value": null}
+{"parent_id": 152, "id": 159, "type": "module", "docstring": null, "name": "util", "string_inside_parens": null, "return_value": null}
+{"parent_id": 159, "id": 160, "type": "function", "docstring": null, "name": "document_id_to_link_root", "string_inside_parens": "doc_id", "return_value": null}
+{"parent_id": 159, "id": 161, "type": "function", "docstring": null, "name": "find_path_between", "string_inside_parens": "a, b", "return_value": null}
+{"parent_id": 159, "id": 162, "type": "function", "docstring": null, "name": "doc_to_href", "string_inside_parens": "options, link_node, target_doc_id", "return_value": null}
+{"parent_id": 159, "id": 163, "type": "function", "docstring": null, "name": "anchor_to_href", "string_inside_parens": "options, link_node, anchor_node", "return_value": null}
+{"parent_id": 159, "id": 164, "type": "function", "docstring": null, "name": "doc_id_to_single_page_anchor_name", "string_inside_parens": "doc_id", "return_value": null}
+{"parent_id": 159, "id": 165, "type": "function", "docstring": null, "name": "html_attrs_to_string", "string_inside_parens": "kwargs", "return_value": null}
+{"parent_id": 159, "id": 166, "type": "function", "docstring": "Dumb way to copy files", "name": "copy_files", "string_inside_parens": "in_out_path_pairs", "return_value": null}
+{"parent_id": 159, "id": 167, "type": "function", "docstring": null, "name": "read_htmlwriter_options", "string_inside_parens": "config, input_dir, output_dir", "return_value": null}
+{"parent_id": 152, "id": 168, "type": "module", "docstring": null, "name": "visitors", "string_inside_parens": null, "return_value": null}
+{"parent_id": 168, "id": 169, "type": "function", "docstring": null, "name": "get_tag_to_visitor", "string_inside_parens": "library, stream, options", "return_value": null}
+{"parent_id": 168, "id": 170, "type": "class", "docstring": null, "name": "WritingVisitor", "string_inside_parens": "CWTreeVisitor", "return_value": null}
+{"parent_id": 170, "id": 171, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "options, output_stream", "return_value": null}
+{"parent_id": 168, "id": 172, "type": "class", "docstring": null, "name": "TagVisitor", "string_inside_parens": "WritingVisitor", "return_value": null}
+{"parent_id": 172, "id": 173, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "options, output_stream, tag_name", "return_value": null}
+{"parent_id": 172, "id": 174, "type": "method", "docstring": null, "name": "before_children", "string_inside_parens": "tree, node", "return_value": null}
+{"parent_id": 172, "id": 175, "type": "method", "docstring": null, "name": "after_children", "string_inside_parens": "tree, node", "return_value": null}
+{"parent_id": 168, "id": 176, "type": "class", "docstring": null, "name": "TextVisitor", "string_inside_parens": "WritingVisitor", "return_value": null}
+{"parent_id": 176, "id": 177, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "options, output_stream, tag_name", "return_value": null}
+{"parent_id": 176, "id": 178, "type": "method", "docstring": null, "name": "before_children", "string_inside_parens": "tree, node", "return_value": null}
+{"parent_id": 168, "id": 179, "type": "class", "docstring": null, "name": "AnchorVisitor", "string_inside_parens": "WritingVisitor", "return_value": null}
+{"parent_id": 179, "id": 180, "type": "method", "docstring": null, "name": "before_children", "string_inside_parens": "tree, node", "return_value": null}
+{"parent_id": 179, "id": 181, "type": "method", "docstring": null, "name": "after_children", "string_inside_parens": "tree, node", "return_value": null}
+{"parent_id": 168, "id": 182, "type": "class", "docstring": null, "name": "LinkVisitor", "string_inside_parens": "WritingVisitor", "return_value": null}
+{"parent_id": 182, "id": 183, "type": "method", "docstring": null, "name": "before_children", "string_inside_parens": "tree, node", "return_value": null}
+{"parent_id": 182, "id": 184, "type": "method", "docstring": null, "name": "after_children", "string_inside_parens": "tree, node", "return_value": null}
+{"parent_id": 168, "id": 185, "type": "class", "docstring": null, "name": "DocumentLinkVisitor", "string_inside_parens": "WritingVisitor", "return_value": null}
+{"parent_id": 185, "id": 186, "type": "method", "docstring": null, "name": "before_children", "string_inside_parens": "tree, node", "return_value": null}
+{"parent_id": 185, "id": 187, "type": "method", "docstring": null, "name": "after_children", "string_inside_parens": "tree, node", "return_value": null}
+{"parent_id": 168, "id": 188, "type": "class", "docstring": null, "name": "DocumentVisitor", "string_inside_parens": "WritingVisitor", "return_value": null}
+{"parent_id": 188, "id": 189, "type": "method", "docstring": null, "name": "before_children", "string_inside_parens": "tree, node", "return_value": null}
+{"parent_id": 188, "id": 190, "type": "method", "docstring": null, "name": "after_children", "string_inside_parens": "tree, node", "return_value": null}
+{"parent_id": 1, "id": 191, "type": "module", "docstring": null, "name": "markdown_parser", "string_inside_parens": null, "return_value": null}
+{"parent_id": 191, "id": 192, "type": "function", "docstring": null, "name": "lex_and_parse_html", "string_inside_parens": "string, allowed_tags", "return_value": null}
+{"parent_id": 191, "id": 193, "type": "function", "docstring": null, "name": "string_to_cwdom", "string_inside_parens": "string, allowed_tags", "return_value": null}
+{"parent_id": 191, "id": 194, "type": "module", "docstring": null, "name": "ast", "string_inside_parens": null, "return_value": null}
+{"parent_id": 194, "id": 195, "type": "class", "docstring": null, "name": "InternalParseError", "string_inside_parens": "Exception", "return_value": null}
+{"parent_id": 194, "id": 196, "type": "class", "docstring": null, "name": "KissUpASTNode", "string_inside_parens": "", "return_value": null}
+{"parent_id": 196, "id": 197, "type": "method", "docstring": null, "name": "get_string_for_test_comparison", "string_inside_parens": "inner_indentation=0", "return_value": null}
+{"parent_id": 194, "id": 198, "type": "function", "docstring": null, "name": "create_ast_node", "string_inside_parens": "class_name, production_name, forms", "return_value": null}
+{"parent_id": 194, "id": 199, "type": "class", "docstring": null, "name": "TokenNode", "string_inside_parens": "KissUpASTNode", "return_value": null}
+{"parent_id": 199, "id": 200, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "name, token", "return_value": null}
+{"parent_id": 199, "id": 201, "type": "method", "docstring": null, "name": "get_string_for_test_comparison", "string_inside_parens": "inner_indentation=0", "return_value": null}
+{"parent_id": 199, "id": 202, "type": "method", "docstring": null, "name": "__eq__", "string_inside_parens": "other", "return_value": null}
+{"parent_id": 199, "id": 203, "type": "method", "docstring": null, "name": "__repr__", "string_inside_parens": "", "return_value": null}
+{"parent_id": 191, "id": 204, "type": "module", "docstring": null, "name": "cfm_to_cwdom", "string_inside_parens": null, "return_value": null}
+{"parent_id": 204, "id": 205, "type": "function", "docstring": null, "name": "lex_and_parse_html", "string_inside_parens": "string, allowed_tags", "return_value": null}
+{"parent_id": 204, "id": 206, "type": "function", "docstring": null, "name": "html_string_to_cwdom", "string_inside_parens": "string, config", "return_value": null}
+{"parent_id": 204, "id": 207, "type": "function", "docstring": null, "name": "parse_tree_to_cwdom", "string_inside_parens": "root, config", "return_value": null}
+{"parent_id": 204, "id": 208, "type": "function", "docstring": null, "name": "stmts_to_list", "string_inside_parens": "stmts, config", "return_value": null}
+{"parent_id": 204, "id": 209, "type": "function", "docstring": null, "name": "stmt_to_tag_or_text", "string_inside_parens": "stmt, config", "return_value": null}
+{"parent_id": 204, "id": 210, "type": "class", "docstring": null, "name": "UnparsedTagNode", "string_inside_parens": "CWNode", "return_value": null}
+{"parent_id": 210, "id": 211, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "name, parse_tree, literal", "return_value": null}
+{"parent_id": 210, "id": 212, "type": "method", "docstring": null, "name": "get_args_string_for_test_comparison", "string_inside_parens": "", "return_value": null}
+{"parent_id": 210, "id": 213, "type": "method", "docstring": null, "name": "__repr__", "string_inside_parens": "", "return_value": null}
+{"parent_id": 204, "id": 214, "type": "class", "docstring": null, "name": "UnparsedOpenTagNode", "string_inside_parens": "UnparsedTagNode", "return_value": null}
+{"parent_id": 214, "id": 215, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "parse_tree, literal", "return_value": null}
+{"parent_id": 204, "id": 216, "type": "class", "docstring": null, "name": "UnparsedCloseTagNode", "string_inside_parens": "UnparsedTagNode", "return_value": null}
+{"parent_id": 216, "id": 217, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "parse_tree, literal", "return_value": null}
+{"parent_id": 204, "id": 218, "type": "function", "docstring": null, "name": "_dump", "string_inside_parens": "ast_node", "return_value": null}
+{"parent_id": 204, "id": 219, "type": "function", "docstring": null, "name": "t", "string_inside_parens": "name", "return_value": null}
+{"parent_id": 204, "id": 220, "type": "function", "docstring": null, "name": "post", "string_inside_parens": "name", "return_value": null}
+{"parent_id": 204, "id": 221, "type": "function", "docstring": null, "name": "t_Text", "string_inside_parens": "ast_node, config", "return_value": null}
+{"parent_id": 204, "id": 222, "type": "function", "docstring": null, "name": "t_Document", "string_inside_parens": "ast_node, config", "return_value": null}
+{"parent_id": 204, "id": 223, "type": "function", "docstring": null, "name": "t_Header", "string_inside_parens": "ast_node, config", "return_value": null}
+{"parent_id": 204, "id": 224, "type": "function", "docstring": null, "name": "t_Paragraph", "string_inside_parens": "ast_node, config", "return_value": null}
+{"parent_id": 204, "id": 225, "type": "function", "docstring": null, "name": "t_Link", "string_inside_parens": "ast_node, config", "return_value": null}
+{"parent_id": 204, "id": 226, "type": "function", "docstring": null, "name": "t_List", "string_inside_parens": "ast_node, config", "return_value": null}
+{"parent_id": 204, "id": 227, "type": "function", "docstring": null, "name": "t_Item", "string_inside_parens": "ast_node, config", "return_value": null}
+{"parent_id": 204, "id": 228, "type": "function", "docstring": null, "name": "t_HtmlBlock", "string_inside_parens": "ast_node, config", "return_value": null}
+{"parent_id": 204, "id": 229, "type": "function", "docstring": null, "name": "t_HtmlInline", "string_inside_parens": "ast_node, config", "return_value": null}
+{"parent_id": 204, "id": 230, "type": "function", "docstring": null, "name": "t_Emph", "string_inside_parens": "ast_node, config", "return_value": null}
+{"parent_id": 204, "id": 231, "type": "function", "docstring": null, "name": "t_Strong", "string_inside_parens": "ast_node, config", "return_value": null}
+{"parent_id": 204, "id": 232, "type": "function", "docstring": null, "name": "t_BlockQuote", "string_inside_parens": "ast_node, config", "return_value": null}
+{"parent_id": 204, "id": 233, "type": "function", "docstring": null, "name": "t_ThematicBreak", "string_inside_parens": "ast_node, config", "return_value": null}
+{"parent_id": 204, "id": 234, "type": "function", "docstring": null, "name": "t_CodeBlock", "string_inside_parens": "ast_node, config", "return_value": null}
+{"parent_id": 204, "id": 235, "type": "function", "docstring": null, "name": "t_Code", "string_inside_parens": "ast_node, config", "return_value": null}
+{"parent_id": 204, "id": 236, "type": "function", "docstring": null, "name": "t_Hardbreak", "string_inside_parens": "ast_node, config", "return_value": null}
+{"parent_id": 204, "id": 237, "type": "function", "docstring": null, "name": "t_Softbreak", "string_inside_parens": "ast_node, config", "return_value": null}
+{"parent_id": 204, "id": 238, "type": "function", "docstring": null, "name": "t_Image", "string_inside_parens": "ast_node, config", "return_value": null}
+{"parent_id": 204, "id": 239, "type": "function", "docstring": null, "name": "post_Image", "string_inside_parens": "node, config", "return_value": null}
+{"parent_id": 204, "id": 240, "type": "class", "docstring": null, "name": "NonFatalParseError", "string_inside_parens": "Exception", "return_value": null}
+{"parent_id": 204, "id": 241, "type": "function", "docstring": null, "name": "_do_your_best", "string_inside_parens": "literal", "return_value": null}
+{"parent_id": 204, "id": 242, "type": "function", "docstring": null, "name": "_yield_nodes", "string_inside_parens": "literal, tokens, i, node", "return_value": null}
+{"parent_id": 204, "id": 243, "type": "function", "docstring": null, "name": "maybe_parse_self_closing_tag", "string_inside_parens": "literal", "return_value": null}
+{"parent_id": 204, "id": 244, "type": "function", "docstring": null, "name": "maybe_parse_open_tag", "string_inside_parens": "literal", "return_value": null}
+{"parent_id": 204, "id": 245, "type": "function", "docstring": null, "name": "maybe_parse_close_tag", "string_inside_parens": "literal", "return_value": null}
+{"parent_id": 204, "id": 246, "type": "class", "docstring": null, "name": "NoMatchingTagError", "string_inside_parens": "Exception", "return_value": null}
+{"parent_id": 204, "id": 247, "type": "function", "docstring": null, "name": "fix_ignored_html", "string_inside_parens": "node", "return_value": null}
+{"parent_id": 204, "id": 248, "type": "function", "docstring": null, "name": "_ast_node_to_cwdom", "string_inside_parens": "ast_node, config", "return_value": null}
+{"parent_id": 204, "id": 249, "type": "function", "docstring": null, "name": "_replace_lone_p", "string_inside_parens": "nodes", "return_value": null}
+{"parent_id": 204, "id": 250, "type": "function", "docstring": null, "name": "commonmark_to_cwdom", "string_inside_parens": "text, config, fix_tags=True", "return_value": null}
+{"parent_id": 204, "id": 251, "type": "function", "docstring": null, "name": "cfm_to_cwdom", "string_inside_parens": "text, config, fix_tags=True", "return_value": null}
+{"parent_id": 191, "id": 252, "type": "module", "docstring": null, "name": "html_lexer", "string_inside_parens": null, "return_value": null}
+{"parent_id": 252, "id": 253, "type": "class", "docstring": null, "name": "LexError", "string_inside_parens": "Exception", "return_value": null}
+{"parent_id": 253, "id": 254, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "line, pos, msg", "return_value": null}
+{"parent_id": 252, "id": 255, "type": "function", "docstring": "Match text", "name": "_match_text", "string_inside_parens": "s, i, num_brackets, line, pos", "return_value": null}
+{"parent_id": 252, "id": 256, "type": "function", "docstring": "Match string literal", "name": "_match_string_literal", "string_inside_parens": "s, i, num_brackets, line, pos", "return_value": null}
+{"parent_id": 252, "id": 257, "type": "function", "docstring": null, "name": "_match_left_bracket", "string_inside_parens": "s, i, num_brackets, line, pos", "return_value": null}
+{"parent_id": 252, "id": 258, "type": "function", "docstring": null, "name": "_match_right_bracket", "string_inside_parens": "s, i, num_brackets, line, pos", "return_value": null}
+{"parent_id": 252, "id": 259, "type": "function", "docstring": null, "name": "_make_re_matcher", "string_inside_parens": "expr, required_num_brackets, Cls", "return_value": null}
+{"parent_id": 252, "id": 260, "type": "function", "docstring": null, "name": "lex_html", "string_inside_parens": "s", "return_value": null}
+{"parent_id": 191, "id": 261, "type": "module", "docstring": "stmts_a -> stmt stmts_a\n         | \u03b5\n\nstmts_b -> stmt stmts_b\n         | END\n\nstmt -> TEXT\n      | tag\n\ntag -> open_tag stmts_a close_tag\n     | self_closing_tag\n\nopen_tag -> < tag_contents space? >\n\nclose_tag -> < space? / BBWORD >\n\nself_closing_tag -> < tag_contents / space? >\n\ntag_contents -> space? BBWORD tag_args space?\n\ntag_args -> tag_arg tag_args\n          | \u03b5\n\ntag_arg -> SPACE BBWORD = arg_value\n\narg_value -> BBWORD\n           | STRING\n\nspace? -> SPACE\n        | \u03b5", "name": "html_parser", "string_inside_parens": null, "return_value": null}
+{"parent_id": 261, "id": 262, "type": "class", "docstring": null, "name": "TagMismatchError", "string_inside_parens": "ParseError", "return_value": null}
+{"parent_id": 262, "id": 263, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "token1, token2", "return_value": null}
+{"parent_id": 261, "id": 264, "type": "class", "docstring": null, "name": "UnknownTagError", "string_inside_parens": "ParseError", "return_value": null}
+{"parent_id": 264, "id": 265, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "tag_name_token", "return_value": null}
+{"parent_id": 261, "id": 266, "type": "function", "docstring": null, "name": "token_rule", "string_inside_parens": "name", "return_value": null}
+{"parent_id": 261, "id": 267, "type": "function", "docstring": null, "name": "empty_rule", "string_inside_parens": "Cls, form", "return_value": null}
+{"parent_id": 261, "id": 268, "type": "function", "docstring": null, "name": "tags_should_match", "string_inside_parens": "tag_node, config", "return_value": null}
+{"parent_id": 261, "id": 269, "type": "function", "docstring": null, "name": "self_closing_tag_should_be_allowed", "string_inside_parens": "tag_node, config", "return_value": null}
+{"parent_id": 261, "id": 270, "type": "function", "docstring": null, "name": "parse_html", "string_inside_parens": "tokens, allowed_tags=None", "return_value": null}
+{"parent_id": 261, "id": 271, "type": "function", "docstring": null, "name": "parser_shortcut", "string_inside_parens": "name", "return_value": null}
+{"parent_id": 191, "id": 272, "type": "module", "docstring": null, "name": "parse_tree_to_cwdom", "string_inside_parens": null, "return_value": null}
+{"parent_id": 272, "id": 273, "type": "function", "docstring": null, "name": "parse_tree_to_cwdom", "string_inside_parens": "root", "return_value": null}
+{"parent_id": 272, "id": 274, "type": "function", "docstring": null, "name": "stmts_to_list", "string_inside_parens": "stmts", "return_value": null}
+{"parent_id": 272, "id": 275, "type": "function", "docstring": null, "name": "stmt_to_tag_or_text", "string_inside_parens": "stmt", "return_value": null}
+{"parent_id": 191, "id": 276, "type": "module", "docstring": null, "name": "parse_tree_to_cwdom_util", "string_inside_parens": null, "return_value": null}
+{"parent_id": 276, "id": 277, "type": "class", "docstring": null, "name": "DuplicateArgumentsError", "string_inside_parens": "ParseError", "return_value": null}
+{"parent_id": 276, "id": 278, "type": "function", "docstring": null, "name": "tag_args_to_dict", "string_inside_parens": "tag_args", "return_value": null}
+{"parent_id": 276, "id": 279, "type": "function", "docstring": null, "name": "tag_args_to_list", "string_inside_parens": "tag_args", "return_value": null}
+{"parent_id": 276, "id": 280, "type": "function", "docstring": null, "name": "get_tag_arg_value", "string_inside_parens": "tag_arg", "return_value": null}
+{"parent_id": 191, "id": 281, "type": "module", "docstring": null, "name": "parser_support", "string_inside_parens": null, "return_value": null}
+{"parent_id": 281, "id": 282, "type": "function", "docstring": null, "name": "log", "string_inside_parens": "text, *args, **kwargs", "return_value": null}
+{"parent_id": 281, "id": 283, "type": "class", "docstring": null, "name": "ParseError", "string_inside_parens": "Exception", "return_value": null}
+{"parent_id": 283, "id": 284, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "token, msg=None", "return_value": null}
+{"parent_id": 283, "id": 285, "type": "method", "docstring": null, "name": "__eq__", "string_inside_parens": "other", "return_value": null}
+{"parent_id": 283, "id": 286, "type": "method", "docstring": null, "name": "__hash__", "string_inside_parens": "", "return_value": null}
+{"parent_id": 281, "id": 287, "type": "function", "docstring": null, "name": "raise_parse_error", "string_inside_parens": "token", "return_value": null}
+{"parent_id": 281, "id": 288, "type": "function", "docstring": null, "name": "none_to_duple", "string_inside_parens": "result, default", "return_value": null}
+{"parent_id": 281, "id": 289, "type": "function", "docstring": null, "name": "parse_sequence", "string_inside_parens": "tokens, i, config, *names", "return_value": null}
+{"parent_id": 281, "id": 290, "type": "function", "docstring": null, "name": "alternatives", "string_inside_parens": "*parse_fns", "return_value": null}
+{"parent_id": 281, "id": 291, "type": "function", "docstring": null, "name": "sequence_rule", "string_inside_parens": "Cls, form, *sequence", "return_value": null}
+{"parent_id": 281, "id": 292, "type": "function", "docstring": "validator may simply return False, or raise a ParseError", "name": "validate", "string_inside_parens": "validator, parse_fn", "return_value": null}
+{"parent_id": 281, "id": 293, "type": "function", "docstring": null, "name": "rule", "string_inside_parens": "name, *fns, error_if_not_success=False", "return_value": null}
+{"parent_id": 281, "id": 294, "type": "function", "docstring": null, "name": "call_parse_function", "string_inside_parens": "name, tokens, i, config", "return_value": null}
+{"parent_id": 191, "id": 295, "type": "module", "docstring": null, "name": "tokens", "string_inside_parens": null, "return_value": null}
+{"parent_id": 295, "id": 296, "type": "class", "docstring": null, "name": "Token", "string_inside_parens": "", "return_value": null}
+{"parent_id": 296, "id": 297, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "line, pos, value", "return_value": null}
+{"parent_id": 296, "id": 298, "type": "method", "docstring": null, "name": "__eq__", "string_inside_parens": "other", "return_value": null}
+{"parent_id": 296, "id": 299, "type": "method", "docstring": null, "name": "__repr__", "string_inside_parens": "", "return_value": null}
+{"parent_id": 296, "id": 300, "type": "method", "docstring": null, "name": "__hash__", "string_inside_parens": "", "return_value": null}
+{"parent_id": 295, "id": 301, "type": "class", "docstring": null, "name": "BracketLeftToken", "string_inside_parens": "Token", "return_value": null}
+{"parent_id": 301, "id": 302, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "line, pos, value='<'", "return_value": null}
+{"parent_id": 295, "id": 303, "type": "class", "docstring": null, "name": "BracketRightToken", "string_inside_parens": "Token", "return_value": null}
+{"parent_id": 303, "id": 304, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "line, pos, value='>'", "return_value": null}
+{"parent_id": 295, "id": 305, "type": "class", "docstring": null, "name": "BBWordToken", "string_inside_parens": "Token", "return_value": null}
+{"parent_id": 295, "id": 306, "type": "class", "docstring": null, "name": "EqualsToken", "string_inside_parens": "Token", "return_value": null}
+{"parent_id": 306, "id": 307, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "line, pos, value='='", "return_value": null}
+{"parent_id": 295, "id": 308, "type": "class", "docstring": null, "name": "SlashToken", "string_inside_parens": "Token", "return_value": null}
+{"parent_id": 308, "id": 309, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "line, pos, value='/'", "return_value": null}
+{"parent_id": 295, "id": 310, "type": "class", "docstring": null, "name": "EndToken", "string_inside_parens": "Token", "return_value": null}
+{"parent_id": 310, "id": 311, "type": "method", "docstring": null, "name": "__init__", "string_inside_parens": "line, pos, value=''", "return_value": null}
+{"parent_id": 295, "id": 312, "type": "class", "docstring": null, "name": "TextToken", "string_inside_parens": "Token", "return_value": null}
+{"parent_id": 295, "id": 313, "type": "class", "docstring": null, "name": "StringToken", "string_inside_parens": "Token", "return_value": null}
+{"parent_id": 295, "id": 314, "type": "class", "docstring": null, "name": "SpaceToken", "string_inside_parens": "Token", "return_value": null}
+{"parent_id": 1, "id": 315, "type": "module", "docstring": null, "name": "stdlib", "string_inside_parens": null, "return_value": null}
+{"parent_id": 315, "id": 316, "type": "module", "docstring": null, "name": "basics", "string_inside_parens": null, "return_value": null}
+{"parent_id": 316, "id": 317, "type": "function", "docstring": null, "name": "add_basics", "string_inside_parens": "library", "return_value": null}
+{"parent_id": 315, "id": 318, "type": "module", "docstring": null, "name": "code", "string_inside_parens": null, "return_value": null}
+{"parent_id": 318, "id": 319, "type": "function", "docstring": null, "name": "_dumb_parse_args", "string_inside_parens": "s", "return_value": null}
+{"parent_id": 318, "id": 320, "type": "function", "docstring": null, "name": "add_code", "string_inside_parens": "library", "return_value": null}
+{"parent_id": 315, "id": 321, "type": "module", "docstring": null, "name": "html", "string_inside_parens": null, "return_value": null}
+{"parent_id": 321, "id": 322, "type": "function", "docstring": null, "name": "add_html", "string_inside_parens": "library", "return_value": null}
+{"parent_id": 315, "id": 323, "type": "module", "docstring": null, "name": "links", "string_inside_parens": null, "return_value": null}
+{"parent_id": 323, "id": 324, "type": "function", "docstring": null, "name": "add_links", "string_inside_parens": "library", "return_value": null}
+{"parent_id": 315, "id": 325, "type": "module", "docstring": null, "name": "src_py", "string_inside_parens": null, "return_value": null}
+{"parent_id": 325, "id": 326, "type": "function", "docstring": null, "name": "read_config", "string_inside_parens": "config", "return_value": null}
+{"parent_id": 325, "id": 327, "type": "function", "docstring": null, "name": "_create_symbol_tree", "string_inside_parens": "symbol_defs", "return_value": null}
+{"parent_id": 325, "id": 328, "type": "function", "docstring": null, "name": "_debug_print_tree", "string_inside_parens": "t, i=0", "return_value": null}
+{"parent_id": 325, "id": 329, "type": "function", "docstring": null, "name": "_get_symbol_at_path", "string_inside_parens": "t, parts", "return_value": null}
+{"parent_id": 325, "id": 330, "type": "function", "docstring": null, "name": "get_symbol_at_path", "string_inside_parens": "root, path", "return_value": null}
+{"parent_id": 325, "id": 331, "type": "function", "docstring": null, "name": "_get_symbol_node", "string_inside_parens": "library, path, symbol, h_level=2, full_path=True", "return_value": null}
+{"parent_id": 325, "id": 332, "type": "function", "docstring": null, "name": "_get_symbol_nodes_recursive", "string_inside_parens": "library, parent_path, symbol, h_level", "return_value": null}
+{"parent_id": 325, "id": 333, "type": "function", "docstring": null, "name": "add_src_py", "string_inside_parens": "library", "return_value": null}
+{"parent_id": 315, "id": 334, "type": "module", "docstring": null, "name": "table_of_contents", "string_inside_parens": null, "return_value": null}
+{"parent_id": 334, "id": 335, "type": "function", "docstring": null, "name": "tree_to_text", "string_inside_parens": "tree, node", "return_value": null}
+{"parent_id": 334, "id": 336, "type": "function", "docstring": null, "name": "_add_toc_data_if_not_exists", "string_inside_parens": "tree", "return_value": null}
+{"parent_id": 334, "id": 337, "type": "function", "docstring": null, "name": "_node_to_toc_entry", "string_inside_parens": "tree, node", "return_value": null}
+{"parent_id": 334, "id": 338, "type": "function", "docstring": null, "name": "_format_entry_number", "string_inside_parens": "entry_to_number, entry", "return_value": null}
+{"parent_id": 334, "id": 339, "type": "function", "docstring": null, "name": "_nested_list_to_node", "string_inside_parens": "entry_to_number, entry_children_pairs, max_depth=3", "return_value": null}
+{"parent_id": 334, "id": 340, "type": "function", "docstring": null, "name": "_entries_to_nested_list", "string_inside_parens": "entries", "return_value": null}
+{"parent_id": 334, "id": 341, "type": "function", "docstring": null, "name": "_store_entry_to_sequence", "string_inside_parens": "nested_list, entry_to_sequence, sequence_so_far", "return_value": null}
+{"parent_id": 334, "id": 342, "type": "function", "docstring": null, "name": "_doc_tree_to_sorted_paths", "string_inside_parens": "doc_tree", "return_value": null}
+{"parent_id": 334, "id": 343, "type": "function", "docstring": null, "name": "_preorder_traversal_of_nested_list", "string_inside_parens": "entries", "return_value": null}
+{"parent_id": 334, "id": 344, "type": "function", "docstring": "Collects all `h1`, `h2`, etc. tags in a tree, which\nyou can display with `[table-of-contents /]`.\n\nCurrently they are displayed in alphabetical order. \n\nThe original header tags will be modified to include anchors (to which\nthe TOC table will link) and heading numbers.\n\n# Planned features\n\n## Explicit ordering of documents\n\n```\n[table-of-contents]\n    doc_1.txt\n    doc_2.txt\n[/table-of-contents]\n```\n\n## Scoped TOC instances (for sidebars)\n\n```\n[# only show entries under doc_1.txt #]\n[table-of-contents scope=\"doc_1.txt\" /]\n```", "name": "add_table_of_contents", "string_inside_parens": "library", "return_value": null}
