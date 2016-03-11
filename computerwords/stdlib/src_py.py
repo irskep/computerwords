@@ -100,13 +100,16 @@ def add_src_py(library):
         symbol = None
         symbol_node = None
         symbol_path = None
+        h_level = 2
         if 'module' in node.kwargs:
             symbol_path = node.kwargs['module']
+            h_level = int(node.kwargs.get('heading-level', "1"))
         else:
             return
 
         symbol = get_symbol_at_path(symbol_tree, symbol_path)
-        symbol_node = _get_symbol_node(library, symbol_path, symbol, h_level=2)
+        symbol_node = _get_symbol_node(
+            library, symbol_path, symbol, h_level=h_level)
         tree.replace_subtree(node, symbol_node)
 
         if (    node.kwargs.get('include-children', 'false').lower() == 'true'
@@ -114,5 +117,5 @@ def add_src_py(library):
             new_siblings = []
             for child in symbol.children:
                 new_siblings += list(_get_symbol_nodes_recursive(
-                    library, symbol_path, child, h_level=3))
+                    library, symbol_path, child, h_level=h_level + 1))
             tree.add_siblings_ahead(new_siblings)
