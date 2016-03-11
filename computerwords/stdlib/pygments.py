@@ -1,6 +1,3 @@
-import hashlib
-import subprocess
-
 import pygments
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import get_lexer_by_name
@@ -19,7 +16,7 @@ def _dumb_parse_args(s):
     return d
 
 
-def add_code(library):
+def add_pygments(library):
     @library.processor('pre')
     def lang_pygments_convert(tree, node):
         try:
@@ -34,7 +31,7 @@ def add_code(library):
 
             if kwargs.get('filename', None):
                 figure_children.append(
-                    CWTagNode('div', {'class': 'filename'}, [
+                    CWTagNode('figcaption', {'class': 'filename'}, [
                         CWTextNode(kwargs['filename'])
                     ]))
 
@@ -48,26 +45,3 @@ def add_code(library):
                 CWTagNode('figure', {'class': 'code'}, figure_children))
         except ClassNotFound:
             pass
-
-
-    @library.processor('pre')
-    def lang_graphviz_convert(tree, node):
-        if node.kwargs.get('language', None) != 'graphviz-dot-convert':
-            return
-
-        code = node.children[0].text.encode('UTF-8')
-        h = hashlib.sha256()
-        h.update(code)
-
-        # output_path = tree.env['output_dir'] / "{}.png".format(h.hexdigest())
-        output_path = tree.env['output_dir'] / "{}.svg".format(h.hexdigest())
-        src = output_path.relative_to(tree.env['output_dir'])
-        # p = subprocess.Popen(
-        #     ['dot', '-Tpng', '-Gdpi=192', '-o', str(output_path)], stdin=subprocess.PIPE)
-        p = subprocess.Popen(
-            ['dot', '-Tsvg', '-o', str(output_path)], stdin=subprocess.PIPE)
-        p.communicate(code, timeout=10)
-        tree.replace_subtree(
-            node, CWTagNode('figure', {'class': 'image graphviz-graph'}, [
-                CWTagNode('img', {'src': str(src)}),
-            ]))

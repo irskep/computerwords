@@ -4,7 +4,7 @@ from computerwords.cwdom.nodes import CWTagNode, CWTextNode
 def add_html(library):
     library.SEMANTIC_HTML_TAGS = {
         'main', 'header', 'footer', 'article', 'section', 'aside', 'nav',
-        'figure'
+        'figure', 'figcaption'
     }
 
     library.HTML_TAGS = {
@@ -14,7 +14,7 @@ def add_html(library):
         'ol', 'ul', 'li',
         'blockquote', 'img',
 
-        'table', 'thead', 'tbody', 'tr', 'th', 'td',
+        'table', 'thead', 'tbody', 'tr', 'th', 'td', 'caption',
     } | library.SEMANTIC_HTML_TAGS
 
     library.ALIAS_HTML_TAGS = {

@@ -43,6 +43,17 @@ Note: JSON cannot contain comments, so this isn't copy-pasteable.
 
       // What to put in the <meta name="description"> tag
       "meta_description": ""
+  },
+
+  // Python autodoc options
+  "python": {
+
+    // Where to read symbols from.
+    // Generate this file with:
+    // python3 -m computerwords.source_parsers.python35 \
+    //    MODULE_DIR MODULE_NAME
+    //    > path/to/symbols.json
+    "symbols_path": "symbols.json",
   }
 }
 ```

@@ -3,7 +3,8 @@ from .basics import add_basics
 from .html import add_html
 from .links import add_links
 from .table_of_contents import add_table_of_contents
-from .code import add_code
+from .pygments import add_pygments
+from .graphviz import add_graphviz
 from .src_py import add_src_py
 
 
@@ -12,5 +13,6 @@ add_basics(stdlib)
 add_html(stdlib)
 add_links(stdlib)
 add_table_of_contents(stdlib)
-add_code(stdlib)
+add_pygments(stdlib)
+add_graphviz(stdlib)
 add_src_py(stdlib)
