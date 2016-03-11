@@ -16,13 +16,12 @@ becomes this:
 ```graphviz-dot-convert
 strict digraph {
     rankdir="LR";
+    node [fontname="Helvetica" fontsize=10 shape="box"];
 
-    Root [label="Root" fontname="Helvetica" fontsize=10 shape="box"]
-    Document [label="Document(path='readme.md')" fontname="Helvetica" fontsize=10 shape="box"]
-    TitleText [label="Text(text='Title')" fontname="Helvetica" fontsize=10 shape="box"]
-    BodyText [label="Text(text='some text')" fontname="Helvetica" fontsize=10 shape="box"]
-    h1 [fontname="Helvetica" fontsize=10 shape="box"]
-    p [fontname="Helvetica" fontsize=10 shape="box"]
+    Root [label="Root"]
+    Document [label="Document(path='readme.md')"]
+    TitleText [label="Text(text='Title')"]
+    BodyText [label="Text(text='some text')"]
 
     Root -> Document
     Document -> h1
