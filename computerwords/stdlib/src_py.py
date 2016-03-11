@@ -8,7 +8,9 @@ from computerwords.markdown_parser.cfm_to_cwdom import cfm_to_cwdom
 
 
 SymbolDef = namedtuple(
-    'SymbolDef', ['id', 'parent_id', 'type', 'name', 'docstring', 'children'])
+    'SymbolDef',
+    ['id', 'parent_id', 'type', 'name', 'docstring',
+     'string_inside_parens', 'return_value', 'children'])
 
 
 def read_config(config):
@@ -18,7 +20,6 @@ def read_config(config):
 
 
 def _create_symbol_tree(symbol_defs):
-    # {"parent": 1, "docstring": null, "id": 2, "name": "__main__", "type": "module"}
     nodes_by_id = {}
     for symbol in symbol_defs:
         nodes_by_id[symbol['id']] = SymbolDef(children=[], **symbol)
@@ -55,14 +56,35 @@ def get_symbol_at_path(root, path):
 
 
 def _get_symbol_node(library, path, symbol, h_level=2, full_path=True):
-    prefix = {
-        'class': 'class ',
-        'function': 'function ',
-    }.get(symbol.type, '')
-    text = path if full_path else symbol.name
-    suffix = '()' if symbol.type in {'class', 'function', 'method'} else ''
+    name_nodes = []
+
+    if symbol.type in {'class', 'function'}:
+        name_nodes.append(
+            CWTagNode('span', {'class': 'autodoc-keyword'}, [
+                CWTextNode(symbol.type + ' ')
+            ]))
+
+    name_nodes.append(
+        CWTagNode('span', {'class': 'autodoc-identifier'}, [
+            CWTextNode(path if full_path else symbol.name)
+        ]))
+
+    print(symbol.string_inside_parens)
+    if symbol.string_inside_parens is not None:
+        name_nodes.append(
+            CWTagNode('span', {'class': 'autodoc-arguments'}, [
+                CWTextNode('(' + symbol.string_inside_parens + ')')
+            ]))
+
+    if symbol.return_value:
+        name_nodes.append(
+            CWTagNode('span', {'class': 'autodoc-return-value'}, [
+                CWTextNode(' &rarr; ', escape=False),
+                CWTextNode(symbol.return_value)
+            ]))
+
     tag_node = CWTagNode('h{}'.format(h_level), {}, [
-        CWTagNode('tt', {}, [CWTextNode(prefix + text + suffix)])
+        CWTagNode('tt', {}, name_nodes)
     ])
     tag_node.data['ref_id_override'] = path
     children = [tag_node]
@@ -76,7 +98,7 @@ def _get_symbol_node(library, path, symbol, h_level=2, full_path=True):
 
 
 def _get_symbol_nodes_recursive(library, parent_path, symbol, h_level):
-    if symbol.name.startswith('_'):
+    if symbol.name.startswith('_') and symbol.name != '__init__':
         return
     path = parent_path + '.' + symbol.name
     yield _get_symbol_node(library, path, symbol, h_level, full_path=False)

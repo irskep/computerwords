@@ -5,7 +5,7 @@ Utilities for traversing `CWNode` trees
 from collections import deque
 
 
-def preorder_traversal(node):
+def preorder_traversal(node=None) -> "iterator(CWNode)":
     """
     Yields every node in the tree. Each node is yielded before its descendants.
     Mutation is disallowed.
@@ -17,7 +17,7 @@ def preorder_traversal(node):
         for child in reversed(node.children):
             stack.append(child)
 
-def postorder_traversal(node):
+def postorder_traversal(node) -> "iterator(CWNode)":
     """
     Yields every node in the tree. Each node is yielded after its descendants.
     Mutation is disallowed.
@@ -61,7 +61,7 @@ class PostorderTraverser:
     def __iter__(self):
         return self
 
-    def __next__(self):
+    def __next__(self) -> "CWNode":
         if self._is_first_result:
             self._descend()
             self._is_first_result = False

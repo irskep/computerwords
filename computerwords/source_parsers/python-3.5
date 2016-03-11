@@ -1,4 +1,7 @@
 #!/usr/bin/env python3.5
+
+# useful reference: http://greentreesnakes.readthedocs.org/en/latest/nodes.html
+
 import argparse
 import ast
 import json
@@ -43,6 +46,8 @@ def parse_data(root, path):
             'name': module_display_name,
             'docstring': ast.get_docstring(module),
             'parent_id': module_parent_id,
+            'string_inside_parens': None,
+            'return_value': None,
         }
         for node in module.body:
             if isinstance(node, ast.FunctionDef):
@@ -52,6 +57,8 @@ def parse_data(root, path):
                     'name': node.name,
                     'docstring': ast.get_docstring(node),
                     'parent_id': module_id,
+                    'string_inside_parens': _read_fn_args(node),
+                    'return_value': _read_fn_return_value(node),
                 }
             elif isinstance(node, ast.ClassDef):
                 class_id = get_next_id()
@@ -61,6 +68,8 @@ def parse_data(root, path):
                     'name': node.name,
                     'docstring': ast.get_docstring(node),
                     'parent_id': module_id,
+                    'string_inside_parens': _read_cls_bases(node),
+                    'return_value': None,
                 }
                 # sys.stderr.write(repr(node._fields))
                 # sys.stderr.write('\n')
@@ -72,7 +81,65 @@ def parse_data(root, path):
                             'name': class_node.name,
                             'docstring': ast.get_docstring(class_node),
                             'parent_id': class_id,
+                            'string_inside_parens': _read_fn_args(
+                                class_node, skip_first=True),
+                            'return_value': _read_fn_return_value(class_node),
                         }
+
+
+def _get_arg_string(arg, default=None, prefix=''):
+    s = prefix + arg.arg
+    if arg.annotation:
+        s += ':' + arg.annotation
+    if default is not None:
+        s += '=' + _get_default_str(default)
+    return s
+
+
+def _get_default_str(default):
+    if isinstance(default, ast.NameConstant):
+        return repr(default.value)
+    elif isinstance(default, ast.Num):
+        return repr(default.n)
+    elif isinstance(default, ast.Name):
+        return default.id
+    elif isinstance(default, ast.Str):
+        return repr(default.s)
+    else:
+        print(default, file=sys.stderr)
+        return "???"
+
+
+def _read_fn_args(node, skip_first=False):
+    items = []
+    arguments = node.args
+
+    num_defaults = len(arguments.defaults)
+    defaults_start_i = len(arguments.args) - num_defaults
+    for i, arg in enumerate(arguments.args):
+        if i == 0 and skip_first:
+            continue
+        if i >= defaults_start_i:
+            items.append(
+                _get_arg_string(arg, arguments.defaults[i - defaults_start_i]))
+        else:
+            items.append(_get_arg_string(arg))
+    if arguments.vararg:
+        items.append(_get_arg_string(arguments.vararg, None, '*'))
+    #print('kwdef', arguments.kw_defaults, file=sys.stderr)
+    #print('items', items, file=sys.stderr)
+    return ', '.join(items)
+
+
+def _read_fn_return_value(node):
+    if node.returns is None:
+        return None
+    else:
+        return node.returns.s
+
+
+def _read_cls_bases(node):
+    return ', '.join([b.id for b in node.bases])
 
 
 def main():
