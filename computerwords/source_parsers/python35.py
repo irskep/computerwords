@@ -1,5 +1,3 @@
-#!/usr/bin/env python3.5
-
 # useful reference: http://greentreesnakes.readthedocs.org/en/latest/nodes.html
 
 import argparse

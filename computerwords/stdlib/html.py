@@ -1,6 +1,10 @@
+from computerwords.cwdom.nodes import CWTagNode, CWTextNode
+
+
 def add_html(library):
     library.SEMANTIC_HTML_TAGS = {
-        'main', 'header', 'footer', 'article', 'section', 'aside', 'nav'
+        'main', 'header', 'footer', 'article', 'section', 'aside', 'nav',
+        'figure'
     }
 
     library.HTML_TAGS = {
@@ -9,7 +13,8 @@ def add_html(library):
         'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
         'ol', 'ul', 'li',
         'blockquote', 'img',
-        'article', 'nav', 'figure', 'section', 'footer', 'header',
+
+        'table', 'thead', 'tbody', 'tr', 'th', 'td',
     } | library.SEMANTIC_HTML_TAGS
 
     library.ALIAS_HTML_TAGS = {
@@ -17,6 +22,11 @@ def add_html(library):
         'b': 'strong',
         'code': 'pre',
     }
+
+    all_tags = (
+        library.SEMANTIC_HTML_TAGS |
+        library.HTML_TAGS |
+        library.ALIAS_HTML_TAGS.keys())
 
     noop = lambda *args, **kwargs: None
     for html_tag in library.HTML_TAGS:
@@ -42,3 +52,9 @@ def add_html(library):
             return  # might do something with this later
         else:
             return
+
+    @library.processor('html-enumerate-all-tags')
+    def process_enumerate_all_tags(tree, node):
+        tree.replace_subtree(node, CWTagNode('tt', {}, [
+            CWTextNode(', '.join(sorted(all_tags)))
+        ]))

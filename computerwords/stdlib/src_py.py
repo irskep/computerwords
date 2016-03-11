@@ -89,10 +89,10 @@ def _get_symbol_node(library, path, symbol, h_level=2, full_path=True):
     children = [tag_node]
     if symbol.docstring:
         children.append(CWTagNode(
-            'div', {'class': 'autodoc-{}-docstring-body'.format(symbol.type)},
+            'section', {'class': 'autodoc-{}-docstring-body'.format(symbol.type)},
             children=cfm_to_cwdom(symbol.docstring, library.get_allowed_tags())))
     return CWTagNode(
-        'div', kwargs={'class': 'autodoc-{}'.format(symbol.type)},
+        'section', kwargs={'class': 'autodoc-{}'.format(symbol.type)},
         children=children)
 
 

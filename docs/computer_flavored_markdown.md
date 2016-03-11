@@ -97,3 +97,29 @@ This is because I have bolted a CommonMark parser, which doesn't really
 understand HTML, to an HTML parser of my own design. I'm still working out
 the bugs. You should still be able to express anything if you mess with the
 line breaks a little.
+
+## The parser is too picky
+
+If you try to use your Github Flavored Markdown files, a lot of them won't
+work because Computer Flavored Markdown throws errors in too many cases instead
+of passing strings through verbatim when it can't parse them.
+
+The most obvious example is when you try to use angle brackets:
+
+```md
+This will <fail>
+```
+
+If you want to use angle brackets, for now you'll have to escape them.
+
+```md
+This will \<succeed\>
+```
+
+\<yay!\>
+
+## Tags must have explicit open/close or be self-closing
+
+Any time you use a tag, it needs to either be of the form
+`<my-tag>contents</my-tag>` or `<my-tag />`. Using `<my-tag>` by itself
+will result in an error.
