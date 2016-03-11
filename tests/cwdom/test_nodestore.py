@@ -282,7 +282,7 @@ class TestCWTree(CWTestCase):
         library = LibraryForTesting()
         tree.apply_library(library)
         self.assertEqual(library.visit_history, [
-            'a', 'replace_self', 'Document', 'Root', 'replacement'])
+            'a', 'replace_self', 'replacement', 'Document', 'Root'])
         self.assertEqual(tree.root.get_string_for_test_comparison(), self.strip("""
             Root()
               Document(path='doc')
@@ -301,7 +301,7 @@ class TestCWTree(CWTestCase):
         library = LibraryForTesting()
         tree.apply_library(library)
         self.assertEqual(library.visit_history, [
-            'a', 'replace_self_subtree', 'Document', 'Root', 'replacement', 'replacement'])
+            'a', 'replace_self_subtree', 'replacement', 'Document', 'Root', 'replacement'])
         self.assertEqual(tree.root.get_string_for_test_comparison(), self.strip("""
             Root()
               Document(path='doc')
