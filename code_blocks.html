@@ -32,16 +32,15 @@ code blocks:
     ```
 </pre><a href="#Supported-languages" name="Supported-languages" class='header-anchor'><h2>Supported languages</h2></a><p>Computer Words supports any languages that the installed version of <a href='http://pygments.org/'>Pygments</a> supports.</p><a href="#Extras-file-names" name="Extras-file-names" class='header-anchor'><h2>Extras: file names</h2></a><p>As you may have noticed above, Computer Words extends the syntax of traditional Markdown code blocks by allowing attributes after the language name. Specifically, it supports one attribute, <tt>filename</tt>, which adds a line at the top of the code block.</p><p>Note: the attributes are parsed using a short, hacky function, not a proper parser, so the attribute&#x27;s value must be an unquoted string with no spaces. This might be improved in the future but for now it pretty much works.</p><figure class='code'><figcaption class='filename'>logSomething.js</figcaption><div class="highlight"><pre><span></span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Hello&quot;</span><span class="p">);</span>
 </pre></div>
-</figure><a href="#Extras-graphviz-rendering" name="Extras-graphviz-rendering" class='header-anchor'><h2>Extras: graphviz rendering</h2></a><p>If you set the language to <tt>graphviz-dot-convert</tt>, and you have <a href='http://www.graphviz.org/'>Graphviz</a> installed, then Computer Words will render the contents to an SVG and insert the result. This site&#x27;s own <a href='how_it_works.html'>How it works</a> page uses it to show diagrams.</p><figure class='image graphviz-graph'><img src='e09eeea91dfcdce54d79e8db1419332e76837e31f25ac8e30c0d2f81d3425cc3.svg'></img></figure><pre language='None'>```graphviz-dot-convert
+</figure><a href="#Extras-graphviz-rendering" name="Extras-graphviz-rendering" class='header-anchor'><h2>Extras: graphviz rendering</h2></a><p>If you set the language to <tt>graphviz-dot-convert</tt>, and you have <a href='http://www.graphviz.org/'>Graphviz</a> installed, then Computer Words will render the contents to an SVG and insert the result. This site&#x27;s own <a href='how_it_works.html'>How it works</a> page uses it to show diagrams.</p><figure class='image graphviz-graph'><img src='13348fa022bbcb567ed7fd22ce750e988252078deacf680386705d7308582738.svg'></img></figure><pre language='None'>```graphviz-dot-convert
 strict digraph {
     rankdir=&quot;LR&quot;;
+    node [fontname=&quot;Helvetica&quot; fontsize=10 shape=&quot;box&quot;];
 
-    Root [label=&quot;Root&quot; fontname=&quot;Helvetica&quot; fontsize=10 shape=&quot;box&quot;]
-    Document [label=&quot;Document(path=&#x27;readme.md&#x27;)&quot; fontname=&quot;Helvetica&quot; fontsize=10 shape=&quot;box&quot;]
-    TitleText [label=&quot;Text(text=&#x27;Title&#x27;)&quot; fontname=&quot;Helvetica&quot; fontsize=10 shape=&quot;box&quot;]
-    BodyText [label=&quot;Text(text=&#x27;some text&#x27;)&quot; fontname=&quot;Helvetica&quot; fontsize=10 shape=&quot;box&quot;]
-    h1 [fontname=&quot;Helvetica&quot; fontsize=10 shape=&quot;box&quot;]
-    p [fontname=&quot;Helvetica&quot; fontsize=10 shape=&quot;box&quot;]
+    Root [label=&quot;Root&quot;]
+    Document [label=&quot;Document(path=&#x27;readme.md&#x27;)&quot;]
+    TitleText [label=&quot;Text(text=&#x27;Title&#x27;)&quot;]
+    BodyText [label=&quot;Text(text=&#x27;some text&#x27;)&quot;]
 
     Root -&gt; Document
     Document -&gt; h1

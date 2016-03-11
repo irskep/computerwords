@@ -20,7 +20,7 @@
 
 some text
 </pre></div>
-</figure><p>becomes this:</p><figure class='image graphviz-graph'><img src='e09eeea91dfcdce54d79e8db1419332e76837e31f25ac8e30c0d2f81d3425cc3.svg'></img></figure><a href="#Processing" name="Processing" class='header-anchor'><h2>Processing</h2></a><p>Then we apply a processor library to the graph. A <i>library</i> is a mapping of <tt>node_name -&gt; [processor]</tt>. A <i>processor</i> is a function like this:</p><figure class='code'><div class="highlight"><pre><span></span><span class="nd">@library.processor</span><span class="p">(</span><span class="s1">&#39;xxx&#39;</span><span class="p">)</span>  <span class="c1"># operate on &#39;xxx&#39; nodes</span>
+</figure><p>becomes this:</p><figure class='image graphviz-graph'><img src='13348fa022bbcb567ed7fd22ce750e988252078deacf680386705d7308582738.svg'></img></figure><a href="#Processing" name="Processing" class='header-anchor'><h2>Processing</h2></a><p>Then we apply a processor library to the graph. A <i>library</i> is a mapping of <tt>node_name -&gt; [processor]</tt>. A <i>processor</i> is a function like this:</p><figure class='code'><div class="highlight"><pre><span></span><span class="nd">@library.processor</span><span class="p">(</span><span class="s1">&#39;xxx&#39;</span><span class="p">)</span>  <span class="c1"># operate on &#39;xxx&#39; nodes</span>
 <span class="k">def</span> <span class="nf">process_xxx</span><span class="p">(</span><span class="n">node_store</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
     <span class="c1"># you can mutate the node, its children, or its</span>
     <span class="c1"># ancestors (but not its siblings).</span>
