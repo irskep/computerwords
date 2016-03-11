@@ -87,3 +87,9 @@ figure .filename {
 figure.image {
   text-align: center;
 }
+
+/* autodoc */
+
+.autodoc-keyword {
+  color: #04a;
+}

@@ -7,7 +7,7 @@ from computerwords.cwdom.nodes import (
     CWTagNode,
     CWTextNode,
 )
-from computerwords.cwdom.traversal import iterate_parents
+from computerwords.cwdom.traversal import iterate_ancestors
 
 
 log = logging.getLogger(__name__)
@@ -142,7 +142,7 @@ def add_table_of_contents(library):
         # associate this entry with both nodes for convenience
         node.data['toc_entry'] = entry
 
-        for parent in iterate_parents(node):
+        for parent in iterate_ancestors(node):
             if isinstance(parent, CWDocumentNode):
                 break
             parent.data['toc_entry'] = entry

@@ -9,7 +9,7 @@ from .traversal import (
     preorder_traversal,
     postorder_traversal,
     PostorderTraverser,
-    iterate_parents,
+    iterate_ancestors,
 )
 
 
@@ -129,7 +129,7 @@ class CWTree:
         self._mark_node_dirty(node)
 
     def mark_ancestors_dirty(self, node):
-        for parent in iterate_parents(node):
+        for parent in iterate_ancestors(node):
             self._mark_node_dirty(parent)
 
     def _mark_subtree_dirty(self, node):

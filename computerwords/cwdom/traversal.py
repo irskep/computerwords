@@ -1,5 +1,5 @@
 """
-Utilities for traversing `CWNode` trees
+Utilities for traversing `CWNode` trees.
 """
 
 from collections import deque
@@ -32,6 +32,97 @@ def postorder_traversal(node) -> "iterator(CWNode)":
             for i in reversed(range(len(node.children))):
                 stack.append((node.children[i], 'yield'))
                 stack.append((node.children[i], 'add_children'))
+
+
+def iterate_ancestors(node):
+    """
+    Yields every ancestor of a node, starting with its immediate parent.
+
+    ```python
+    from computerwords.cwdom.nodes import CWNode
+    from computerwords.cwdom.traversal import iterate_ancestors
+    node_c = CWNode('c', [])
+    tree = CWNode('a', [
+        CWNode('b', [node_c]),
+        CWNode('d', []),
+    ])
+    assert ([node.name for node in iterate_ancestors(node_c)] ==
+            ['b', 'a'])
+    ```
+    """
+    node = node.get_parent()
+    while node:
+        yield node
+        node = node.get_parent()
+
+
+def find_ancestor(node, predicate):
+    """
+    Returns the closest ancestor of a node matching the given predicate.
+
+    ```python
+    from computerwords.cwdom.traversal import find_ancestor
+    document_node = find_ancestor(node, lambda n: n.name == 'Document')
+    ```
+    """
+    for ancestor in iterate_ancestors(node):
+        if predicate(ancestor):
+            return ancestor
+
+
+def visit_tree(tree, node_name_to_visitor, node=None):
+    """
+    Recursively call the `CWTreeVisitor` for each node. If a node
+    is encountered that has no corresponding visitor, `MissingVisitorError` is
+    thrown.
+
+    ```python
+    from computerwords.cwdom.CWTree import CWTree
+    from computerwords.cwdom.traversal import (
+        visit_tree,
+        CWTreeVisitor
+    )
+
+    visits = []
+    class SimpleVisitor(CWTreeVisitor):
+        def before_children(self, tree, node):
+            visits.append('pre-{}'.format(node.name))
+
+        def after_children(self, tree, node):
+            visits.append('post-{}'.format(node.name))
+
+    tree = CWTree(CWNode('x', [CWNode('y', [])]))
+    visit_tree(tree, {
+        'x': SimpleVisitor(),
+        'y': SimpleVisitor(),
+    })
+    assert visits == ['pre-x', 'pre-y', 'post-y', 'post-x']
+    ```
+    """
+    node = node or tree.root
+    try:
+        visitor = node_name_to_visitor[node.name]
+    except KeyError:
+        raise MissingVisitorError(
+            "No visitor registered for {!r}".format(node.name))
+    visitor.before_children(tree, node)
+    for child in node.children:
+        visit_tree(tree, node_name_to_visitor, child)
+    visitor.after_children(tree, node)
+
+
+class MissingVisitorError(Exception):
+    """
+    Error thrown when trying to visit a node for which no visitor is available.
+    """
+
+
+class CWTreeVisitor:
+    def before_children(self, tree, node):
+        """Called before the node's children are visited."""
+
+    def after_children(self, tree, node):
+        """Called after the node's children are visited."""
 
 
 class PostorderTraverser:
@@ -82,44 +173,3 @@ class PostorderTraverser:
     def _descend(self):
         while self.cursor.children:
             self.cursor = self.cursor.children[0]
-
-
-def iterate_parents(node):
-    node = node.get_parent()
-    while node:
-        yield node
-        node = node.get_parent()
-
-
-def find_ancestor(node, predicate):
-    for ancestor in iterate_parents(node):
-        if predicate(ancestor):
-            return ancestor
-
-
-class MissingVisitorError(Exception): pass
-
-
-def visit_tree(tree, node_name_to_visitor, node=None):
-    """
-    Recursively call the CWTreeVisitor for each node. If a node
-    is encountered that has no corresponding visitor, an error is thrown.
-    """
-    node = node or tree.root
-    try:
-        visitor = node_name_to_visitor[node.name]
-    except KeyError:
-        raise MissingVisitorError(
-            "No visitor registered for {!r}".format(node.name))
-    visitor.before_children(tree, node)
-    for child in node.children:
-        visit_tree(tree, node_name_to_visitor, child)
-    visitor.after_children(tree, node)
-
-
-class CWTreeVisitor:
-    def before_children(self, tree, node):
-        pass
-
-    def after_children(self, tree, node):
-        pass

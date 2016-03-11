@@ -116,6 +116,10 @@ tt {
 
 /* fancy things */
 
-.autodoc-docstring-body {
+.autodoc-function-docstring-body, .autodoc-class-docstring-body, .autodoc-method {
   margin-left: 2rem;
+}
+
+.autodoc-function-docstring-body figure {
+  margin-left: 0; margin-right: 0;
 }
