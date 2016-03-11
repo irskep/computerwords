@@ -109,6 +109,7 @@ class CWTree:
     def _replace_cursor(self, new_node):
         self._traverser.replace_cursor(new_node)
         self._replacement_node = new_node
+        self._active_node = new_node
 
     def apply_library(self, library, initial_data=None):
         self.processor_data = initial_data or {}
@@ -200,6 +201,17 @@ class CWTree:
         child.set_parent(parent)
         child.deep_set_document_id(parent.document_id)
         self._mark_subtree_dirty(child)
+
+    def add_siblings_ahead(self, new_siblings):
+        node = self._active_node
+        parent = node.get_parent()
+        child_i = parent.children.index(node)
+        for i, sibling in enumerate(new_siblings):
+            parent.children.insert(i + 1 + child_i, sibling)
+            sibling.set_parent(parent)
+            sibling.deep_set_document_id(parent.document_id)
+            self._mark_subtree_dirty(sibling)
+            
 
     def replace_node(self, old_node, new_node):
         if old_node != self._active_node:

@@ -54,6 +54,30 @@ def get_symbol_at_path(root, path):
     return _get_symbol_at_path(root, parts[1:])
 
 
+def _get_symbol_node(library, path, symbol, h_level=2, full_path=True):
+    tag_node = CWTagNode('h{}'.format(h_level), {}, [
+        CWTagNode('tt', {}, [
+            CWTextNode(path if full_path else symbol.name)
+        ])
+    ])
+    tag_node.data['ref_id_override'] = path
+    children = [tag_node]
+    if symbol.docstring:
+        children += cfm_to_cwdom(symbol.docstring, library.get_allowed_tags())
+    return CWTagNode(
+        'div', kwargs={'class': 'autodoc-{}'.format(symbol.type)},
+        children=children)
+
+
+def _get_symbol_nodes_recursive(library, parent_path, symbol, h_level):
+    if symbol.name.startswith('_'):
+        return
+    path = parent_path + '.' + symbol.name
+    yield _get_symbol_node(library, path, symbol, h_level, full_path=False)
+    for child in symbol.children:
+        yield from _get_symbol_nodes_recursive(library, path, child, h_level + 1)
+
+
 def add_src_py(library):
     @library.processor('autodoc-python')
     def process_autodoc_module(tree, node):
@@ -67,15 +91,22 @@ def add_src_py(library):
 
         symbol_tree = tree.processor_data['autodoc_symbol_tree']
 
+        symbol = None
+        symbol_node = None
+        symbol_path = None
         if 'module' in node.kwargs:
-            symbol = get_symbol_at_path(symbol_tree, node.kwargs['module'])
-            children = [
-                CWTagNode('h1', {}, [
-                    CWTagNode('tt', {}, [
-                        CWTextNode(node.kwargs['module'])
-                    ])
-                ])
-            ]
-            if symbol.docstring:
-                children += cfm_to_cwdom(symbol.docstring, library.get_allowed_tags())
-            tree.replace_subtree(node, CWTagNode(                'div', kwargs={'class': 'autodoc-module'}, children=children))
+            symbol_path = node.kwargs['module']
+        else:
+            return
+
+        symbol = get_symbol_at_path(symbol_tree, symbol_path)
+        symbol_node = _get_symbol_node(library, symbol_path, symbol, h_level=2)
+        tree.replace_subtree(node, symbol_node)
+
+        if (    node.kwargs.get('include-children', 'false').lower() == 'true'
+                and symbol.children):
+            new_siblings = []
+            for child in symbol.children:
+                new_siblings += list(_get_symbol_nodes_recursive(
+                    library, symbol_path, child, h_level=3))
+            tree.add_siblings_ahead(new_siblings)

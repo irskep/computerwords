@@ -1,3 +1,7 @@
+"""
+Utilities for traversing `CWNode` trees
+"""
+
 from collections import deque
 
 

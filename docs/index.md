@@ -1,5 +1,3 @@
-<autodoc-python module="computerwords.cwdom.CWTree" />
-
 Computer Words is a tool that helps you write documentation for software. It
 is extensible and you can write Markdown. Computer Words is conceptually
 similar to [Sphinx](http://sphinx-doc.org/).
