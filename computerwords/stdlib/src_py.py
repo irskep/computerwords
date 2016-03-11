@@ -69,7 +69,6 @@ def _get_symbol_node(library, path, symbol, h_level=2, full_path=True):
             CWTextNode(path if full_path else symbol.name)
         ]))
 
-    print(symbol.string_inside_parens)
     if symbol.string_inside_parens is not None:
         name_nodes.append(
             CWTagNode('span', {'class': 'autodoc-arguments'}, [

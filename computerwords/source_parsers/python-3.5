@@ -106,7 +106,8 @@ def _get_default_str(default):
     elif isinstance(default, ast.Str):
         return repr(default.s)
     else:
-        print(default, file=sys.stderr)
+        # you shouldn't be using other types anyway.
+        print('Could not parse arg type', default, file=sys.stderr)
         return "???"
 
 
@@ -124,8 +125,23 @@ def _read_fn_args(node, skip_first=False):
                 _get_arg_string(arg, arguments.defaults[i - defaults_start_i]))
         else:
             items.append(_get_arg_string(arg))
+
     if arguments.vararg:
         items.append(_get_arg_string(arguments.vararg, None, '*'))
+
+    num_defaults = len(arguments.kw_defaults)
+    defaults_start_i = len(arguments.kwonlyargs) - num_defaults
+    for i, arg in enumerate(arguments.kwonlyargs):
+        if i == 0 and skip_first:
+            continue
+        if i >= defaults_start_i:
+            items.append(
+                _get_arg_string(arg, arguments.kw_defaults[i - defaults_start_i]))
+        else:
+            items.append(_get_arg_string(arg))
+
+    if arguments.kwarg:
+        items.append(_get_arg_string(arguments.kwarg, None, '**'))
     #print('kwdef', arguments.kw_defaults, file=sys.stderr)
     #print('items', items, file=sys.stderr)
     return ', '.join(items)

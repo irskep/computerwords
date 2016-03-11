@@ -5,7 +5,7 @@ Utilities for traversing `CWNode` trees
 from collections import deque
 
 
-def preorder_traversal(node=None) -> "iterator(CWNode)":
+def preorder_traversal(node) -> "iterator(CWNode)":
     """
     Yields every node in the tree. Each node is yielded before its descendants.
     Mutation is disallowed.
