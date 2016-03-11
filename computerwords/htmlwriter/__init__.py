@@ -7,7 +7,7 @@ from computerwords.cwdom.nodes import (
     CWTagNode,
     CWTextNode,
 )
-from computerwords.cwdom.traversal import visit_tree
+from computerwords.cwdom.traversal import visit_tree, preorder_traversal
 from .visitors import get_tag_to_visitor
 from .util import (
     SINGLE_PAGE_TEMPLATE_PATH,
@@ -72,6 +72,13 @@ def write_document(config, options, output_dir, library, tree, document_node):
         ctx['title_url'] = relative_site_url
     else:
         ctx['title_url'] = options.site_url
+
+    ctx['page_title'] = ctx['site_subtitle']
+    for node in preorder_traversal(document_node):
+        if node.name == 'h1':
+            ctx['page_title'] = tree.subtree_to_text(node)
+            break
+
     with SINGLE_PAGE_TEMPLATE_PATH.open('r') as template_stream:
         with output_path.open('w') as output_stream:
             output_stream.write(template_stream.read().format(

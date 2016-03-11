@@ -19,14 +19,6 @@ TOC_TAG_NAME = 'table-of-contents'
 TOCEntry = namedtuple('TOCEntry', ['level', 'heading_node', 'ref_id'])
 
 
-def tree_to_text(tree, node):
-    segments = []
-    for n in tree.preorder_traversal(node):
-        if n.name == 'Text':
-            segments.append(n.text)
-    return ''.join(segments)
-
-
 ### helpers ###
 
 
@@ -36,7 +28,7 @@ def _add_toc_data_if_not_exists(tree):
 
 
 def _node_to_toc_entry(tree, node):
-    text = tree_to_text(tree, node)
+    text = tree.subtree_to_text(node)
     ref_id = node.data.get('ref_id_override', tree.text_to_ref_id(text))
     return TOCEntry(NAME_TO_LEVEL[node.name], node, ref_id)
 

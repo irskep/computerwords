@@ -368,6 +368,14 @@ class CWTree:
         self._known_ref_ids.add(ref_id)
         return ref_id
 
+    def subtree_to_text(self, node):
+        """Returns a string of the concatenated text in a subtree"""
+        segments = []
+        for n in preorder_traversal(node):
+            if n.name == 'Text':
+                segments.append(n.text)
+        return ''.join(segments)
+
 
 class CWTreeConsistencyError(Exception):
     """Error that is thrown if any of the limitations of `CWTree`'s methods are
