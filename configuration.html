@@ -13,7 +13,7 @@
         <header id="pageheader">
             <a class="header-link" href="index.html"><h1>Computer Words</h1></a>
             <h2>A system for writing and publishing documentation</h2>
-            <div id="navheader"><nav class='previous-page'><a href="computer_flavored_markdown.html">&larr; Computer Flavored Markdown</a></nav><nav class='next-page'><a href="how_it_works.html">How it works &rarr;</a></nav><div style="clear: both;"></div></div>
+            <div id="navheader"><nav class='previous-page'><a href="computer_flavored_markdown.html">&larr; Computer Flavored Markdown</a></nav><nav class='next-page'><a href="tag_reference.html">Tag reference &rarr;</a></nav><div style="clear: both;"></div></div>
             <hr>
         </header>
         <main id="pagebody"><article><a href="#Configuration" name="Configuration" class='header-anchor'><h1>Configuration</h1></a><p>All configuration lives in a JSON file that we&#x27;ll call <tt>conf.json</tt>. Every path is relative to the directory in which this file lives.</p><a href="#Complete-example" name="Complete-example" class='header-anchor'><h2>Complete example</h2></a><p>Note: JSON cannot contain comments, so this isn&#x27;t copy-pasteable.</p><figure class='code'><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -51,6 +51,17 @@
 
       <span class="c1">// What to put in the &lt;meta name=&quot;description&quot;&gt; tag</span>
       <span class="s2">&quot;meta_description&quot;</span><span class="o">:</span> <span class="s2">&quot;&quot;</span>
+  <span class="p">},</span>
+
+  <span class="c1">// Python autodoc options</span>
+  <span class="s2">&quot;python&quot;</span><span class="o">:</span> <span class="p">{</span>
+
+    <span class="c1">// Where to read symbols from.</span>
+    <span class="c1">// Generate this file with:</span>
+    <span class="c1">// python3 -m computerwords.source_parsers.python35 \</span>
+    <span class="c1">//    MODULE_DIR MODULE_NAME</span>
+    <span class="c1">//    &gt; path/to/symbols.json</span>
+    <span class="s2">&quot;symbols_path&quot;</span><span class="o">:</span> <span class="s2">&quot;symbols.json&quot;</span><span class="p">,</span>
   <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -83,6 +94,6 @@
 <span class="k">  * </span>examples/example_2.md
 </pre></div>
 </figure></article></main>
-        <footer id="pagefooter"><nav class='previous-page'><a href="computer_flavored_markdown.html">&larr; Computer Flavored Markdown</a></nav><nav class='next-page'><a href="how_it_works.html">How it works &rarr;</a></nav><div style="clear: both;"></div></footer>
+        <footer id="pagefooter"><nav class='previous-page'><a href="computer_flavored_markdown.html">&larr; Computer Flavored Markdown</a></nav><nav class='next-page'><a href="tag_reference.html">Tag reference &rarr;</a></nav><div style="clear: both;"></div></footer>
     </body>
 </html>

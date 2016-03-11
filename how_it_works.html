@@ -13,10 +13,10 @@
         <header id="pageheader">
             <a class="header-link" href="index.html"><h1>Computer Words</h1></a>
             <h2>A system for writing and publishing documentation</h2>
-            <div id="navheader"><nav class='previous-page'><a href="configuration.html">&larr; Configuration</a></nav><nav class='next-page'><a href="about.html">Conceptual information &rarr;</a></nav><div style="clear: both;"></div></div>
+            <div id="navheader"><nav class='previous-page'><a href="code_blocks.html">&larr; Code Blocks</a></nav><nav class='next-page'><a href="about.html">Conceptual information &rarr;</a></nav><div style="clear: both;"></div></div>
             <hr>
         </header>
-        <main id="pagebody"><article><a href="#How-it-works" name="How-it-works" class='header-anchor'><h1>How it works</h1></a><a href="#Input" name="Input" class='header-anchor'><h2>Input</h2></a><p>First, your files are parsed into a tree called the “Computer Words Document Object Model”, or <tt>CWDOM</tt>. So this:</p><figure class='code'><div class='filename'>readme.md</div><div class="highlight"><pre><span></span><span class="k"># </span><span class="gh">Title</span>
+        <main id="pagebody"><article><a href="#How-it-works" name="How-it-works" class='header-anchor'><h1>How it works</h1></a><a href="#Input" name="Input" class='header-anchor'><h2>Input</h2></a><p>First, your files are parsed into a tree called the “Computer Words Document Object Model”, or <tt>CWDOM</tt>. So this:</p><figure class='code'><figcaption class='filename'>readme.md</figcaption><div class="highlight"><pre><span></span><span class="k"># </span><span class="gh">Title</span>
 
 some text
 </pre></div>
@@ -30,6 +30,6 @@ some text
     <span class="n">node_store</span><span class="o">.</span><span class="n">replace_node</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">CWDOMNode</span><span class="p">(</span><span class="s1">&#39;yyy&#39;</span><span class="p">))</span>
 </pre></div>
 </figure><p>Each node will be processed at least once, in a <i>post-order tree traversal</i> (meaning that a node will be visited before its ancestors). If a node is mutated by another node&#x27;s processor, that node will be marked <i>dirty</i> and its processors will be run again.</p><a href="#Output" name="Output" class='header-anchor'><h2>Output</h2></a><p>The <i>html writer</i> walks the tree and writes HTML.</p></article></main>
-        <footer id="pagefooter"><nav class='previous-page'><a href="configuration.html">&larr; Configuration</a></nav><nav class='next-page'><a href="about.html">Conceptual information &rarr;</a></nav><div style="clear: both;"></div></footer>
+        <footer id="pagefooter"><nav class='previous-page'><a href="code_blocks.html">&larr; Code Blocks</a></nav><nav class='next-page'><a href="about.html">Conceptual information &rarr;</a></nav><div style="clear: both;"></div></footer>
     </body>
 </html>
