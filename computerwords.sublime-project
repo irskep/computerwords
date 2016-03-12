@@ -3,7 +3,7 @@
 	[
 		{
 			"path": ".",
-      "folder_exclude_patterns": ["__pycache__"],
+      "folder_exclude_patterns": ["__pycache__", "docs/build/", "dist", "build", "*.egg-info"],
 		}
 	]
 }
