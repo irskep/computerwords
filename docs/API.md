@@ -11,3 +11,9 @@
     include-children=True
     heading-level=2
     />
+
+<autodoc-python
+    module="computerwords.cwdom.nodes"
+    include-children=True
+    heading-level=2
+    />

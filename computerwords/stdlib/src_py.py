@@ -99,6 +99,8 @@ def _get_symbol_node(library, path, symbol, h_level=2, full_path=True):
 def _get_symbol_nodes_recursive(library, parent_path, symbol, h_level):
     if symbol.name.startswith('_') and symbol.name != '__init__':
         return
+    if not symbol.docstring:
+        return
     path = parent_path + '.' + symbol.name
     yield _get_symbol_node(library, path, symbol, h_level, full_path=False)
     for child in symbol.children:
