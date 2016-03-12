@@ -127,3 +127,10 @@ tt {
 .autodoc-arguments {
   font-weight: normal;
 }
+
+.autodoc-source-link {
+  display: block;
+  float: right;
+  font-size: 0.8rem;
+  font-weight: normal;
+}

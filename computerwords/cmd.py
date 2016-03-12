@@ -25,6 +25,9 @@ def run():
     args = p.parse_args()
 
     config = dict(DictCascade(DEFAULT_CONFIG, json.load(args.conf)))
+    if not config['html']['site_url'].endswith('/'):
+        config['html']['site_url'] += "/"
+
     files_root = pathlib.Path(args.conf.name).parent.resolve()
     config['root_dir'] = files_root
     output_root = pathlib.Path(files_root) / pathlib.Path(config['output_dir'])

@@ -60,7 +60,9 @@ def get_symbol_at_path(root, path):
     return _get_symbol_at_path(root, parts[1:])
 
 
-def _get_symbol_node(library, path, symbol, h_level=2, full_path=True):
+def _get_symbol_node(library, output_url, path, symbol, h_level=2, full_path=True):
+    output_path = output_url + symbol.relative_path
+
     name_nodes = []
 
     if symbol.type in {'class', 'function'}:
@@ -87,31 +89,38 @@ def _get_symbol_node(library, path, symbol, h_level=2, full_path=True):
                 CWTextNode(symbol.return_value)
             ]))
 
-    tag_node = CWTagNode('h{}'.format(h_level), {}, [
-        CWTagNode('tt', {}, name_nodes)
+    heading_node = CWTagNode('h{}'.format(h_level), {}, [
+        CWTagNode('tt', {}, name_nodes),
+        CWTagNode('a', {'href': output_path, 'class': 'autodoc-source-link'}, [
+            CWTextNode('src')
+        ])
     ])
-    tag_node.data['ref_id_override'] = path
-    children = [tag_node]
+    heading_node.data['ref_id_override'] = path
+
+    children = [heading_node]
+
     if symbol.docstring:
+        css_class = 'autodoc-{}-docstring-body'.format(symbol.type)
+        docstring_children = cfm_to_cwdom(symbol.docstring, library.get_allowed_tags())
         children.append(CWTagNode(
-            'section', {'class': 'autodoc-{}-docstring-body'.format(symbol.type)},
-            children=cfm_to_cwdom(symbol.docstring, library.get_allowed_tags())))
-    return CWTagNode(
+            'div', {'class': css_class}, children=docstring_children))
+    node = CWTagNode(
         'section', kwargs={'class': 'autodoc-{}'.format(symbol.type)},
         children=children)
+    return node
 
 
-def _get_symbol_nodes_recursive(library, parent_path, symbol, h_level, all_symbols):
+def _get_symbol_nodes_recursive(library, output_url, parent_path, symbol, h_level, all_symbols):
     if symbol.name.startswith('_') and symbol.name != '__init__':
         return
     if not symbol.docstring:
         return
     path = parent_path + '.' + symbol.name
     all_symbols.add(symbol)
-    yield _get_symbol_node(library, path, symbol, h_level, full_path=False)
+    yield _get_symbol_node(library, output_url, path, symbol, h_level, full_path=False)
     for child in symbol.children:
         yield from _get_symbol_nodes_recursive(
-            library, path, child, h_level + 1, all_symbols)
+            library, output_url, path, child, h_level + 1, all_symbols)
 
 
 def add_src_py(library):
@@ -128,6 +137,8 @@ def add_src_py(library):
         symbol_tree = tree.processor_data['autodoc_symbol_tree']
 
         all_symbols = set()
+        output_dir = tree.env['output_dir'] / 'src'
+        output_url = tree.env['config']['html']['site_url'] + "src/"
 
         symbol = None
         symbol_node = None
@@ -142,7 +153,7 @@ def add_src_py(library):
         symbol = get_symbol_at_path(symbol_tree, symbol_path)
         all_symbols.add(symbol)
         symbol_node = _get_symbol_node(
-            library, symbol_path, symbol, h_level=h_level)
+            library, output_url, symbol_path, symbol, h_level=h_level)
         tree.replace_subtree(node, symbol_node)
 
         if (    node.kwargs.get('include-children', 'false').lower() == 'true'
@@ -150,7 +161,7 @@ def add_src_py(library):
             new_siblings = []
             for child in symbol.children:
                 new_siblings += list(_get_symbol_nodes_recursive(
-                    library, symbol_path, child, h_level + 1, all_symbols))
+                    library, output_url, symbol_path, child, h_level + 1, all_symbols))
             tree.add_siblings_ahead(new_siblings)
 
         src_paths = set(
@@ -158,7 +169,7 @@ def add_src_py(library):
             for symbol in all_symbols)
 
         for src, rel_dest in src_paths:
-            abs_dest = tree.env['output_dir'] / 'src' / rel_dest
+            abs_dest = output_dir / rel_dest
             abs_dest.parent.mkdir(parents=True, exist_ok=True)
             with open(src, 'r') as src_f:
                 with abs_dest.open('w') as dest_f:
