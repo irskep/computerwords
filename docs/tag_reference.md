@@ -66,6 +66,9 @@ this:
 }
 ```
 
+(Remember, all paths in the config file are relative to the config file's
+directory.)
+
 Now you can use the `<autodoc-python />` tag to include module docs in your
 Markdown files:
 
