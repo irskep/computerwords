@@ -7,10 +7,16 @@ from computerwords.cwdom.traversal import find_ancestor
 from computerwords.markdown_parser.cfm_to_cwdom import cfm_to_cwdom
 
 
-SymbolDef = namedtuple(
+SymbolDefBase = namedtuple(
     'SymbolDef',
     ['id', 'parent_id', 'type', 'name', 'docstring',
-     'string_inside_parens', 'return_value', 'children'])
+     'string_inside_parens', 'return_value', 'source_file_path', 'line_number',
+     'relative_path', 'children'])
+
+
+class SymbolDef(SymbolDefBase):
+    def __hash__(self):
+        return hash(self.id)
 
 
 def read_config(config):
@@ -46,7 +52,6 @@ def _get_symbol_at_path(t, parts):
         return next_symbol
     else:
         return _get_symbol_at_path(next_symbol, parts[1:])
-
 
 
 def get_symbol_at_path(root, path):
@@ -96,15 +101,17 @@ def _get_symbol_node(library, path, symbol, h_level=2, full_path=True):
         children=children)
 
 
-def _get_symbol_nodes_recursive(library, parent_path, symbol, h_level):
+def _get_symbol_nodes_recursive(library, parent_path, symbol, h_level, all_symbols):
     if symbol.name.startswith('_') and symbol.name != '__init__':
         return
     if not symbol.docstring:
         return
     path = parent_path + '.' + symbol.name
+    all_symbols.add(symbol)
     yield _get_symbol_node(library, path, symbol, h_level, full_path=False)
     for child in symbol.children:
-        yield from _get_symbol_nodes_recursive(library, path, child, h_level + 1)
+        yield from _get_symbol_nodes_recursive(
+            library, path, child, h_level + 1, all_symbols)
 
 
 def add_src_py(library):
@@ -120,6 +127,8 @@ def add_src_py(library):
 
         symbol_tree = tree.processor_data['autodoc_symbol_tree']
 
+        all_symbols = set()
+
         symbol = None
         symbol_node = None
         symbol_path = None
@@ -131,6 +140,7 @@ def add_src_py(library):
             return
 
         symbol = get_symbol_at_path(symbol_tree, symbol_path)
+        all_symbols.add(symbol)
         symbol_node = _get_symbol_node(
             library, symbol_path, symbol, h_level=h_level)
         tree.replace_subtree(node, symbol_node)
@@ -140,5 +150,16 @@ def add_src_py(library):
             new_siblings = []
             for child in symbol.children:
                 new_siblings += list(_get_symbol_nodes_recursive(
-                    library, symbol_path, child, h_level=h_level + 1))
+                    library, symbol_path, child, h_level + 1, all_symbols))
             tree.add_siblings_ahead(new_siblings)
+
+        src_paths = set(
+            (symbol.source_file_path, symbol.relative_path)
+            for symbol in all_symbols)
+
+        for src, rel_dest in src_paths:
+            abs_dest = tree.env['output_dir'] / 'src' / rel_dest
+            abs_dest.parent.mkdir(parents=True, exist_ok=True)
+            with open(src, 'r') as src_f:
+                with abs_dest.open('w') as dest_f:
+                    dest_f.write(src_f.read())

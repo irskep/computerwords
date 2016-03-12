@@ -17,6 +17,24 @@ def get_next_id():
 MODULE_NAME_TO_ID = {}
 
 
+def get_line(
+        id, type, name, docstring, parent_id, string_inside_parens=None,
+        return_value=None, line_number=None, source_file_path=None,
+        relative_path=None):
+    return {
+        'id': id,
+        'type': type,
+        'name': name,
+        'docstring': docstring,
+        'parent_id': parent_id,
+        'string_inside_parens': string_inside_parens,
+        'return_value': return_value,
+        'line_number': line_number,
+        'source_file_path': source_file_path,
+        'relative_path': relative_path,
+    }
+
+
 def parse_data(root, path):
     parts = path.relative_to(root).parts
     if parts and parts[-1] == '__init__.py':
@@ -36,53 +54,58 @@ def parse_data(root, path):
     else:
         module_parent_id = None
 
+    rel_path = path.relative_to(root)
+
+    common = {
+        'source_file_path': str(path),
+        'relative_path': str(rel_path),
+    }
+
     with path.open('r') as f:
         module = ast.parse(f.read())
-        yield {
-            'id': module_id,
-            'type': 'module',
-            'name': module_display_name,
-            'docstring': ast.get_docstring(module),
-            'parent_id': module_parent_id,
-            'string_inside_parens': None,
-            'return_value': None,
-        }
+        yield get_line(
+            id=module_id,
+            type='module',
+            name=module_display_name,
+            docstring=ast.get_docstring(module),
+            parent_id=module_parent_id,
+            **common)
         for node in module.body:
             if isinstance(node, ast.FunctionDef):
-                yield {
-                    'id': get_next_id(),
-                    'type': 'function',
-                    'name': node.name,
-                    'docstring': ast.get_docstring(node),
-                    'parent_id': module_id,
-                    'string_inside_parens': _read_fn_args(node),
-                    'return_value': _read_fn_return_value(node),
-                }
+                yield get_line(
+                    id=get_next_id(),
+                    type='function',
+                    name=node.name,
+                    docstring=ast.get_docstring(node),
+                    parent_id=module_id,
+                    string_inside_parens=_read_fn_args(node),
+                    return_value=_read_fn_return_value(node),
+                    line_number=node.lineno,
+                    **common)
             elif isinstance(node, ast.ClassDef):
                 class_id = get_next_id()
-                yield {
-                    'id': class_id,
-                    'type': 'class',
-                    'name': node.name,
-                    'docstring': ast.get_docstring(node),
-                    'parent_id': module_id,
-                    'string_inside_parens': _read_cls_bases(node),
-                    'return_value': None,
-                }
-                # sys.stderr.write(repr(node._fields))
-                # sys.stderr.write('\n')
+                yield get_line(
+                    id=class_id,
+                    type='class',
+                    name=node.name,
+                    docstring=ast.get_docstring(node),
+                    parent_id=module_id,
+                    string_inside_parens=_read_cls_bases(node),
+                    line_number=node.lineno,
+                    **common)
                 for class_node in node.body:
                     if isinstance(class_node, ast.FunctionDef):
-                        yield {
-                            'id': get_next_id(),
-                            'type': 'method',
-                            'name': class_node.name,
-                            'docstring': ast.get_docstring(class_node),
-                            'parent_id': class_id,
-                            'string_inside_parens': _read_fn_args(
+                        yield get_line(
+                            id=get_next_id(),
+                            type='method',
+                            name=class_node.name,
+                            docstring=ast.get_docstring(class_node),
+                            parent_id=class_id,
+                            string_inside_parens=_read_fn_args(
                                 class_node, skip_first=True),
-                            'return_value': _read_fn_return_value(class_node),
-                        }
+                            return_value=_read_fn_return_value(class_node),
+                            line_number=class_node.lineno,
+                            **common)
 
 
 def _get_arg_string(arg, default=None, prefix=''):
@@ -140,8 +163,6 @@ def _read_fn_args(node, skip_first=False):
 
     if arguments.kwarg:
         items.append(_get_arg_string(arguments.kwarg, None, '**'))
-    #print('kwdef', arguments.kw_defaults, file=sys.stderr)
-    #print('items', items, file=sys.stderr)
     return ', '.join(items)
 
 
