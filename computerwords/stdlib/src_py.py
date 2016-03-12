@@ -61,7 +61,9 @@ def get_symbol_at_path(root, path):
 
 
 def _get_symbol_node(library, output_url, path, symbol, h_level=2, full_path=True):
-    output_path = output_url + symbol.relative_path
+    output_path = output_url + symbol.relative_path + ".html"
+    if symbol.line_number:
+        output_path += '#{}'.format(symbol.line_number)
 
     name_nodes = []
 
@@ -169,8 +171,42 @@ def add_src_py(library):
             for symbol in all_symbols)
 
         for src, rel_dest in src_paths:
-            abs_dest = output_dir / rel_dest
+            abs_dest = output_dir / (rel_dest + ".html")
             abs_dest.parent.mkdir(parents=True, exist_ok=True)
             with open(src, 'r') as src_f:
                 with abs_dest.open('w') as dest_f:
-                    dest_f.write(src_f.read())
+                    _write_linkable_src(src_f, dest_f, rel_dest)
+
+
+def _write_linkable_src(src_f, dest_f, name):
+    """Pretty hacky for now but it works"""
+
+    dest_f.write("""<!doctype html>
+<html>
+    <head>
+        <title>{name}</title>""".format(name=name))
+    dest_f.write("""
+        <style>
+            pre {
+                margin: 0;
+                line-height: 120%;
+            }
+            a {
+                display: block;
+            }
+            a:target {
+                background-color: #cdf;
+            }
+        </style>
+    </head>
+    <body class="autodoc-source">
+""")
+
+    for i, line in enumerate(src_f):
+        dest_f.write("""
+<a name={i}><pre>{line}</pre></a>
+        """.format(i=i + 1, line=line.rstrip() or '&nbsp;'))
+
+    dest_f.write("""
+    </body>
+</html>""")
