@@ -3,7 +3,7 @@ is extensible and you can write Markdown. Computer Words is conceptually
 similar to [Sphinx](http://sphinx-doc.org/).
 
 The page you are reading was written in
-[Computer Flavored Markdown](#computer-flavored-markdown) and compiled
+[Computer Flavored Markdown](computer_flavored_markdown.html#computer-flavored-markdown) and compiled
 with Computer Words.
 
 [Computer Words on GitHub](https://github.com/irskep/computerwords)
