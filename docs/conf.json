@@ -18,7 +18,7 @@
         "roadmap.md",
         "related_work.md"
     ],
-    "python": {
+    "python3.5": {
         "symbols_path": "./build/symbols.json"
     }
 }

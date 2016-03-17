@@ -15,7 +15,6 @@ from computerwords.plugin import CWPlugin
 from computerwords.markdown_parser.cfm_to_cwdom import cfm_to_cwdom
 from computerwords.read_doc_tree import read_doc_tree
 from computerwords.stdlib import stdlib
-from computerwords.stdlib.src_py import read_config
 
 log = logging.getLogger(__name__)
 
@@ -29,6 +28,13 @@ def _get_plugins(plugin_names):
                     yield maybe_cls()
             except TypeError:
                 pass
+
+
+def _get_cfm_reader(lib):
+    def _read_doc_tree(toc_entry):
+        with toc_entry.root_path.open() as f:
+            return cfm_to_cwdom(f.read(), lib.get_allowed_tags())
+    return _read_doc_tree
 
 
 def run():
@@ -58,17 +64,11 @@ def run():
     for plugin in plugins:
         plugin.postprocess_config(config)
 
-    read_config(config)
-
     for plugin in plugins:
         plugin.add_processors(stdlib)
 
-    def _read_doc_tree(toc_entry):
-        with toc_entry.root_path.open() as f:
-            return cfm_to_cwdom(f.read(), stdlib.get_allowed_tags())
-
     doc_tree, document_nodes = read_doc_tree(
-        files_root, config['file_hierarchy'], _read_doc_tree)
+        files_root, config['file_hierarchy'], _get_cfm_reader(stdlib))
     tree = CWTree(CWRootNode(document_nodes), {
         'doc_tree': doc_tree,
         'output_dir': output_root,

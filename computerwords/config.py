@@ -12,8 +12,9 @@ DEFAULT_CONFIG = {
     "plugins": [
         "computerwords.plugins.graphviz",
         "computerwords.plugins.htmlwriter",
+        "computerwords.plugins.python35",
     ],
-    "python": {
+    "python3.5": {
         "symbols_path": "symbols.json",
     },
 }

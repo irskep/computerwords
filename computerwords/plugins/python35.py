@@ -2,9 +2,82 @@ import json
 import pathlib
 from collections import namedtuple
 
+from computerwords.plugin import CWPlugin
+
 from computerwords.cwdom.nodes import CWTagNode, CWTextNode
 from computerwords.cwdom.traversal import find_ancestor
 from computerwords.markdown_parser.cfm_to_cwdom import cfm_to_cwdom
+
+
+class Python35Plugin(CWPlugin):
+
+    CONFIG_NAMESPACE = "python3.5"
+
+    def get_default_config(self):
+        return {
+            "symbols_path": "symbols.json",
+        }
+
+    def postprocess_config(self, config):
+        symbols_path = pathlib.Path(config['python3.5']['symbols_path'])
+        config['python3.5']['resolved_symbols_path'] = (
+            config['root_dir'].joinpath(symbols_path))
+
+    def add_processors(self, library):
+        # HACK
+        self.library = library
+        library.processor('autodoc-python', self.process_autodoc_module)
+
+    def process_autodoc_module(self, tree, node):
+        if 'autodoc_symbols' not in tree.processor_data:
+            config = tree.env['config']
+            with config['python3.5']['resolved_symbols_path'].open() as f:
+                symbol_defs = [json.loads(line) for line in f]
+                tree.processor_data['autodoc_symbols'] = symbol_defs
+                symbol_tree = _create_symbol_tree(symbol_defs)
+                tree.processor_data['autodoc_symbol_tree'] = symbol_tree
+
+        symbol_tree = tree.processor_data['autodoc_symbol_tree']
+
+        all_symbols = set()
+        output_dir = tree.env['output_dir'] / 'src'
+        output_url = tree.env['config']['html']['site_url'] + "src/"
+
+        symbol = None
+        symbol_node = None
+        symbol_path = None
+        h_level = 2
+        if 'module' in node.kwargs:
+            symbol_path = node.kwargs['module']
+            h_level = int(node.kwargs.get('heading-level', "1"))
+        else:
+            return
+
+        symbol = get_symbol_at_path(symbol_tree, symbol_path)
+        all_symbols.add(symbol)
+        symbol_node = _get_symbol_node(
+            self.library, output_url, symbol_path, symbol, h_level=h_level)
+        tree.replace_subtree(node, symbol_node)
+
+        if (    node.kwargs.get('include-children', 'false').lower() == 'true'
+                and symbol.children):
+            new_siblings = []
+            for child in symbol.children:
+                new_siblings += list(_get_symbol_nodes_recursive(
+                    self.library, output_url, symbol_path, child, h_level + 1,
+                    all_symbols))
+            tree.add_siblings_ahead(new_siblings)
+
+        src_paths = set(
+            (symbol.source_file_path, symbol.relative_path)
+            for symbol in all_symbols)
+
+        for src, rel_dest in src_paths:
+            abs_dest = output_dir / (rel_dest + ".html")
+            abs_dest.parent.mkdir(parents=True, exist_ok=True)
+            with open(src, 'r') as src_f:
+                with abs_dest.open('w') as dest_f:
+                    _write_linkable_src(src_f, dest_f, rel_dest)
 
 
 SymbolDefBase = namedtuple(
@@ -17,12 +90,6 @@ SymbolDefBase = namedtuple(
 class SymbolDef(SymbolDefBase):
     def __hash__(self):
         return hash(self.id)
-
-
-def read_config(config):
-    symbols_path = pathlib.Path(config['python']['symbols_path'])
-    config['python']['resolved_symbols_path'] = (
-        config['root_dir'].joinpath(symbols_path))
 
 
 def _create_symbol_tree(symbol_defs):
@@ -125,59 +192,6 @@ def _get_symbol_nodes_recursive(library, output_url, parent_path, symbol, h_leve
             library, output_url, path, child, h_level + 1, all_symbols)
 
 
-def add_src_py(library):
-    @library.processor('autodoc-python')
-    def process_autodoc_module(tree, node):
-        if 'autodoc_symbols' not in tree.processor_data:
-            config = tree.env['config']
-            with config['python']['resolved_symbols_path'].open() as f:
-                symbol_defs = [json.loads(line) for line in f]
-                tree.processor_data['autodoc_symbols'] = symbol_defs
-                symbol_tree = _create_symbol_tree(symbol_defs)
-                tree.processor_data['autodoc_symbol_tree'] = symbol_tree
-
-        symbol_tree = tree.processor_data['autodoc_symbol_tree']
-
-        all_symbols = set()
-        output_dir = tree.env['output_dir'] / 'src'
-        output_url = tree.env['config']['html']['site_url'] + "src/"
-
-        symbol = None
-        symbol_node = None
-        symbol_path = None
-        h_level = 2
-        if 'module' in node.kwargs:
-            symbol_path = node.kwargs['module']
-            h_level = int(node.kwargs.get('heading-level', "1"))
-        else:
-            return
-
-        symbol = get_symbol_at_path(symbol_tree, symbol_path)
-        all_symbols.add(symbol)
-        symbol_node = _get_symbol_node(
-            library, output_url, symbol_path, symbol, h_level=h_level)
-        tree.replace_subtree(node, symbol_node)
-
-        if (    node.kwargs.get('include-children', 'false').lower() == 'true'
-                and symbol.children):
-            new_siblings = []
-            for child in symbol.children:
-                new_siblings += list(_get_symbol_nodes_recursive(
-                    library, output_url, symbol_path, child, h_level + 1, all_symbols))
-            tree.add_siblings_ahead(new_siblings)
-
-        src_paths = set(
-            (symbol.source_file_path, symbol.relative_path)
-            for symbol in all_symbols)
-
-        for src, rel_dest in src_paths:
-            abs_dest = output_dir / (rel_dest + ".html")
-            abs_dest.parent.mkdir(parents=True, exist_ok=True)
-            with open(src, 'r') as src_f:
-                with abs_dest.open('w') as dest_f:
-                    _write_linkable_src(src_f, dest_f, rel_dest)
-
-
 def _write_linkable_src(src_f, dest_f, name):
     """Pretty hacky for now but it works"""
 
@@ -210,3 +224,6 @@ def _write_linkable_src(src_f, dest_f, name):
     dest_f.write("""
     </body>
 </html>""")
+
+
+__all__ = ['Python35Plugin']
