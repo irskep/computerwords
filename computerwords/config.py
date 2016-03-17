@@ -9,6 +9,9 @@ DEFAULT_CONFIG = {
     "site_subtitle": "",
     "author": "Docs McGee",
     "output_dir": "./build",
+    "plugins": [
+        "computerwords.plugins.graphviz"    ,
+    ],
     "html": {
         "site_url": "/",
         "css_files": None,
