@@ -10,16 +10,9 @@ DEFAULT_CONFIG = {
     "author": "Docs McGee",
     "output_dir": "./build",
     "plugins": [
-        "computerwords.plugins.graphviz"    ,
+        "computerwords.plugins.graphviz",
+        "computerwords.plugins.htmlwriter",
     ],
-    "html": {
-        "site_url": "/",
-        "css_files": None,
-        "css_theme": "default",
-        "static_dir_name": "static",
-        "meta_description": "",
-    },
-
     "python": {
         "symbols_path": "symbols.json",
     },

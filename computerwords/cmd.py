@@ -23,16 +23,19 @@ log = logging.getLogger(__name__)
 def _get_plugins(plugin_names):
     for import_path in plugin_names:
         module = importlib.import_module(import_path)
-        for attr in module.__all__:
-            cls = getattr(module, attr)
-            if issubclass(cls, CWPlugin):
-                yield cls()
+        for maybe_cls in module.__dict__.values():
+            try:
+                if issubclass(maybe_cls, CWPlugin):
+                    yield maybe_cls()
+            except TypeError:
+                pass
 
 
 def run():
     p = argparse.ArgumentParser()
     p.add_argument('--conf', default="conf.json", type=argparse.FileType('r'))
     p.add_argument('--debug', default=False, action='store_true')
+    p.add_argument('--writer', default='html', action='store')
     args = p.parse_args()
 
     config_json = json.load(args.conf)
@@ -47,25 +50,25 @@ def run():
     config = dict(
         DictCascade(*([DEFAULT_CONFIG] + more_defaults + [config_json])))
 
-    if not config['html']['site_url'].endswith('/'):
-        config['html']['site_url'] += "/"
-
     files_root = pathlib.Path(args.conf.name).parent.resolve()
     config['root_dir'] = files_root
     output_root = pathlib.Path(files_root) / pathlib.Path(config['output_dir'])
     output_root.mkdir(exist_ok=True)
+
+    for plugin in plugins:
+        plugin.postprocess_config(config)
 
     read_config(config)
 
     for plugin in plugins:
         plugin.add_processors(stdlib)
 
-    def _get_doc_cwdom(subtree):
-        with subtree.root_path.open() as f:
+    def _read_doc_tree(toc_entry):
+        with toc_entry.root_path.open() as f:
             return cfm_to_cwdom(f.read(), stdlib.get_allowed_tags())
 
     doc_tree, document_nodes = read_doc_tree(
-        files_root, config['file_hierarchy'], _get_doc_cwdom)
+        files_root, config['file_hierarchy'], _read_doc_tree)
     tree = CWTree(CWRootNode(document_nodes), {
         'doc_tree': doc_tree,
         'output_dir': output_root,
@@ -75,5 +78,9 @@ def run():
         print(tree.root.get_string_for_test_comparison())
     tree.apply_library(stdlib)
 
-
-    write_html(config, files_root, output_root, stdlib, tree)
+    writers = {
+        plugin.WRITER_NAME: plugin
+        for plugin in plugins
+        if plugin.WRITER_NAME is not None
+    }
+    writers[args.writer].write(config, files_root, output_root, stdlib, tree)
