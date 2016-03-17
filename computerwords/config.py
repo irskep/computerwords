@@ -12,6 +12,7 @@ DEFAULT_CONFIG = {
     "plugins": [
         "computerwords.plugins.graphviz",
         "computerwords.plugins.htmlwriter",
+        "computerwords.plugins.pygments",
         "computerwords.plugins.python35",
     ],
     "python3.5": {
