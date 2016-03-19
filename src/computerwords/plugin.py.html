@@ -1,0 +1,209 @@
+<!doctype html>
+<html>
+    <head>
+        <title>computerwords/plugin.py</title>
+        <style>
+            pre {
+                margin: 0;
+                line-height: 120%;
+            }
+            a {
+                display: block;
+            }
+            a:target {
+                background-color: #cdf;
+            }
+        </style>
+    </head>
+    <body class="autodoc-source">
+
+<a name=1><pre>"""</pre></a>
+        
+<a name=2><pre>## Writing a plugin for Computer Words</pre></a>
+        
+<a name=3><pre>&nbsp;</pre></a>
+        
+<a name=4><pre>Summary: write a class inheriting from `computerwords.plugin.CWPlugin`,</pre></a>
+        
+<a name=5><pre>put it in a module accessible in `PYTHONPATH`, and add it to a list of</pre></a>
+        
+<a name=6><pre>module paths under the `"plugins"` key in your config file.</pre></a>
+        
+<a name=7><pre>&nbsp;</pre></a>
+        
+<a name=8><pre>### 1. Inherit from `CWPlugin`</pre></a>
+        
+<a name=9><pre>&nbsp;</pre></a>
+        
+<a name=10><pre>```python</pre></a>
+        
+<a name=11><pre>from computerwords.cwdom.nodes import CWTagNode, CWTextNode</pre></a>
+        
+<a name=12><pre>from computerwords.plugin import CWPlugin</pre></a>
+        
+<a name=13><pre>&nbsp;</pre></a>
+        
+<a name=14><pre>class MyPlugin(CWPlugin):</pre></a>
+        
+<a name=15><pre>    # we want to add some things to the config file</pre></a>
+        
+<a name=16><pre>    CONFIG_NAMESPACE = 'my_plugin'</pre></a>
+        
+<a name=17><pre>&nbsp;</pre></a>
+        
+<a name=18><pre>    # here are our default values</pre></a>
+        
+<a name=19><pre>    def get_default_config(sel):</pre></a>
+        
+<a name=20><pre>        return {</pre></a>
+        
+<a name=21><pre>            "files_to_read": []</pre></a>
+        
+<a name=22><pre>        }</pre></a>
+        
+<a name=23><pre>&nbsp;</pre></a>
+        
+<a name=24><pre>    # override this method to write to the config after it has</pre></a>
+        
+<a name=25><pre>    # been read</pre></a>
+        
+<a name=26><pre>    def postprocess_config(self, config):</pre></a>
+        
+<a name=27><pre>        local_config = config["my_plugin"]</pre></a>
+        
+<a name=28><pre>        local_config["file_contents"] = {}</pre></a>
+        
+<a name=29><pre>        for path in local_config["files_to_read"]:</pre></a>
+        
+<a name=30><pre>            with open(path, 'r') as f:</pre></a>
+        
+<a name=31><pre>                local_config["file_contents"][path] = f.read()</pre></a>
+        
+<a name=32><pre>&nbsp;</pre></a>
+        
+<a name=33><pre>    # If you're writing a custom tag, this is where you</pre></a>
+        
+<a name=34><pre>    # implement it.</pre></a>
+        
+<a name=35><pre>    def add_processors(self, library):</pre></a>
+        
+<a name=36><pre>        @library.processor('under-construction')</pre></a>
+        
+<a name=37><pre>        def process_my_tag(tree, node):</pre></a>
+        
+<a name=38><pre>            tree.replace(</pre></a>
+        
+<a name=39><pre>                node,</pre></a>
+        
+<a name=40><pre>                CWTagNode(</pre></a>
+        
+<a name=41><pre>                    'marquee',</pre></a>
+        
+<a name=42><pre>                    {'class': 'under-construction'},</pre></a>
+        
+<a name=43><pre>                    [CWTextNode('Under Construction')]))</pre></a>
+        
+<a name=44><pre>```</pre></a>
+        
+<a name=45><pre>&nbsp;</pre></a>
+        
+<a name=46><pre>### 2. Put your plugin in `PYTHONPATH`</pre></a>
+        
+<a name=47><pre>&nbsp;</pre></a>
+        
+<a name=48><pre>You can either install your plugin as a package or just add</pre></a>
+        
+<a name=49><pre>`PYTHONPATH=$PYTHONPATH:$PATH_TO_MODULE_DIR` in front of your invocation of</pre></a>
+        
+<a name=50><pre>`python -m computerwords`. Kind of like this:</pre></a>
+        
+<a name=51><pre>&nbsp;</pre></a>
+        
+<a name=52><pre>```sh</pre></a>
+        
+<a name=53><pre># plugin file is at plugins/my_plugin.py</pre></a>
+        
+<a name=54><pre>PYTHONPATH=$PYTHONPATH:./plugins \\</pre></a>
+        
+<a name=55><pre>    python -m computerwords \\</pre></a>
+        
+<a name=56><pre>        --conf docs/conf.json</pre></a>
+        
+<a name=57><pre>```</pre></a>
+        
+<a name=58><pre>&nbsp;</pre></a>
+        
+<a name=59><pre>### 3. Add your plugin to the config file</pre></a>
+        
+<a name=60><pre>&nbsp;</pre></a>
+        
+<a name=61><pre>```json</pre></a>
+        
+<a name=62><pre>{</pre></a>
+        
+<a name=63><pre>    "plugins": [</pre></a>
+        
+<a name=64><pre>        "my_plugin"</pre></a>
+        
+<a name=65><pre>    ]</pre></a>
+        
+<a name=66><pre>}</pre></a>
+        
+<a name=67><pre>```</pre></a>
+        
+<a name=68><pre>"""</pre></a>
+        
+<a name=69><pre>&nbsp;</pre></a>
+        
+<a name=70><pre>class CWPlugin:</pre></a>
+        
+<a name=71><pre>    """Base class for all Computer Words plugins."""</pre></a>
+        
+<a name=72><pre>&nbsp;</pre></a>
+        
+<a name=73><pre>    """If you want to include custom information in the config file, specify</pre></a>
+        
+<a name=74><pre>    a namespace for it to live under. For example, the HTML writer's</pre></a>
+        
+<a name=75><pre>    configuration is all under the `"html"` key."""</pre></a>
+        
+<a name=76><pre>    CONFIG_NAMESPACE = None</pre></a>
+        
+<a name=77><pre>&nbsp;</pre></a>
+        
+<a name=78><pre>    def get_default_config(self):</pre></a>
+        
+<a name=79><pre>        """If you specified `CONFIG_NAMESPACE`, provide a default dictionary</pre></a>
+        
+<a name=80><pre>        here"""</pre></a>
+        
+<a name=81><pre>        return None</pre></a>
+        
+<a name=82><pre>&nbsp;</pre></a>
+        
+<a name=83><pre>    """Optionally transform the config after it is read"""</pre></a>
+        
+<a name=84><pre>    def postprocess_config(self, config):</pre></a>
+        
+<a name=85><pre>        pass</pre></a>
+        
+<a name=86><pre>&nbsp;</pre></a>
+        
+<a name=87><pre>    def add_processors(self, library):</pre></a>
+        
+<a name=88><pre>        """Use `cwdom.library.Library.processor` to define transforms on the</pre></a>
+        
+<a name=89><pre>        tree."""</pre></a>
+        
+<a name=90><pre>        pass</pre></a>
+        
+<a name=91><pre>&nbsp;</pre></a>
+        
+<a name=92><pre>    WRITER_NAME = None</pre></a>
+        
+<a name=93><pre>    def write(self, config, src_root, dest_root, stdlib, tree):</pre></a>
+        
+<a name=94><pre>        pass</pre></a>
+        
+    </body>
+</html>
