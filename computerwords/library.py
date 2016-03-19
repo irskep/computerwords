@@ -49,6 +49,9 @@ class Library:
         return set(self.tag_name_to_processors.keys())
 
     def run_processors(self, tree, node):
+        if tree.get_is_node_dirty(node):
+            raise ValueError(
+                "Nodes should be marked un-dirty before processing.")
         for p in self.get_processors(node.name):
             if tree.get_is_node_dirty(node):
                 raise UnhandledEdgeCaseError((

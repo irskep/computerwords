@@ -95,13 +95,13 @@ class CWTree:
             for node in self._traverser:
                 if node not in dirty_nodes: continue
                 if node in self._removed_nodes: continue
-                if node in self._dirty_nodes:
-                    self._dirty_nodes.remove(node)
                 self._process_node_for_second_pass(library, node)
             dirty_nodes = self._dirty_nodes
             self._dirty_nodes = set()
 
     def _process_node_for_second_pass(self, library, node):
+        if node in self._dirty_nodes:
+            self._dirty_nodes.remove(node)
         self._active_node = node
         self._replacement_node = None
         library.run_processors(self, self._active_node)
@@ -148,7 +148,7 @@ class CWTree:
     def _mark_subtree_dirty(self, node):
         self.mark_node_dirty(node)
         for child in node.children:
-            self._mark_node_dirty(child)
+            self._mark_subtree_dirty(child)
 
     def get_is_node_dirty(self, node):
         """Returns `True` if the node is marked dirty."""

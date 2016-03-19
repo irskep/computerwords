@@ -7,7 +7,7 @@ module paths under the `"plugins"` key in your config file.
 
 ### 1. Inherit from `CWPlugin`
 
-```py
+```python
 from computerwords.cwdom.nodes import CWTagNode, CWTextNode
 from computerwords.plugin import CWPlugin
 
@@ -21,14 +21,17 @@ class MyPlugin(CWPlugin):
             "files_to_read": []
         }
 
-    # override this method to write to the config after it has been read
+    # override this method to write to the config after it has
+    # been read
     def postprocess_config(self, config):
-        config["my_plugin"]["file_contents"] = {}
-        for path in config["my_plugin"]["files_to_read"]:
+        local_config = config["my_plugin"]
+        local_config["file_contents"] = {}
+        for path in local_config["files_to_read"]:
             with open(path, 'r') as f:
-                config["my_plugin"]["file_contents"][path] = f.read()
+                local_config["file_contents"][path] = f.read()
 
-    # If you're writing a custom tag, this is where you implement it.
+    # If you're writing a custom tag, this is where you
+    # implement it.
     def add_processors(self, library):
         @library.processor('under-construction')
         def process_my_tag(tree, node):
@@ -43,14 +46,21 @@ class MyPlugin(CWPlugin):
 ### 2. Put your plugin in `PYTHONPATH`
 
 You can either install your plugin as a package or just add
-`PYTHONPATH=$PYTHONPATH:$PATH_TO_MODULE_DIR ` in front of your invocation of
-`python -m computerwords`.
+`PYTHONPATH=$PYTHONPATH:$PATH_TO_MODULE_DIR` in front of your invocation of
+`python -m computerwords`. Kind of like this:
+
+```sh
+# plugin file is at plugins/my_plugin.py
+PYTHONPATH=$PYTHONPATH:./plugins \\
+    python -m computerwords \\
+        --conf docs/conf.json
+```
 
 ### 3. Add your plugin to the config file
 
 ```json
 {
-    plugins: [
+    "plugins": [
         "my_plugin"
     ]
 }
