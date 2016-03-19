@@ -116,6 +116,11 @@ tt {
 
 /* fancy things */
 
+/* hide 'src' links in TOC */
+nav.table-of-contents .autodoc-source-link {
+  display: none;
+}
+
 .autodoc-function-docstring-body, .autodoc-class-docstring-body, .autodoc-method {
   margin-left: 2rem;
 }
