@@ -121,7 +121,7 @@ nav.table-of-contents .autodoc-source-link {
   display: none;
 }
 
-.autodoc-function-docstring-body, .autodoc-class-docstring-body, .autodoc-method {
+.autodoc-function-docstring-body, .autodoc-class-docstring-body, .autodoc-method, .autodoc-class_var {
   margin-left: 2rem;
 }
 

@@ -3,8 +3,13 @@
 import argparse
 import ast
 import json
+import logging
 import pathlib
 import sys
+
+
+logging.basicConfig()
+log = logging.getLogger(__name__)
 
 
 next_id = 0
@@ -93,6 +98,8 @@ def parse_data(root, path):
                     string_inside_parens=_read_cls_bases(node),
                     line_number=node.lineno,
                     **common)
+
+                last_class_node = None
                 for class_node in node.body:
                     if isinstance(class_node, ast.FunctionDef):
                         yield get_line(
@@ -106,6 +113,21 @@ def parse_data(root, path):
                             return_value=_read_fn_return_value(class_node),
                             line_number=class_node.lineno,
                             **common)
+                    elif isinstance(class_node, ast.Assign):
+                        try:
+                            name = class_node.targets[0].id
+                            docstring = _read_maybe_docstring(last_class_node)
+                            yield get_line(
+                                id=get_next_id(),
+                                type='class_var',
+                                name=name,
+                                docstring=docstring,
+                                parent_id=class_id,
+                                line_number=class_node.lineno,
+                                **common)
+                        except AttributeError:
+                            pass
+                    last_class_node = class_node
 
 
 def _get_arg_string(arg, default=None, prefix=''):
@@ -175,6 +197,15 @@ def _read_fn_return_value(node):
 
 def _read_cls_bases(node):
     return ', '.join([b.id for b in node.bases])
+
+
+def _read_maybe_docstring(node):
+    if not node:
+        return None
+    if isinstance(node, ast.Expr):
+        return _read_maybe_docstring(node.value)
+    elif isinstance(node, ast.Str):
+        return node.s
 
 
 def main():
