@@ -182,7 +182,7 @@ def t_CodeBlock(ast_node, config):
 
 @t('Code')
 def t_Code(ast_node, config):
-    yield CWTagNode('tt', {}, [CWTextNode(ast_node.literal)])
+    yield CWTagNode('code', {}, [CWTextNode(ast_node.literal)])
 
 @t('Hardbreak')
 def t_Hardbreak(ast_node, config):

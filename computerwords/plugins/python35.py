@@ -159,7 +159,7 @@ def _get_symbol_node(library, output_url, path, symbol, h_level=2, full_path=Tru
             ]))
 
     heading_node = CWTagNode('h{}'.format(h_level), {}, [
-        CWTagNode('tt', {}, name_nodes),
+        CWTagNode('code', {}, name_nodes),
         CWTagNode('a', {'href': output_path, 'class': 'autodoc-source-link'}, [
             CWTextNode('src')
         ])

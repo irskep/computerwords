@@ -2,29 +2,85 @@ from computerwords.cwdom.nodes import CWTagNode, CWTextNode
 
 
 def add_html(library):
-    library.SEMANTIC_HTML_TAGS = {
+    SEMANTIC_HTML_TAGS = {
         'main', 'header', 'footer', 'article', 'section', 'aside', 'nav',
-        'figure', 'figcaption'
+        'figure', 'figcaption', 'address', 'hgroup',
+
+        'details', 'dialog', 'menu', 'menuitem', 'summary',
     }
 
-    library.HTML_TAGS = {
-        'strong', 'i', 'u', 's', 'tt', 'span', 'pre',
-        'p', 'div', 'a', 'br', 'hr',
-        'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+    BLOCK_LEVEL_TAGS = {
+        'pre', 'p', 'div', 'hr',
         'ol', 'ul', 'li',
-        'blockquote', 'img',
+        'blockquote',
+        'canvas', 'script', 'noscript'
+    }
 
-        'table', 'thead', 'tbody', 'tr', 'th', 'td', 'caption',
-    } | library.SEMANTIC_HTML_TAGS
+    MEDIA_TAGS = {
+        'map', 'area',
+        'audio', 'track', 'video',
+    }
+
+    HEADING_TAGS = {
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+    }
+
+    INLINE_TAGS = {
+        'strong', 'i', 'u', 's', 'span', 'code',
+        'a', 'br', 'img',
+        'abbr', 'bdi', 'bdo', 'cite', 'data', 'dfn', 'em', 'kbd', 'mark',
+        'q', 'samp', 'small', 'sub', 'sup', 'time', 'var', 'wbr',
+        'del', 'ins',
+
+        'rp', 'rt', 'rtc', 'ruby',
+    }
+
+    TABLE_TAGS = {
+        'table', 'thead', 'tbody', 'tr', 'th', 'td', 'caption', 'col',
+        'colgroup', 'tfoot', 'thead',
+    }
+
+    DEFN_TAGS = {'dd', 'dl', 'dt'}
+
+    EMBEDDING_TAGS = {'embed', 'object', 'param', 'source'}
+
+    FORM_TAGS = {
+        'button', 'datalist', 'fieldset', 'form', 'input', 'keygen', 'label',
+        'legend', 'meter', 'optgroup', 'option', 'output', 'progress',
+        'select',
+    }
+
+    EXPERIMENTAL_TAGS = {
+        'content', 'element', 'shadow', 'template',
+    }
+
+    DEPRECATED_TAGS = {
+        'acronym', 'applet', 'basefont', 'big', 'blink', 'center', 'command',
+        'content', 'dir', 'font', 'frame', 'frameset', 'isindex', 'listing',
+        'marquee', 'noembed', 'plaintext', 'spacer', 'xmp',
+    }
+
+    library.HTML_TAGS = (
+        SEMANTIC_HTML_TAGS |
+        BLOCK_LEVEL_TAGS |
+        HEADING_TAGS |
+        INLINE_TAGS |
+        TABLE_TAGS |
+        DEFN_TAGS |
+        MEDIA_TAGS |
+        EMBEDDING_TAGS |
+        FORM_TAGS |
+        EXPERIMENTAL_TAGS |
+        DEPRECATED_TAGS
+    )
 
     library.ALIAS_HTML_TAGS = {
         'strike': 's',
         'b': 'strong',
-        'code': 'pre',
+        'tt': 'code',
     }
 
     all_tags = (
-        library.SEMANTIC_HTML_TAGS |
         library.HTML_TAGS |
         library.ALIAS_HTML_TAGS.keys())
 

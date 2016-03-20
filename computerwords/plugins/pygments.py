@@ -1,3 +1,5 @@
+import logging
+
 import pygments
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import get_lexer_by_name
@@ -6,6 +8,9 @@ from pygments.util import ClassNotFound
 from computerwords.plugin import CWPlugin
 
 from computerwords.cwdom.nodes import CWTagNode, CWTextNode
+
+
+log = logging.getLogger(__name__)
 
 
 class PygmentsPlugin(CWPlugin):
