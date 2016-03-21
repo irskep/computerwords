@@ -30,7 +30,7 @@ class TestHTML(CWTestCase):
             CWDocumentNode('doc 1', [
                 CWTagNode('strike', {}, []),
                 CWTagNode('b', {}, []),
-                CWTagNode('code', {}, []),
+                CWTagNode('tt', {}, []),
             ]),
         ]))
         tree.apply_library(LibraryForTesting())
@@ -39,5 +39,5 @@ class TestHTML(CWTestCase):
               Document(path='doc 1')
                 s(kwargs={})
                 strong(kwargs={})
-                pre(kwargs={})
+                code(kwargs={})
         """))
