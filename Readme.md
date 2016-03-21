@@ -1,3 +1,3 @@
 # Computer Words
 
-It's a bit like Sphinx. Development is still extremely early.
+Go to [the web site.](http://steveasleep.com/computerwords)

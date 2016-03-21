@@ -85,10 +85,13 @@ nav.next-page {
 
 /* block-level semantic elements */
 
-figure.code {
-  border: 1px solid #ddd;
+figure.code, aside.note-note, aside.note-warning {
   border-radius: 3px;
   padding: 0.5rem;
+}
+
+figure.code, aside.note-note {
+  border: 1px solid #ddd;
   background-color: #fafafa;
 }
 
@@ -138,4 +141,27 @@ nav.table-of-contents .autodoc-source-link {
   float: right;
   font-size: 0.8rem;
   font-weight: normal;
+}
+
+/* notes plugin */
+
+aside.note-warning, aside.note-note {
+  margin: 1em 40px;
+  padding: 0.5rem;
+}
+aside.note-warning::before, aside.note-note::before {
+  font-weight: bold;
+  display: block;
+}
+
+aside.note-warning {
+  background-color: #fff8f8;
+  border: 1px solid #faaaaa;
+}
+aside.note-warning.note-auto-prefix::before {
+  content: "Warning: ";
+}
+
+aside.note-note.note-auto-prefix::before {
+  content: "Note: ";
 }

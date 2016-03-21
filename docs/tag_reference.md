@@ -46,6 +46,32 @@ The output looks like this:
 </nav>
 ```
 
+## Asides
+
+You can call out a note or a warning using—wait for it—`<note>` and
+`<warning>`. Use `no-prefix=true` to omit the automatic first line of bold
+text.
+
+```md
+<note>This is a note.</note>
+
+<note no-prefix=true>
+This is another note.
+</note>
+```
+
+<note>This is a note.</note>
+
+<note no-prefix=true>
+This is another note.
+</note>
+
+```md
+<warning>This is a warning.</warning>
+```
+
+<warning>This is a warning.</warning>
+
 ## Python documentation
 
 Computer Words supports including documentation from *symbol files*. These

@@ -10,6 +10,9 @@ with Computer Words.
 
 [Source code for this page](https://github.com/irskep/computerwords/tree/master/docs)
 
+<warning>This is alpha-quality software. Most of it works very well, but be
+sure to read the parser caveats if you intend to really use it.</warning>
+
 <h1 skip_toc=True>Table of Contents</h1>
 
 <table-of-contents maxdepth=2 />
