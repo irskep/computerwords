@@ -30,12 +30,13 @@ arg_value -> BBWORD
 space? -> SPACE
         | ε
 """
+import logging
 
 from collections import namedtuple
 from .ast import *
 from .parser_support import *
 
-ParserConfig = namedtuple('ParserConfig', ['allowed_tags'])
+log = logging.getLogger(__name__)
 
 
 class TagMismatchError(ParseError):
@@ -93,8 +94,10 @@ def tags_should_match(tag_node, config):
     return True
 
 def self_closing_tag_should_be_allowed(tag_node, config):
+    if not config.allowed_tags:
+        return True
     tag_name_token = tag_node.tag_contents.bbword.token
-    if config.allowed_tags and tag_name_token.value not in config.allowed_tags:
+    if tag_name_token.value not in config.allowed_tags:
         raise UnknownTagError(tag_name_token)
     return True
 
@@ -168,22 +171,17 @@ rule('arg_value',
     sequence_rule(ArgValueNode, 2, 'token_STRING'))
 
 
-def parse_html(tokens, allowed_tags=None):
-    if allowed_tags is None:
-        allowed_tags = set()
-    config = ParserConfig(allowed_tags)
+def parse_html(tokens, config):
     return call_parse_function('stmts_b', tokens, 0, config)[0]
 
 
 def parser_shortcut(name):
-    def parse_fn(tokens, allowed_tags=None):
-        if allowed_tags is None:
-            allowed_tags = set()
-        config = ParserConfig(allowed_tags)
+    def parse_fn(tokens, config):
         return call_parse_function(name, tokens, 0, config)
     return parse_fn
 
 parse_open_tag = parser_shortcut('open_tag')
 parse_close_tag = parser_shortcut('close_tag')
 parse_self_closing_tag = parser_shortcut('self_closing_tag')
+parse_tag= parser_shortcut('tag')
 parse_single_statement = parser_shortcut('stmt')

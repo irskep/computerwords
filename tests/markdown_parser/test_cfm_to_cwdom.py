@@ -1,17 +1,19 @@
 import unittest
 
 from computerwords.cwdom.nodes import *
+from computerwords.markdown_parser import CFMParserConfig
 from computerwords.markdown_parser.cfm_to_cwdom import cfm_to_cwdom
 
 from tests.CWTestCase import CWTestCase
 
 
 TAGS = {'a', 'b', 'c', 'x', 'y', 'z'}
+CONFIG = CFMParserConfig(document_id=None, allowed_tags=TAGS)
 
 
 class IntegratedHTMLParsingTestCase(CWTestCase):
     def test_inline_html(self):
-        root = CWRootNode(cfm_to_cwdom("a <b><c>b</c></b> c", TAGS))
+        root = CWRootNode(cfm_to_cwdom("a <b><c>b</c></b> c", CONFIG))
         self.assertMultiLineEqual(
             root.get_string_for_test_comparison(), self.strip("""
                 Root()
@@ -23,7 +25,7 @@ class IntegratedHTMLParsingTestCase(CWTestCase):
             """))
 
     def test_self_closing_tag(self):
-        root = CWRootNode(cfm_to_cwdom("<a />", TAGS))
+        root = CWRootNode(cfm_to_cwdom("<a />", CONFIG))
         self.assertMultiLineEqual(
             root.get_string_for_test_comparison(), self.strip("""
                 Root()
@@ -37,7 +39,7 @@ class IntegratedHTMLParsingTestCase(CWTestCase):
 
             par
         """)
-        root = CWRootNode(cfm_to_cwdom(s, TAGS))
+        root = CWRootNode(cfm_to_cwdom(s, CONFIG))
         self.assertMultiLineEqual(
             root.get_string_for_test_comparison(), self.strip("""
                 Root()
@@ -60,8 +62,8 @@ class IntegratedHTMLParsingTestCase(CWTestCase):
             </x>abc
         """)
         print('----------------------')
-        self.log_node(CWRootNode(cfm_to_cwdom(s, TAGS, fix_tags=False)))
-        root = CWRootNode(cfm_to_cwdom(s, TAGS))
+        self.log_node(CWRootNode(cfm_to_cwdom(s, CONFIG, fix_tags=False)))
+        root = CWRootNode(cfm_to_cwdom(s, CONFIG))
         self.log_node(root)
         self.assertMultiLineEqual(
             root.get_string_for_test_comparison(), self.strip("""
@@ -83,7 +85,7 @@ class IntegratedHTMLParsingTestCase(CWTestCase):
 
             some test</x>
         """)
-        root = CWRootNode(cfm_to_cwdom(s, TAGS))
+        root = CWRootNode(cfm_to_cwdom(s, CONFIG))
         self.log_node(root)
 
     def test_block_html_4(self):
@@ -92,7 +94,7 @@ class IntegratedHTMLParsingTestCase(CWTestCase):
             some test
             </x>
         """)
-        root = CWRootNode(cfm_to_cwdom(s, TAGS))
+        root = CWRootNode(cfm_to_cwdom(s, CONFIG))
         self.assertMultiLineEqual(
             root.get_string_for_test_comparison(), self.strip("""
                 Root()
@@ -107,7 +109,7 @@ class IntegratedHTMLParsingTestCase(CWTestCase):
 
             </x>
         """)
-        root = CWRootNode(cfm_to_cwdom(s, TAGS))
+        root = CWRootNode(cfm_to_cwdom(s, CONFIG))
         self.assertMultiLineEqual(
             root.get_string_for_test_comparison(), self.strip("""
                 Root()
@@ -123,8 +125,8 @@ class IntegratedHTMLParsingTestCase(CWTestCase):
             some test
             </x>
         """)
-        self.log_node(CWRootNode(cfm_to_cwdom(s, TAGS, fix_tags=False)))
-        root = CWRootNode(cfm_to_cwdom(s, TAGS))
+        self.log_node(CWRootNode(cfm_to_cwdom(s, CONFIG, fix_tags=False)))
+        root = CWRootNode(cfm_to_cwdom(s, CONFIG))
         self.assertMultiLineEqual(
             root.get_string_for_test_comparison(), self.strip("""
                 Root()
@@ -141,7 +143,7 @@ class IntegratedHTMLParsingTestCase(CWTestCase):
 
             </x>
         """)
-        root = CWRootNode(cfm_to_cwdom(s, TAGS))
+        root = CWRootNode(cfm_to_cwdom(s, CONFIG))
         self.assertMultiLineEqual(
             root.get_string_for_test_comparison(), self.strip("""
                 Root()

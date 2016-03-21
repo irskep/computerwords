@@ -12,6 +12,7 @@ from computerwords.config import DictCascade, DEFAULT_CONFIG
 from computerwords.cwdom.nodes import CWRootNode
 from computerwords.cwdom.CWTree import CWTree
 from computerwords.plugin import CWPlugin
+from computerwords.markdown_parser import CFMParserConfig
 from computerwords.markdown_parser.cfm_to_cwdom import cfm_to_cwdom
 from computerwords.read_doc_tree import read_doc_tree
 from computerwords.stdlib import stdlib
@@ -31,9 +32,11 @@ def _get_plugins(plugin_names):
 
 
 def _get_cfm_reader(lib):
-    def _read_doc_tree(toc_entry):
+    def _read_doc_tree(toc_entry, doc_id):
+        config = CFMParserConfig(
+            allowed_tags=lib.get_allowed_tags(), document_id=doc_id)
         with toc_entry.root_path.open() as f:
-            return cfm_to_cwdom(f.read(), lib.get_allowed_tags())
+            return cfm_to_cwdom(f.read(), config)
     return _read_doc_tree
 
 

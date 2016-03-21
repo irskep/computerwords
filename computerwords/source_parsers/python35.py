@@ -196,7 +196,13 @@ def _read_fn_return_value(node):
 
 
 def _read_cls_bases(node):
-    return ', '.join([b.id for b in node.bases])
+    try:
+        return ', '.join([b.id for b in node.bases])
+    except AttributeError:
+        log.warning(
+            "Can't parse class bases for {}: {!r}".format(
+                node.name, node.bases))
+        return ''  # can't parse
 
 
 def _read_maybe_docstring(node):

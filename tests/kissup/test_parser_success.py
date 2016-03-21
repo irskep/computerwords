@@ -3,9 +3,8 @@ from textwrap import dedent
 
 from computerwords.markdown_parser import tokens as t
 from computerwords.markdown_parser import ast
-from computerwords.markdown_parser import parser_support
+from computerwords.markdown_parser import parser_support, CFMParserConfig
 from computerwords.markdown_parser.html_lexer import lex_html
-from computerwords.markdown_parser.html_parser import ParserConfig
 
 
 parse_funcs = parser_support.PARSE_FUNC_REGISTRY
@@ -19,7 +18,9 @@ def strip(s):
     return dedent(s)[1:-1]
 
 
-def parse_production(name, tokens, i, config=ParserConfig({'abc'})):
+def parse_production(
+        name, tokens, i,
+        config=CFMParserConfig(document_id=None, allowed_tags={'abc'})):
     return parse_funcs[name](tokens, i, config)
 
 

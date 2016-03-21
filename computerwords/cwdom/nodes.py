@@ -106,6 +106,10 @@ class CWNode:
             self.set_children([child.deepcopy() for child in node.children] + self.children)
         return self
 
+    def replace_child(self, i, child):
+        self.children[i] = child
+        child.set_parent(self)
+
     def get_string_for_test_comparison(self, inner_indentation=2):
         """Returns a string that is very convenient to compare using
         `unittest.TestCase.assertMultiLineEqual()`

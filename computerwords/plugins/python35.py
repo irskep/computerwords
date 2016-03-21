@@ -6,6 +6,7 @@ from computerwords.plugin import CWPlugin
 
 from computerwords.cwdom.nodes import CWTagNode, CWTextNode
 from computerwords.cwdom.traversal import find_ancestor
+from computerwords.markdown_parser import CFMParserConfig
 from computerwords.markdown_parser.cfm_to_cwdom import cfm_to_cwdom
 
 
@@ -24,7 +25,6 @@ class Python35Plugin(CWPlugin):
             config['root_dir'].joinpath(symbols_path))
 
     def add_processors(self, library):
-        # HACK
         self.library = library
         library.processor('autodoc-python', self.process_autodoc_module)
 
@@ -53,10 +53,14 @@ class Python35Plugin(CWPlugin):
         else:
             return
 
+        parser_config = CFMParserConfig(
+            document_id=(symbol_path,),
+            allowed_tags=self.library.get_allowed_tags())
+
         symbol = get_symbol_at_path(symbol_tree, symbol_path)
         all_symbols.add(symbol)
         symbol_node = _get_symbol_node(
-            self.library, output_url, symbol_path, symbol, h_level=h_level)
+            parser_config, output_url, symbol_path, symbol, h_level=h_level)
         tree.replace_subtree(node, symbol_node)
 
         if (    node.kwargs.get('include-children', 'false').lower() == 'true'
@@ -64,7 +68,7 @@ class Python35Plugin(CWPlugin):
             new_siblings = []
             for child in symbol.children:
                 new_siblings += list(_get_symbol_nodes_recursive(
-                    self.library, output_url, symbol_path, child, h_level + 1,
+                    parser_config, output_url, symbol_path, child, h_level + 1,
                     all_symbols))
             tree.add_siblings_ahead(new_siblings)
 
@@ -127,7 +131,7 @@ def get_symbol_at_path(root, path):
     return _get_symbol_at_path(root, parts[1:])
 
 
-def _get_symbol_node(library, output_url, path, symbol, h_level=2, full_path=True):
+def _get_symbol_node(parser_config, output_url, path, symbol, h_level=2, full_path=True):
     output_path = output_url + symbol.relative_path + ".html"
     if symbol.line_number:
         output_path += '#{}'.format(symbol.line_number)
@@ -170,7 +174,7 @@ def _get_symbol_node(library, output_url, path, symbol, h_level=2, full_path=Tru
 
     if symbol.docstring:
         css_class = 'autodoc-{}-docstring-body'.format(symbol.type)
-        docstring_children = cfm_to_cwdom(symbol.docstring, library.get_allowed_tags())
+        docstring_children = cfm_to_cwdom(symbol.docstring, parser_config)
         children.append(CWTagNode(
             'div', {'class': css_class}, children=docstring_children))
     node = CWTagNode(
@@ -179,17 +183,17 @@ def _get_symbol_node(library, output_url, path, symbol, h_level=2, full_path=Tru
     return node
 
 
-def _get_symbol_nodes_recursive(library, output_url, parent_path, symbol, h_level, all_symbols):
+def _get_symbol_nodes_recursive(parser_config, output_url, parent_path, symbol, h_level, all_symbols):
     if symbol.name.startswith('_') and symbol.name != '__init__':
         return
     if not symbol.docstring:
         return
     path = parent_path + '.' + symbol.name
     all_symbols.add(symbol)
-    yield _get_symbol_node(library, output_url, path, symbol, h_level, full_path=False)
+    yield _get_symbol_node(parser_config, output_url, path, symbol, h_level, full_path=False)
     for child in symbol.children:
         yield from _get_symbol_nodes_recursive(
-            library, output_url, path, child, h_level + 1, all_symbols)
+            parser_config, output_url, path, child, h_level + 1, all_symbols)
 
 
 def _write_linkable_src(src_f, dest_f, name):

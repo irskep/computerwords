@@ -4,24 +4,27 @@ from collections import OrderedDict
 
 import CommonMark
 
+from . import CFMParserConfig
 from computerwords.cwdom.nodes import *
 from .html_lexer import lex_html
 from .html_parser import (
     parse_open_tag,
     parse_close_tag,
     parse_self_closing_tag,
+    parse_tag,
 )
 
 ### begin __init__.py ###
 
 from .html_parser import parse_html
 
-def lex_and_parse_html(string, allowed_tags):
-    return parse_html(list(lex_html(string)), allowed_tags=allowed_tags)
+def lex_and_parse_html(string, config):
+    return parse_html(list(lex_html(string)), config=config)
 
 
 def html_string_to_cwdom(string, config):
-    return parse_tree_to_cwdom(lex_and_parse_html(string, config), config)
+    return parse_tree_to_cwdom(
+        lex_and_parse_html(string, config), config)
 
 ### end __init__.py ###
 
@@ -153,11 +156,11 @@ def t_HtmlBlock(ast_node, config):
         items = list(html_string_to_cwdom(ast_node.literal, config))
         yield from items
     except ParseError:
-        yield from _do_your_best(ast_node.literal)
+        yield from _do_your_best(ast_node.literal, config)
 
 @t('HtmlInline')
 def t_HtmlInline(ast_node, config):
-    yield from _do_your_best(ast_node.literal)
+    yield from _do_your_best(ast_node.literal, config)
 
 @t('Emph')
 def t_Emph(ast_node, config):
@@ -207,22 +210,29 @@ def post_Image(node, config):
 class NonFatalParseError(Exception): pass
 
 
-def _do_your_best(literal):
+def _do_your_best(literal, config):
     try:
-        yield from maybe_parse_self_closing_tag(literal)
+        result = maybe_parse_everything(literal, config)
+        if result:
+            return result
+    except NonFatalParseError:
+        pass
+
+    try:
+        yield from maybe_parse_self_closing_tag(literal, config)
         return
     except NonFatalParseError:
         pass
 
     try:
-        yield from maybe_parse_open_tag(literal)
+        yield from maybe_parse_open_tag(literal, config)
         return
     except NonFatalParseError:
         pass
 
 
     try:
-        yield from maybe_parse_close_tag(literal)
+        yield from maybe_parse_close_tag(literal, config)
         return
     except NonFatalParseError:
         pass
@@ -236,9 +246,16 @@ def _yield_nodes(literal, tokens, i, node):
         yield CWTextNode(literal[tokens[i].pos:])
 
 
-def maybe_parse_self_closing_tag(literal):
+def maybe_parse_everything(literal, config):
+    try:
+        result = html_string_to_cwdom(literal, config)
+    except ParseError:
+        raise NonFatalParseError()
+
+
+def maybe_parse_self_closing_tag(literal, config):
     tokens = list(lex_html(literal))
-    result = parse_self_closing_tag(tokens)
+    result = parse_self_closing_tag(tokens, config)
     if result:
         yield from _yield_nodes(literal, tokens, result[1], CWTagNode(
             result[0].tag_contents.bbword.value,
@@ -247,9 +264,9 @@ def maybe_parse_self_closing_tag(literal):
         raise NonFatalParseError()
 
 
-def maybe_parse_open_tag(literal):
+def maybe_parse_open_tag(literal, config):
     tokens = list(lex_html(literal))
-    result = parse_open_tag(tokens)
+    result = parse_open_tag(tokens, config)
     if result:
         yield from _yield_nodes(
             literal, tokens, result[1], UnparsedOpenTagNode(result[0], literal))
@@ -257,9 +274,9 @@ def maybe_parse_open_tag(literal):
         raise NonFatalParseError()
 
 
-def maybe_parse_close_tag(literal):
+def maybe_parse_close_tag(literal, config):
     tokens = list(lex_html(literal))
-    result = parse_close_tag(tokens)
+    result = parse_close_tag(tokens, config)
     if result:
         yield from _yield_nodes(
             literal, tokens, result[1], UnparsedCloseTagNode(result[0], literal))
@@ -270,7 +287,7 @@ def maybe_parse_close_tag(literal):
 class NoMatchingTagError(Exception): pass
 
 
-def fix_ignored_html(node):
+def fix_ignored_html(node, strict=False):
     children = node.children
     left_i = None
     new_tag = None
@@ -285,10 +302,15 @@ def fix_ignored_html(node):
 
     if new_tag is not None:
         right_i = None
+        abort = False
         for i, child in reversed(list(enumerate(children))):
             if i <= left_i:
-                raise NoMatchingTagError("Matching tag not found for {}".format(
-                    new_tag.name))
+                if strict:
+                    raise NoMatchingTagError(
+                        "Matching tag not found for {}".format(new_tag.name))
+                else:
+                    abort = True
+                break
             if isinstance(child, UnparsedCloseTagNode):
                 tag_name = child.parse_tree.bbword.value
                 if tag_name != new_tag.name:
@@ -297,11 +319,18 @@ def fix_ignored_html(node):
                 right_i = i
                 break
 
-        sub_children = children[left_i+1:right_i]
-        del node.children[left_i+1:right_i+1]
-        node.children[left_i] = new_tag
-        new_tag.set_children(sub_children)
-        node.claim_children()
+        if abort:
+            literal = children[left_i].literal
+            log.warning(
+                "Error parsing {!r} in {}; emitting escaped text instead".format(
+                    literal, node.document_id))
+            node.replace_child(left_i, CWTextNode(literal))
+        else:
+            sub_children = children[left_i+1:right_i]
+            del node.children[left_i+1:right_i+1]
+            node.children[left_i] = new_tag
+            new_tag.set_children(sub_children)
+            node.claim_children()
 
     for child in node.children:
         fix_ignored_html(child)
@@ -348,10 +377,12 @@ def _replace_lone_p(nodes):
 def commonmark_to_cwdom(text, config, fix_tags=True):
     parser = CommonMark.blocks.Parser()
     doc_node = list(_ast_node_to_cwdom(parser.parse(text), config))[0]
+    doc_node.deep_set_document_id(config.document_id)
     if fix_tags:
         fix_ignored_html(doc_node)
     return _replace_lone_p(doc_node.children)
 
 
 def cfm_to_cwdom(text, config, fix_tags=True):
+    assert(isinstance(config, CFMParserConfig))
     return commonmark_to_cwdom(text, config, fix_tags)
