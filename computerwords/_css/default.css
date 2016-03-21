@@ -153,15 +153,21 @@ aside.note-warning::before, aside.note-note::before {
   font-weight: bold;
   display: block;
 }
+aside.note-warning > p:first-child, aside.note-note > p:first-child {
+  margin-top: 0;
+}
+aside.note-warning > p:last-child, aside.note-note > p:last-child {
+  margin-bottom: 0;
+}
 
 aside.note-warning {
   background-color: #fff8f8;
   border: 1px solid #faaaaa;
 }
 aside.note-warning.note-auto-prefix::before {
-  content: "Warning: ";
+  content: "Warning";
 }
 
 aside.note-note.note-auto-prefix::before {
-  content: "Note: ";
+  content: "Note";
 }

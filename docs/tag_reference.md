@@ -52,6 +52,13 @@ You can call out a note or a warning using—wait for it—`<note>` and
 `<warning>`. Use `no-prefix=true` to omit the automatic first line of bold
 text.
 
+<warning>If you want to put multiple paragraphs in an aside, you need to put
+the opening and closing tags in their own paragraphs. See the
+[parser bugs](computer_flavored_markdown.html#The-parser-has-bugs) section.
+</warning>
+
+### Example 1
+
 ```md
 <note>This is a note.</note>
 
@@ -62,9 +69,27 @@ This is another note.
 
 <note>This is a note.</note>
 
+### Example 2
+
+```md
 <note no-prefix=true>
-This is another note.
+
+**Another note**
+
+This is a multi-paragraph note with a custom first line.
+
 </note>
+```
+
+<note no-prefix=true>
+
+**Another note**
+
+This is a multi-paragraph note with a custom first line.
+
+</note>
+
+### Example 3
 
 ```md
 <warning>This is a warning.</warning>

@@ -58,8 +58,22 @@ The means by which this happens is described later.
 
 ## The parser has bugs
 
-You cannot put multiple paragraphs inside tags. For example, while this looks
-totally reasonable, it does not work:
+If you want to put multiple paragraphs inside a tag, the opening and closing
+tags must be in their own lines.
+
+**This works:** 
+
+```markdown
+<warning>
+
+First paragraph of warning.
+
+Second paragraph of warning.
+
+</warning>
+```
+
+**This does not work:** 
 
 ```markdown
 <warning>
