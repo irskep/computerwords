@@ -27,7 +27,7 @@ This is a [paragraph](https://en.wikipedia.org/wiki/Paragraph)
 <span class="k">&gt; </span>blockquote
 <span class="k">&gt; </span>blah blah
 </pre></div>
-</figure><a href="#Extensible-HTML-tags" name="Extensible-HTML-tags" class='header-anchor'><h2>Extensible HTML tags</h2></a><p>In normal Markdown, whenever you write inline HTML, it&#x27;s passed through to the output verbatim. But in Computer Flavored Markdown, it&#x27;s parsed and can be transformed during compilation.</p><p>Take for example, the <tt>&lt;table-of-contents /&gt;</tt> tag. This is not an HTML tag, but it has meaning in Computer Words. If you write this:</p><figure class='code'><div class="highlight"><pre><span></span><span class="cp">&lt;table-of-contents /&gt;</span>
+</figure><a href="#Extensible-HTML-tags" name="Extensible-HTML-tags" class='header-anchor'><h2>Extensible HTML tags</h2></a><p>In normal Markdown, whenever you write inline HTML, it&#x27;s passed through to the output verbatim. But in Computer Flavored Markdown, it&#x27;s parsed and can be transformed during compilation.</p><p>Take for example, the <code>&lt;table-of-contents /&gt;</code> tag. This is not an HTML tag, but it has meaning in Computer Words. If you write this:</p><figure class='code'><div class="highlight"><pre><span></span><span class="cp">&lt;table-of-contents /&gt;</span>
 
 <span class="cp"># Heading 1</span>
 
@@ -69,7 +69,7 @@ This is a [paragraph](https://en.wikipedia.org/wiki/Paragraph)
 </pre></div>
 </figure><p>If you want to use angle brackets, for now you&#x27;ll have to escape them.</p><figure class='code'><div class="highlight"><pre><span></span>This will <span class="se">\&lt;</span>succeed<span class="se">\&gt;</span>
 </pre></div>
-</figure><p>&lt;yay!&gt;</p><a href="#Tags-must-have-explicit-open-close-or-be-self-closing" name="Tags-must-have-explicit-open-close-or-be-self-closing" class='header-anchor'><h2>Tags must have explicit open/close or be self-closing</h2></a><p>Any time you use a tag, it needs to either be of the form <tt>&lt;my-tag&gt;contents&lt;/my-tag&gt;</tt> or <tt>&lt;my-tag /&gt;</tt>. Using <tt>&lt;my-tag&gt;</tt> by itself will result in an error.</p></article></main>
+</figure><p>&lt;yay!&gt;</p><a href="#Tags-must-have-explicit-open-close-or-be-self-closing" name="Tags-must-have-explicit-open-close-or-be-self-closing" class='header-anchor'><h2>Tags must have explicit open/close or be self-closing</h2></a><p>Any time you use a tag, it needs to either be of the form <code>&lt;my-tag&gt;contents&lt;/my-tag&gt;</code> or <code>&lt;my-tag /&gt;</code>. Using <code>&lt;my-tag&gt;</code> by itself will result in an error.</p></article></main>
         <footer id="pagefooter"><nav class='previous-page'><a href="index.html">&larr; Basics</a></nav><nav class='next-page'><a href="configuration.html">Configuration &rarr;</a></nav><div style="clear: both;"></div></footer>
     </body>
 </html>
