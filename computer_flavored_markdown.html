@@ -46,7 +46,13 @@ This is a [paragraph](https://en.wikipedia.org/wiki/Paragraph)
 <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Heading 1<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span>Subheading 1<span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
 </pre></div>
-</figure><p>The means by which this happens is described later.</p><a href="#The-parser-has-bugs" name="The-parser-has-bugs" class='header-anchor'><h2>The parser has bugs</h2></a><p>This works:</p><figure class='code'><div class="highlight"><pre><span></span><span class="cp">&lt;x&gt;</span>
+</figure><p>The means by which this happens is described later.</p><a href="#The-parser-has-bugs" name="The-parser-has-bugs" class='header-anchor'><h2>The parser has bugs</h2></a><p>You cannot put multiple paragraphs inside tags. For example, while this looks totally reasonable, it does not work:</p><figure class='code'><div class="highlight"><pre><span></span><span class="cp">&lt;warning&gt;</span>
+<span class="cp">First paragraph of warning.</span>
+
+<span class="cp">Second paragraph of warning.</span>
+<span class="cp">&lt;/warning&gt;</span>
+</pre></div>
+</figure><p>There are also more bugs. This works:</p><figure class='code'><div class="highlight"><pre><span></span><span class="cp">&lt;x&gt;</span>
 
 <span class="cp">Blah blah blah</span>
 
