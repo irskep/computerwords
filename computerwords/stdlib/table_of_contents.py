@@ -7,7 +7,7 @@ from computerwords.cwdom.nodes import (
     CWTagNode,
     CWTextNode,
 )
-from computerwords.cwdom.traversal import iterate_ancestors
+from computerwords.cwdom.traversal import iterate_ancestors, preorder_traversal
 
 
 log = logging.getLogger(__name__)
@@ -20,6 +20,13 @@ TOCEntry = namedtuple('TOCEntry', ['level', 'heading_node', 'ref_id'])
 
 
 ### helpers ###
+
+
+def _debug_print(entry_and_children, i=0):
+    (entry, children) = entry_and_children
+    print('  ' * i, entry.level, entry.heading_node)
+    for child in children:
+        _debug_print(child, i + 2)
 
 
 def _add_toc_data_if_not_exists(tree):
@@ -87,6 +94,16 @@ def _preorder_traversal_of_nested_list(entries):
             yield from _preorder_traversal_of_nested_list(children)
 
 
+def _deep_set_toc_entry(node):
+    if 'toc_entry' in node.data:
+        return
+    for child in node.children:
+        _deep_set_toc_entry(child)
+        if 'toc_entry' in child.data:
+            node.data['toc_entry'] = child.data['toc_entry']
+            break
+
+
 def add_table_of_contents(library):
     """
     Collects all `h1`, `h2`, etc. tags in a tree, which
@@ -134,21 +151,27 @@ def add_table_of_contents(library):
         # associate this entry with both nodes for convenience
         node.data['toc_entry'] = entry
 
+        # TODO: mark dirty automatically if in second pass!
+        tree.mark_node_dirty(anchor)
+
         for parent in iterate_ancestors(node):
             if isinstance(parent, CWDocumentNode):
+                tree.mark_node_dirty(parent)
                 break
-            parent.data['toc_entry'] = entry
-
-        tree.mark_ancestors_dirty(node)
 
     @library.processor('Document')
     def process_document(tree, node):
         _add_toc_data_if_not_exists(tree)
-        node.data['toc_entries'] = [
-            child.data['toc_entry']
-            for child in node.children
-            if 'toc_entry' in child.data
-        ]
+        node.data['toc_entries'] = []
+        ref_ids = set()
+        for _node in preorder_traversal(node):
+            if 'toc_entry' in _node.data:
+                entry = _node.data['toc_entry']
+                if entry.ref_id in ref_ids:
+                    continue
+                ref_ids.add(entry.ref_id)
+                node.data['toc_entries'].append(entry)
+        tree.mark_node_dirty(node.get_parent())
 
     @library.processor(TOC_TAG_NAME)
     def process_toc(tree, node):

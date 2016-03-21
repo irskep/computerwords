@@ -1,11 +1,11 @@
 """
-## Writing a plugin for Computer Words
+### Writing a plugin for Computer Words
 
 Summary: write a class inheriting from `computerwords.plugin.CWPlugin`,
 put it in a module accessible in `PYTHONPATH`, and add it to a list of
 module paths under the `"plugins"` key in your config file.
 
-### 1. Inherit from `CWPlugin`
+#### 1. Inherit from `CWPlugin`
 
 ```python
 from computerwords.cwdom.nodes import CWTagNode, CWTextNode
@@ -43,7 +43,7 @@ class MyPlugin(CWPlugin):
                     [CWTextNode('Under Construction')]))
 ```
 
-### 2. Put your plugin in `PYTHONPATH`
+#### 2. Put your plugin in `PYTHONPATH`
 
 You can either install your plugin as a package or just add
 `PYTHONPATH=$PYTHONPATH:$PATH_TO_MODULE_DIR` in front of your invocation of
@@ -56,7 +56,7 @@ PYTHONPATH=$PYTHONPATH:./plugins \\
         --conf docs/conf.json
 ```
 
-### 3. Add your plugin to the config file
+#### 3. Add your plugin to the config file
 
 ```json
 {
