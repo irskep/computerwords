@@ -1,12 +1,9 @@
-# Missing features & roadmap
+# Roadmap
 
-## Obvious missing features
+Roughly in order of planned implementation:
 
-* Tag reference documentation
-* Cross-referencing sections without having to repeat the full name
-* Reasonable error messages (do you like 50 line stack traces???)
+1. Semantic linking features. Manually writing out hrefs is error prone and
+   annoying.
+2. Robust parsing.
+3. Reasonable error messages.
 
-## Planned features
-
-* External plugin loading
-* Plugin API documentation
