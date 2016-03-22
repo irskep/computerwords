@@ -13,7 +13,7 @@
         <header id="pageheader">
             <a class="header-link" href="index.html"><h1>Computer Words <span class="project-version">v1.0a1</span></h1></a>
             <h2>A system for writing and publishing documentation</h2>
-            <div id="navheader"><nav class='previous-page'><a href="index.html">&larr; Basics</a></nav><nav class='next-page'><a href="configuration.html">Configuration &rarr;</a></nav><div style="clear: both;"></div></div>
+            <div id="navheader"><nav class='previous-page'><a href="about.html">&larr; About</a></nav><nav class='next-page'><a href="configuration.html">Configuration &rarr;</a></nav><div style="clear: both;"></div></div>
             <hr>
         </header>
         <main id="pagebody"><article><a name='computer-flavored-markdown'></a><a href="#Computer-Flavored-Markdown" name="Computer-Flavored-Markdown" class='header-anchor'><h1>Computer Flavored Markdown</h1></a><a href="#CommonMark" name="CommonMark" class='header-anchor'><h2>CommonMark</h2></a><p>The biggest part of Computer Flavored Markdown is Markdown. Specifically, CFM is mostly just <a href='http://commonmark.org/help/'>CommonMark</a>. So this all works:</p><figure class='code'><div class="highlight"><pre><span></span><span class="k"># </span><span class="gh">Title</span>
@@ -74,6 +74,6 @@ This is a [paragraph](https://en.wikipedia.org/wiki/Paragraph)
 <span class="cp">Blah blah blah&lt;/x&gt;</span>
 </pre></div>
 </figure><p>This is because I have bolted a CommonMark parser, which doesn&#x27;t really understand HTML, to an HTML parser of my own design. I&#x27;m still working out the bugs. You should still be able to express anything if you mess with the line breaks a little.</p><a href="#The-parser-is-too-picky" name="The-parser-is-too-picky" class='header-anchor'><h3>The parser is too picky</h3></a><p>If you try to use your Github Flavored Markdown files, a lot of them won&#x27;t work because Computer Flavored Markdown throws errors in too many cases instead of passing strings through verbatim when it can&#x27;t parse them.</p><p>If you have a good example of this, please open a ticket on GitHub.</p><a href="#Tags-must-have-explicit-open-close-or-be-self-closing" name="Tags-must-have-explicit-open-close-or-be-self-closing" class='header-anchor'><h3>Tags must have explicit open/close or be self-closing</h3></a><p>Any time you use a tag, it needs to either be of the form <code>&lt;my-tag&gt;contents&lt;/my-tag&gt;</code> or <code>&lt;my-tag /&gt;</code>. Using <code>&lt;my-tag&gt;</code> by itself will result in an error.</p><a href="#The-error-messages-are-crap" name="The-error-messages-are-crap" class='header-anchor'><h3>The error messages are crap</h3></a><p>Computer Words doesn&#x27;t know how to tell you what file your problem is in yet.</p></article></main>
-        <footer id="pagefooter"><nav class='previous-page'><a href="index.html">&larr; Basics</a></nav><nav class='next-page'><a href="configuration.html">Configuration &rarr;</a></nav><div style="clear: both;"></div></footer>
+        <footer id="pagefooter"><nav class='previous-page'><a href="about.html">&larr; About</a></nav><nav class='next-page'><a href="configuration.html">Configuration &rarr;</a></nav><div style="clear: both;"></div></footer>
     </body>
 </html>
