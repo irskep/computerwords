@@ -152,9 +152,10 @@ nav.table-of-contents .autodoc-source-link {
 .callout {
   padding: 0.5rem;
 }
-.callout::before {
+.callout.callout-auto-prefix::before {
   font-weight: bold;
   display: block;
+  margin-bottom: 1rem;
 }
 .callout > p:first-child {
   margin-top: 0;
@@ -167,10 +168,10 @@ nav.table-of-contents .autodoc-source-link {
   background-color: #fff8f8;
   border: 1px solid #faaaaa;
 }
-.callout.warning::before {
+.callout.warning.callout-auto-prefix::before {
   content: "Warning";
 }
 
-.callout.note::before {
+.callout.note.callout-auto-prefix::before {
   content: "Note";
 }

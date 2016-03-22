@@ -9,9 +9,8 @@ Note: JSON cannot contain comments, so this isn't copy-pasteable.
 
 ```js
 {
-  /* Include all Markdown files in this directory,
-     ordered alphabetically, but with index.md first
-     if present */
+  // Include all Markdown files in this directory, ordered
+  // alphabetically, but with index.md first if present
   "file_hierarchy": ["*.md"],
 
   // Name of the project or web site
@@ -54,7 +53,12 @@ Note: JSON cannot contain comments, so this isn't copy-pasteable.
     //    MODULE_DIR MODULE_NAME
     //    > path/to/symbols.json
     "symbols_path": "symbols.json",
-  }
+  },
+
+  // Plugins available in $PYTHONPATH
+  "plugins": [
+    "blah.my_cw_plugin"
+  ]
 }
 ```
 

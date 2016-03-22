@@ -73,7 +73,7 @@ def doc_id_to_single_page_anchor_name(doc_id):
 def html_attrs_to_string(kwargs):
     args_str_items = []
     for k, v in kwargs.items():
-        # TODO: escape the value properly
+        # TODO: escape the value properly?
         args_str_items.append(" {}='{}'".format(k, v))
     return ''.join(args_str_items)
 

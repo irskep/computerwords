@@ -6,13 +6,7 @@ The following tags should be usable just as they are in regular HTML:
 
 <html-enumerate-all-tags />
 
-(The list may not be complete because I wrote the list from memory and haven't
-yet compared it to the spec.)
-
-Since Computer Words's default template and HTML writer make use of
-`main`, `header`, `footer`, and `article`, you may want to avoid using those
-tags. If you find yourself writing plugins, you might find a good use for
-`figure`.
+Attributes are passed through verbatim and not checked.
 
 ## Table of contents
 
@@ -21,7 +15,8 @@ It accepts a `maxdepth` attribute which can set a maximum number of levels
 to output.
 
 ```html
-<table-of-contents maxdepth=2 />  <!-- only show 2 levels deep -->
+<!-- only show 2 levels deep -->
+<table-of-contents maxdepth=2 />
 ```
 
 The table of contents takes the top level of its hierarchy from your config
@@ -59,7 +54,7 @@ the opening and closing tags in their own paragraphs. See the
 
 ### Example 1
 
-```md
+```html
 <note>This is a note.</note>
 
 <note no-prefix=true>
@@ -71,7 +66,7 @@ This is another note.
 
 ### Example 2
 
-```md
+```html
 <note no-prefix=true>
 
 **Another note**
@@ -91,7 +86,7 @@ This is a multi-paragraph note with a custom first line.
 
 ### Example 3
 
-```md
+```html
 <warning>This is a warning.</warning>
 ```
 
@@ -103,7 +98,8 @@ Computer Words supports including documentation from *symbol files*. These
 can be generated for Python 3.5 like this:
 
 ```sh
-python3 -m computerwords.source_parsers.python35 . mymodule > docs/symbols.json
+python3 -m computerwords.source_parsers.python35 . mymodule \
+  > docs/symbols.json
 ```
 
 Then tell Computer Words where to find the symbol file in your config like
