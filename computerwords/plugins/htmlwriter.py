@@ -13,6 +13,7 @@ class HTMLWriterPlugin(CWPlugin):
     def get_default_config(self):
         return {
             "site_url": "/",
+            "project_version": None,
             "css_files": None,
             "css_theme": "default",
             "static_dir_name": "static",

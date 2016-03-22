@@ -79,6 +79,11 @@ def write_document(config, options, output_dir, library, tree, document_node):
             ctx['page_title'] = tree.subtree_to_text(node)
             break
 
+    ctx['site_title_with_version'] = (
+        ctx['site_title'] if ctx['project_version'] is None else
+        '{} <span class="project-version">{}</span>'.format(
+            ctx['site_title'], ctx['project_version'] ))
+
     with SINGLE_PAGE_TEMPLATE_PATH.open('r') as template_stream:
         with output_path.open('w') as output_stream:
             output_stream.write(template_stream.read().format(
@@ -100,6 +105,13 @@ def write_single_page(config, options, output_dir, library, tree):
 
     output_path = output_dir / "index.html"
     output_path.touch()
+
+    ctx = {k: v for k, v in config.items()}
+    ctx['site_title_with_version'] = (
+        ctx['site_title'] if ctx['project_version'] is None else
+        '{} <span class="project-version">{}</span>'.format(
+            ctx['site_title'], ctx['project_version'] ))
+
     with SINGLE_PAGE_TEMPLATE_PATH.open('r') as template_stream:
         with output_path.open('w') as output_stream:
             output_stream.write(template_stream.read().format(
@@ -107,7 +119,7 @@ def write_single_page(config, options, output_dir, library, tree):
                 stylesheet_tags="".join(options.stylesheet_tag_strings),
                 body=body,
                 html_options=options,
-                **config,
+                **ctx,
             ))
 
 
