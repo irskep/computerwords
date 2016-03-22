@@ -13,26 +13,26 @@
         <header id="pageheader">
             <a class="header-link" href="index.html"><h1>Computer Words</h1></a>
             <h2>A system for writing and publishing documentation</h2>
-            <div id="navheader"><nav class='previous-page'><a href="tag_reference.html">&larr; Tag reference</a></nav><nav class='next-page'><a href="how_it_works.html">How it works &rarr;</a></nav><div style="clear: both;"></div></div>
+            <div id="navheader"><nav class='previous-page'><a href="tag_reference.html">&larr; Tag reference</a></nav><nav class='next-page'><a href="about.html">Conceptual information &rarr;</a></nav><div style="clear: both;"></div></div>
             <hr>
         </header>
-        <main id="pagebody"><article><a href="#Code-Blocks" name="Code-Blocks" class='header-anchor'><h1>Code Blocks</h1></a><p>Just like most Markdown implementations, you can do syntax-highlighted code blocks:</p><pre language='None'>```python filename=myfunc.py
+        <main id="pagebody"><article><a href="#Code-Blocks" name="Code-Blocks" class='header-anchor'><h1>Code Blocks</h1></a><p>Just like most Markdown implementations, you can do syntax-highlighted code blocks:</p><figure class='code'><pre class='raw'>```python filename=myfunc.py
 def some_func():
     print(&quot;hello!&quot;)
 ```
-</pre><figure class='code'><figcaption class='filename'>myfunc.py</figcaption><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">some_func</span><span class="p">():</span>
+</pre></figure><figure class='code'><figcaption class='filename'>myfunc.py</figcaption><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">some_func</span><span class="p">():</span>
     <span class="k">print</span><span class="p">(</span><span class="s2">&quot;hello!&quot;</span><span class="p">)</span>
 </pre></div>
-</figure><p>And if you wonder how I just inserted three backticks in a code block (when code blocks are typically terminated by three backticks), I remind you that indenting a block 4 spaces serves the same purpose, without syntax highlighting:</p><pre language='None'>Just like most Markdown implementations, you can do syntax-highlighted
+</figure><p>And if you wonder how I just inserted three backticks in a code block (when code blocks are typically terminated by three backticks), I remind you that indenting a block 4 spaces serves the same purpose, without syntax highlighting:</p><figure class='code'><pre class='raw'>Just like most Markdown implementations, you can do syntax-highlighted
 code blocks:
 
     ```python filename=myfunc.py
     def some_func():
         print(&quot;hello!&quot;)
     ```
-</pre><a href="#Supported-languages" name="Supported-languages" class='header-anchor'><h2>Supported languages</h2></a><p>Computer Words supports any languages that the installed version of <a href='http://pygments.org/'>Pygments</a> supports.</p><a href="#Extras-file-names" name="Extras-file-names" class='header-anchor'><h2>Extras: file names</h2></a><p>As you may have noticed above, Computer Words extends the syntax of traditional Markdown code blocks by allowing attributes after the language name. Specifically, it supports one attribute, <code>filename</code>, which adds a line at the top of the code block.</p><p>Note: the attributes are parsed using a short, hacky function, not a proper parser, so the attribute&#x27;s value must be an unquoted string with no spaces. This might be improved in the future but for now it pretty much works.</p><figure class='code'><figcaption class='filename'>logSomething.js</figcaption><div class="highlight"><pre><span></span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Hello&quot;</span><span class="p">);</span>
+</pre></figure><a href="#Supported-languages" name="Supported-languages" class='header-anchor'><h2>Supported languages</h2></a><p>Computer Words supports any languages that the installed version of <a href='http://pygments.org/'>Pygments</a> supports.</p><a href="#Extras-file-names" name="Extras-file-names" class='header-anchor'><h2>Extras: file names</h2></a><p>As you may have noticed above, Computer Words extends the syntax of traditional Markdown code blocks by allowing attributes after the language name. Specifically, it supports one attribute, <code>filename</code>, which adds a line at the top of the code block.</p><p>Note: the attributes are parsed using a short, hacky function, not a proper parser, so the attribute&#x27;s value must be an unquoted string with no spaces. This might be improved in the future but for now it pretty much works.</p><figure class='code'><figcaption class='filename'>logSomething.js</figcaption><div class="highlight"><pre><span></span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Hello&quot;</span><span class="p">);</span>
 </pre></div>
-</figure><a href="#Extras-graphviz-rendering" name="Extras-graphviz-rendering" class='header-anchor'><h2>Extras: graphviz rendering</h2></a><p>If you set the language to <code>graphviz-dot-convert</code>, and you have <a href='http://www.graphviz.org/'>Graphviz</a> installed, then Computer Words will render the contents to an SVG and insert the result. This site&#x27;s own <a href='how_it_works.html'>How it works</a> page uses it to show diagrams.</p><figure class='image graphviz-graph'><img src='13348fa022bbcb567ed7fd22ce750e988252078deacf680386705d7308582738.svg'></img></figure><pre language='None'>```graphviz-dot-convert
+</figure><a href="#Extras-graphviz-rendering" name="Extras-graphviz-rendering" class='header-anchor'><h2>Extras: graphviz rendering</h2></a><p>If you set the language to <code>graphviz-dot-convert</code>, and you have <a href='http://www.graphviz.org/'>Graphviz</a> installed, then Computer Words will render the contents to an SVG and insert the result. This site&#x27;s own <a href='how_it_works.html'>How it works</a> page uses it to show diagrams.</p><figure class='image graphviz-graph'><img src='13348fa022bbcb567ed7fd22ce750e988252078deacf680386705d7308582738.svg'></img></figure><figure class='code'><pre class='raw'>```graphviz-dot-convert
 strict digraph {
     rankdir=&quot;LR&quot;;
     node [fontname=&quot;Helvetica&quot; fontsize=10 shape=&quot;box&quot;];
@@ -49,10 +49,10 @@ strict digraph {
     p -&gt; BodyText
 }
 ```
-</pre><p>There&#x27;s also a &quot;simple&quot; version that you can use like this:</p><pre language='None'>```graphviz-simple
+</pre></figure><p>There&#x27;s also a &quot;simple&quot; version that you can use like this:</p><figure class='code'><pre class='raw'>```graphviz-simple
 A -&gt; B -&gt; C; B -&gt; D;
 ```
-</pre><figure class='image graphviz-graph'><img src='6eb8a36b24b0c2c0c264432f84e3cc598c25113bd143fe2287047a53422cb546.svg'></img></figure></article></main>
-        <footer id="pagefooter"><nav class='previous-page'><a href="tag_reference.html">&larr; Tag reference</a></nav><nav class='next-page'><a href="how_it_works.html">How it works &rarr;</a></nav><div style="clear: both;"></div></footer>
+</pre></figure><figure class='image graphviz-graph'><img src='6eb8a36b24b0c2c0c264432f84e3cc598c25113bd143fe2287047a53422cb546.svg'></img></figure></article></main>
+        <footer id="pagefooter"><nav class='previous-page'><a href="tag_reference.html">&larr; Tag reference</a></nav><nav class='next-page'><a href="about.html">Conceptual information &rarr;</a></nav><div style="clear: both;"></div></footer>
     </body>
 </html>

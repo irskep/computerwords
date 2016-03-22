@@ -17,9 +17,8 @@
             <hr>
         </header>
         <main id="pagebody"><article><a href="#Configuration" name="Configuration" class='header-anchor'><h1>Configuration</h1></a><p>All configuration lives in a JSON file that we&#x27;ll call <code>conf.json</code>. Every path is relative to the directory in which this file lives.</p><a href="#Complete-example" name="Complete-example" class='header-anchor'><h2>Complete example</h2></a><p>Note: JSON cannot contain comments, so this isn&#x27;t copy-pasteable.</p><figure class='code'><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="cm">/* Include all Markdown files in this directory,</span>
-<span class="cm">     ordered alphabetically, but with index.md first</span>
-<span class="cm">     if present */</span>
+  <span class="c1">// Include all Markdown files in this directory, ordered</span>
+  <span class="c1">// alphabetically, but with index.md first if present</span>
   <span class="s2">&quot;file_hierarchy&quot;</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;*.md&quot;</span><span class="p">],</span>
 
   <span class="c1">// Name of the project or web site</span>
@@ -62,7 +61,12 @@
     <span class="c1">//    MODULE_DIR MODULE_NAME</span>
     <span class="c1">//    &gt; path/to/symbols.json</span>
     <span class="s2">&quot;symbols_path&quot;</span><span class="o">:</span> <span class="s2">&quot;symbols.json&quot;</span><span class="p">,</span>
-  <span class="p">}</span>
+  <span class="p">},</span>
+
+  <span class="c1">// Plugins available in $PYTHONPATH</span>
+  <span class="s2">&quot;plugins&quot;</span><span class="o">:</span> <span class="p">[</span>
+    <span class="s2">&quot;blah.my_cw_plugin&quot;</span>
+  <span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </figure><a href="#Defining-table-of-contents-structure-with-file_hierarchy" name="Defining-table-of-contents-structure-with-file_hierarchy" class='header-anchor'><h2>Defining table of contents structure with <code>file_hierarchy</code></h2></a><p>The <code>file_hierarchy</code> option, in addition to collecting input files, determines the structure of the table of contents, and therefore the order in which the resulting documents are navigated.</p><p>The wording in this section might not be great. If something is confusing, please open a ticket.</p><a href="#Data-types" name="Data-types" class='header-anchor'><h3>Data types</h3></a><p>Each entry in <code>file_hierarchy</code> can be one of:</p><ul><li><p><code>string</code>: a relative path to a file (such as <code>&quot;index.md&quot;</code>) or a glob (such as `&quot;*.md&quot;)</p></li><li><p><code>list</code>: a list of strings specifying paths to be sorted together. For example, given files <code>a.txt</code>, <code>c.txt</code>, and <code>b.md</code>, the list <code>[&quot;*.txt&quot;, &quot;*.md&quot;]</code> would be expanded by Computer Words to <code>[&quot;a.txt&quot;, &quot;b.md&quot;, &quot;c.txt&quot;]</code>.</p></li><li><p><code>dict</code>: should have exactly one key, a file path. The value is a list of these data types.</p></li></ul><a href="#Sorting" name="Sorting" class='header-anchor'><h3>Sorting</h3></a><p>When you use a list and/or glob, multiple files often match. The order in which these files appear is based on two things:</p><ol><li><p>If two files are in the same directory and one file is called <code>&quot;index.*&quot;</code>, it will come before the other file.</p></li><li><p>Otherwise, sorting is alphabetical.</p></li></ol><a href="#Example-1-All-files-in-a-single-directory" name="Example-1-All-files-in-a-single-directory" class='header-anchor'><h3>Example 1: All files in a single directory</h3></a><p>You can use a single flat glob to collect every file in a directory.</p><figure class='code'><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;file_hierarchy&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;*.md&quot;</span><span class="p">]}</span>
