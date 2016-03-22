@@ -12,7 +12,7 @@ DEFAULT_CONFIG = {
     "plugins": [
         "computerwords.plugins.graphviz",
         "computerwords.plugins.htmlwriter",
-        "computerwords.plugins.notes",
+        "computerwords.plugins.callouts",
         "computerwords.plugins.pygments",
         "computerwords.plugins.python35",
     ],

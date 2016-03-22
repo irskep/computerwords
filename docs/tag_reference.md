@@ -46,7 +46,7 @@ The output looks like this:
 </nav>
 ```
 
-## Asides
+## Callouts
 
 You can call out a note or a warning using—wait for it—`<note>` and
 `<warning>`. Use `no-prefix=true` to omit the automatic first line of bold

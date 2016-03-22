@@ -13,10 +13,6 @@ with Computer Words.
 <warning>This is alpha-quality software. Most of it works very well, but be
 sure to read the parser caveats if you intend to really use it.</warning>
 
-<h1 skip_toc=True>Table of Contents</h1>
-
-<table-of-contents maxdepth=2 />
-
 # Basics
 
 ```sh
@@ -48,3 +44,7 @@ Hello world!
 ```
 
 The built docs are now in `docs/build/`.
+
+<h1 skip_toc=True>Table of Contents</h1>
+
+<table-of-contents maxdepth=2 />
