@@ -16,7 +16,7 @@ docs:
 	python3 -m computerwords --conf docs/conf.json
 
 watchdocs:
-	watch -n 0.2 make docs
+	./watchdocs.py
 
 docsdebug:
 	python3 -m computerwords --conf docs/conf.json --debug
