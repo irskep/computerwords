@@ -57,7 +57,9 @@ it will be transformed during compilation and rendered like this:
 
 The means by which this happens is described later.
 
-## The parser has bugs
+## Parser caveats
+
+### Bugs
 
 If you want to put multiple paragraphs inside a tag, the opening and closing
 tags must be in their own lines.
@@ -114,7 +116,7 @@ understand HTML, to an HTML parser of my own design. I'm still working out
 the bugs. You should still be able to express anything if you mess with the
 line breaks a little.
 
-## The parser is too picky
+### The parser is too picky
 
 If you try to use your Github Flavored Markdown files, a lot of them won't
 work because Computer Flavored Markdown throws errors in too many cases instead
@@ -122,12 +124,12 @@ of passing strings through verbatim when it can't parse them.
 
 If you have a good example of this, please open a ticket on GitHub.
 
-## Tags must have explicit open/close or be self-closing
+### Tags must have explicit open/close or be self-closing
 
 Any time you use a tag, it needs to either be of the form
 `<my-tag>contents</my-tag>` or `<my-tag />`. Using `<my-tag>` by itself
 will result in an error.
 
-## The error messages are crap
+### The error messages are crap
 
 Computer Words doesn't know how to tell you what file your problem is in yet.
