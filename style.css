@@ -50,6 +50,10 @@ nav.table-of-contents li:before {
 
 /* style tweaks */
 
+#pageheader h1 > .project-version {
+  font-size: 71%;
+}
+
 a {
   color: #04a;
 }
