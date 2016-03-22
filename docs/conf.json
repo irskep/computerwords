@@ -9,11 +9,11 @@
     },
     "file_hierarchy": [
         "index.md",
+        "about.md",
         "computer_flavored_markdown.md",
         "configuration.md",
         "tag_reference.md",
         "code_blocks.md",
-        "about.md",
         "roadmap.md",
         "related_work.md",
         "how_it_works.md",

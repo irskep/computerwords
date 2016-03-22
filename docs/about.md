@@ -1,8 +1,12 @@
-# Conceptual information
+# About
 
-## Why should I use this?
+## Your feedback is essential
 
-You probably shouldn't. It's not ready yet.
+Right now, the best way to leave feedback is to
+[open a ticket on GitHub](http://github.com/irskep/computerwords/issues)
+or comment on an existing thread. This project is in a “public preview” state
+because I want to find all the rough edges before committing to a proper
+release.
 
 ## Project Core Beliefs
 
@@ -13,7 +17,7 @@ You probably shouldn't. It's not ready yet.
    not require authors to constantly refer to syntax references or other
    meta-documentation.
 4. Since the documentation is for software, Computer Words should make it
-   easy to integrate with software. Plugins (custom tags) are a core feature.
+   easy to integrate with software. Plugins are a core feature.
 
 ## Value Proposition
 
@@ -21,13 +25,17 @@ You probably shouldn't. It's not ready yet.
 
 Markdown is the language of GitHub, BitBucket, and GitLab. Software developers
 write Markdown *all the time.* Since they already know Markdown, why should
-they learn a different language to write their documentation?
+they learn a different language to write their documentation, as long as it's
+sufficiently powerful?
 
 If you just write a bunch of Markdown files, you end up hosting your docs
-on a GitHub wiki or some similar abomination. There needs to be some kind of
-organizing power to bring it together.
+on a GitHub wiki or some similar abomination, giving up a lot of convenience
+and power. There needs to be some kind of organizing power to bring it
+together.
 
 ### HTML & CSS
+
+A web page should be more than a sea of `<div>` tags.
 
 The output uses semantic HTML5 markup. That's kind of nice.
 
@@ -43,7 +51,26 @@ to brand your documentation. You should do it.
 
 ### Simple and powerful plugin API
 
-This isn't really true until I document the API, but trust me...it's good.
+Computer Words has a plugin API that allows you to transform arbitrary nodes in
+arbitrary ways. You can implement plugins to replace text inline, collect
+information from one place and reformat it for display in another place, or
+insert content from external files.
+
+More importantly, you can use plugins other people have written!
+
+## Who should use this?
+
+* Documentation nerds. It's in a useable preview state, which means you can
+  see for yourself if the ideas have merit and contribute feedback.
+* Projects with an existing set of Markdown docs that happen to work with
+  the Computer Flavored Markdown parser. You should be able to set up the
+  project with a simple config file and see how it goes.
+
+## Who should *not* use this?
+
+* Anyone who wants a robust, battle-tested system with good error messages.
+* Projects already invested in Sphinx or another non-Markdown system they are
+  happy with.
 
 <a name="why-python-3.5" />
 ## Why Python 3.5?
@@ -53,7 +80,10 @@ Most importantly, because it is a pleasure to write. Computer Words uses
 
 But also, it forces us to treat earlier versions of Python as a *separate
 language*, which makes us more likely to write a better API to support
-non-Python-3.5 languages!
+non-Python-3.5 languages! And since the primary interface to Computer Words
+is an executable, it doesn't need to be maximally source-compatible with
+old versions of the language.
 
 I suspect the project runs fine under Python 3.4. But since few people even
-run Python 3, it might as well be written in OCaml.
+run Python 3, it might as well be written in OCaml, except where plugin
+authors are concerned.
