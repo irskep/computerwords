@@ -29,15 +29,23 @@
   <span class="p">&lt;/</span><span class="nt">ol</span><span class="p">&gt;</span>
 <span class="p">&lt;/</span><span class="nt">nav</span><span class="p">&gt;</span>
 </pre></div>
-</figure><a href="#Asides" name="Asides" class='header-anchor'><h2>Asides</h2></a><p>You can call out a note or a warning using—wait for it—<code>&lt;note&gt;</code> and <code>&lt;warning&gt;</code>. Use <code>no-prefix=true</code> to omit the automatic first line of bold text.</p><figure class='code'><div class="highlight"><pre><span></span>&lt;note&gt;This is a note.&lt;/note&gt;
+</figure><a href="#Callouts" name="Callouts" class='header-anchor'><h2>Callouts</h2></a><p>You can call out a note or a warning using—wait for it—<code>&lt;note&gt;</code> and <code>&lt;warning&gt;</code>. Use <code>no-prefix=true</code> to omit the automatic first line of bold text.</p><p><div class='callout warning note-auto-prefix'>If you want to put multiple paragraphs in an aside, you need to put the opening and closing tags in their own paragraphs. See the <a href='computer_flavored_markdown.html#The-parser-has-bugs'>parser bugs</a> section. </div></p><a href="#Example-1" name="Example-1" class='header-anchor'><h3>Example 1</h3></a><figure class='code'><div class="highlight"><pre><span></span>&lt;note&gt;This is a note.&lt;/note&gt;
 
 <span class="cp">&lt;note no-prefix=true&gt;</span>
 <span class="cp">This is another note.</span>
 <span class="cp">&lt;/note&gt;</span>
 </pre></div>
-</figure><p><aside class='note-note note-auto-prefix'>This is a note.</aside></p><aside class='note-note'>This is another note.</aside><figure class='code'><div class="highlight"><pre><span></span>&lt;warning&gt;This is a warning.&lt;/warning&gt;
+</figure><p><div class='callout note note-auto-prefix'>This is a note.</div></p><a href="#Example-2" name="Example-2" class='header-anchor'><h3>Example 2</h3></a><figure class='code'><div class="highlight"><pre><span></span><span class="cp">&lt;note no-prefix=true&gt;</span>
+
+<span class="cp">**Another note**</span>
+
+<span class="cp">This is a multi-paragraph note with a custom first line.</span>
+
+<span class="cp">&lt;/note&gt;</span>
 </pre></div>
-</figure><p><aside class='note-warning note-auto-prefix'>This is a warning.</aside></p><a href="#Python-documentation" name="Python-documentation" class='header-anchor'><h2>Python documentation</h2></a><p>Computer Words supports including documentation from <i>symbol files</i>. These can be generated for Python 3.5 like this:</p><figure class='code'><div class="highlight"><pre><span></span>python3 -m computerwords.source_parsers.python35 . mymodule &gt; docs/symbols.json
+</figure><div class='callout note'><p><strong>Another note</strong></p><p>This is a multi-paragraph note with a custom first line.</p></div><a href="#Example-3" name="Example-3" class='header-anchor'><h3>Example 3</h3></a><figure class='code'><div class="highlight"><pre><span></span>&lt;warning&gt;This is a warning.&lt;/warning&gt;
+</pre></div>
+</figure><p><div class='callout warning note-auto-prefix'>This is a warning.</div></p><a href="#Python-documentation" name="Python-documentation" class='header-anchor'><h2>Python documentation</h2></a><p>Computer Words supports including documentation from <i>symbol files</i>. These can be generated for Python 3.5 like this:</p><figure class='code'><div class="highlight"><pre><span></span>python3 -m computerwords.source_parsers.python35 . mymodule &gt; docs/symbols.json
 </pre></div>
 </figure><p>Then tell Computer Words where to find the symbol file in your config like this:</p><figure class='code'><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s2">&quot;python&quot;</span><span class="o">:</span> <span class="p">{</span>

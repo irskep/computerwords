@@ -85,12 +85,16 @@ nav.next-page {
 
 /* block-level semantic elements */
 
-figure.code, aside.note-note, aside.note-warning {
+figure, .callout {
+  margin: 1rem 0.5rem;
+}
+
+figure.code, .callout {
   border-radius: 3px;
   padding: 0.5rem;
 }
 
-figure.code, aside.note-note {
+figure.code, .callout.note {
   border: 1px solid #ddd;
   background-color: #fafafa;
 }
@@ -145,23 +149,28 @@ nav.table-of-contents .autodoc-source-link {
 
 /* notes plugin */
 
-aside.note-warning, aside.note-note {
-  margin: 1em 40px;
+.callout {
   padding: 0.5rem;
 }
-aside.note-warning::before, aside.note-note::before {
+.callout::before {
   font-weight: bold;
   display: block;
 }
+.callout > p:first-child {
+  margin-top: 0;
+}
+.callout > p:last-child {
+  margin-bottom: 0;
+}
 
-aside.note-warning {
+.callout.warning {
   background-color: #fff8f8;
   border: 1px solid #faaaaa;
 }
-aside.note-warning.note-auto-prefix::before {
-  content: "Warning: ";
+.callout.warning::before {
+  content: "Warning";
 }
 
-aside.note-note.note-auto-prefix::before {
-  content: "Note: ";
+.callout.note::before {
+  content: "Note";
 }
