@@ -85,4 +85,15 @@ Supported mutations are documented on
 
 ## Output
 
-The *html writer* walks the tree and writes HTML.
+Once the processors have been run until there are no more dirty nodes, it's
+time to do something with the complete tree.
+
+This is where a *writer* takes over. The job of a writer is to turn a
+`CWTree` into human-readable output of some kind.
+
+The only writer available right now is the HTML writer. It works by defining
+a *visitor* for each node name, where each visitor writes the opening tag,
+visits its children, and then writes the closing tag.
+
+Since few people will be writing writers, this is the least well documented
+part of Computer Words right now.

@@ -18,14 +18,19 @@ class CWTree:
     The `CWTree` class models the tree of all documents and their contents. It
     allows you to traverse the tree in various ways and mutate it during
     some types of traversal.
+
+    Properties:
+
+    * `root`: Root of the tree
+    * `env`: Dictionary containing information about how Computer Words
+      was invoked and configured. Contains keys `output_dir`, which is a
+      `pathlib` path to the root directory of output files, and `config`,
+      which is a dict containing the fully resolved configuration.
+    * `processor_data`: Dict that you can use to store and retrieve arbitrary
+      data during processing.
     """
 
     def __init__(self, root, env=None):
-        """
-        * `root`: Root of the tree
-        * `env`: Dictionary containing information about how Computer Words
-          was invoked and configured
-        """
         super().__init__()
         self.root = root
         self.env = env or {}

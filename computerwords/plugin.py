@@ -66,15 +66,22 @@ PYTHONPATH=$PYTHONPATH:./plugins \\
 }
 ```
 
+### Things that might help you
+
+If you need to get content of a node's subtree in the order it appears in the
+document, use `computerwords.cwdom.traversal.preorder_traversal()` to walk
+the tree. In the future, this will be made easier, but this solution should
+work for now, even if it's slow.
+
+You can store data on nodes. Each node has a `data` dict attribute.
+
+You can also store data on the tree using the `tree.processor_data` dict.
+
 ### Best Practices
 
-* Do not mutate the node "in place." Instead, create a copy, modify it, and
-  replace the original. That way, any other processors that respond to changes
-  in that node can run again.
-* If you need to get content of a node's subtree in the order it appears in the
-  document, use `computerwords.cwdom.traversal.preorder_traversal()` to walk
-  the tree. In the future, this will be made easier, but this solution should
-  work for now, even if it's slow.
+Do not mutate the node "in place." Instead, create a copy, modify it, and
+replace the original. That way, any other processors that respond to changes
+in that node can run again.
 """
 
 class CWPlugin:
