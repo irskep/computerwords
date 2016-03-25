@@ -1,4 +1,4 @@
-.PHONY: test watchtest demo docs docsdebug deploy-docs
+.PHONY: test watchtest demo docs docsdebug deploy-docs deploy-pypi
 
 test:
 	python3 -m unittest discover tests --failfast
@@ -26,3 +26,6 @@ docsdebug:
 
 deploy-docs: docs
 	ghp-import -np docs/build
+
+deploy-pypi:
+	python setup.py sdist upload -r pypi

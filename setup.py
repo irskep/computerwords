@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 
-VERSION = '1.0a2'
+VERSION = '1.0a5'
 
 
 def readme():
