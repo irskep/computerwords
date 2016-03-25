@@ -151,59 +151,79 @@
         
 <a name=67><pre>```</pre></a>
         
-<a name=68><pre>"""</pre></a>
+<a name=68><pre>&nbsp;</pre></a>
         
-<a name=69><pre>&nbsp;</pre></a>
+<a name=69><pre>### Best Practices</pre></a>
         
-<a name=70><pre>class CWPlugin:</pre></a>
+<a name=70><pre>&nbsp;</pre></a>
         
-<a name=71><pre>    """Base class for all Computer Words plugins."""</pre></a>
+<a name=71><pre>* Do not mutate the node "in place." Instead, create a copy, modify it, and</pre></a>
         
-<a name=72><pre>&nbsp;</pre></a>
+<a name=72><pre>  replace the original. That way, any other processors that respond to changes</pre></a>
         
-<a name=73><pre>    """If you want to include custom information in the config file, specify</pre></a>
+<a name=73><pre>  in that node can run again.</pre></a>
         
-<a name=74><pre>    a namespace for it to live under. For example, the HTML writer's</pre></a>
+<a name=74><pre>* If you need to get content of a node's subtree in the order it appears in the</pre></a>
         
-<a name=75><pre>    configuration is all under the `"html"` key."""</pre></a>
+<a name=75><pre>  document, use `computerwords.cwdom.traversal.preorder_traversal()` to walk</pre></a>
         
-<a name=76><pre>    CONFIG_NAMESPACE = None</pre></a>
+<a name=76><pre>  the tree. In the future, this will be made easier, but this solution should</pre></a>
         
-<a name=77><pre>&nbsp;</pre></a>
+<a name=77><pre>  work for now, even if it's slow.</pre></a>
         
-<a name=78><pre>    def get_default_config(self):</pre></a>
+<a name=78><pre>"""</pre></a>
         
-<a name=79><pre>        """If you specified `CONFIG_NAMESPACE`, provide a default dictionary</pre></a>
+<a name=79><pre>&nbsp;</pre></a>
         
-<a name=80><pre>        here"""</pre></a>
+<a name=80><pre>class CWPlugin:</pre></a>
         
-<a name=81><pre>        return None</pre></a>
+<a name=81><pre>    """Base class for all Computer Words plugins."""</pre></a>
         
 <a name=82><pre>&nbsp;</pre></a>
         
-<a name=83><pre>    """Optionally transform the config after it is read"""</pre></a>
+<a name=83><pre>    """If you want to include custom information in the config file, specify</pre></a>
         
-<a name=84><pre>    def postprocess_config(self, config):</pre></a>
+<a name=84><pre>    a namespace for it to live under. For example, the HTML writer's</pre></a>
         
-<a name=85><pre>        pass</pre></a>
+<a name=85><pre>    configuration is all under the `"html"` key."""</pre></a>
         
-<a name=86><pre>&nbsp;</pre></a>
+<a name=86><pre>    CONFIG_NAMESPACE = None</pre></a>
         
-<a name=87><pre>    def add_processors(self, library):</pre></a>
+<a name=87><pre>&nbsp;</pre></a>
         
-<a name=88><pre>        """Use `cwdom.library.Library.processor` to define transforms on the</pre></a>
+<a name=88><pre>    def get_default_config(self):</pre></a>
         
-<a name=89><pre>        tree."""</pre></a>
+<a name=89><pre>        """If you specified `CONFIG_NAMESPACE`, provide a default dictionary</pre></a>
         
-<a name=90><pre>        pass</pre></a>
+<a name=90><pre>        here"""</pre></a>
         
-<a name=91><pre>&nbsp;</pre></a>
+<a name=91><pre>        return None</pre></a>
         
-<a name=92><pre>    WRITER_NAME = None</pre></a>
+<a name=92><pre>&nbsp;</pre></a>
         
-<a name=93><pre>    def write(self, config, src_root, dest_root, stdlib, tree):</pre></a>
+<a name=93><pre>    """Optionally transform the config after it is read"""</pre></a>
         
-<a name=94><pre>        pass</pre></a>
+<a name=94><pre>    def postprocess_config(self, config):</pre></a>
+        
+<a name=95><pre>        pass</pre></a>
+        
+<a name=96><pre>&nbsp;</pre></a>
+        
+<a name=97><pre>    def add_processors(self, library):</pre></a>
+        
+<a name=98><pre>        """Use `cwdom.library.Library.processor` to define transforms on the</pre></a>
+        
+<a name=99><pre>        tree."""</pre></a>
+        
+<a name=100><pre>        pass</pre></a>
+        
+<a name=101><pre>&nbsp;</pre></a>
+        
+<a name=102><pre>    WRITER_NAME = None</pre></a>
+        
+<a name=103><pre>    def write(self, config, src_root, dest_root, stdlib, tree):</pre></a>
+        
+<a name=104><pre>        pass</pre></a>
         
     </body>
 </html>

@@ -1,0 +1,217 @@
+<!doctype html>
+<html>
+    <head>
+        <title>computerwords/library.py</title>
+        <style>
+            pre {
+                margin: 0;
+                line-height: 120%;
+            }
+            a {
+                display: block;
+            }
+            a:target {
+                background-color: #cdf;
+            }
+        </style>
+    </head>
+    <body class="autodoc-source">
+
+<a name=1><pre>class UnhandledEdgeCaseError(Exception): pass</pre></a>
+        
+<a name=2><pre>class UnknownNodeNameError(Exception): pass</pre></a>
+        
+<a name=3><pre>&nbsp;</pre></a>
+        
+<a name=4><pre>&nbsp;</pre></a>
+        
+<a name=5><pre>class Library:</pre></a>
+        
+<a name=6><pre>    """</pre></a>
+        
+<a name=7><pre>    A collection of functions that can be applied to nodes. Each function is</pre></a>
+        
+<a name=8><pre>    called a *processor* and applies to nodes with the given *name*.</pre></a>
+        
+<a name=9><pre>&nbsp;</pre></a>
+        
+<a name=10><pre>    As a user of Computer Words, you really only need to know about the</pre></a>
+        
+<a name=11><pre>    `processor()` method.</pre></a>
+        
+<a name=12><pre>    """</pre></a>
+        
+<a name=13><pre>&nbsp;</pre></a>
+        
+<a name=14><pre>    def __init__(self):</pre></a>
+        
+<a name=15><pre>        super().__init__()</pre></a>
+        
+<a name=16><pre>        self.tag_name_to_processors = {}</pre></a>
+        
+<a name=17><pre>        self.universal_processors = []</pre></a>
+        
+<a name=18><pre>&nbsp;</pre></a>
+        
+<a name=19><pre>    def _set_processor(self, tag_name, p, before_others=False):</pre></a>
+        
+<a name=20><pre>        if tag_name == '*':</pre></a>
+        
+<a name=21><pre>            if before_others:</pre></a>
+        
+<a name=22><pre>                self.universal_processors.insert(0, p)</pre></a>
+        
+<a name=23><pre>            else:</pre></a>
+        
+<a name=24><pre>                self.universal_processors.append(p)</pre></a>
+        
+<a name=25><pre>        else:</pre></a>
+        
+<a name=26><pre>            self.tag_name_to_processors.setdefault(tag_name, [])</pre></a>
+        
+<a name=27><pre>            if before_others:</pre></a>
+        
+<a name=28><pre>                self.tag_name_to_processors[tag_name].insert(0, p)</pre></a>
+        
+<a name=29><pre>            else:</pre></a>
+        
+<a name=30><pre>                self.tag_name_to_processors[tag_name].append(p)</pre></a>
+        
+<a name=31><pre>&nbsp;</pre></a>
+        
+<a name=32><pre>    def processor(self, tag_name, p=None, before_others=False):</pre></a>
+        
+<a name=33><pre>        """</pre></a>
+        
+<a name=34><pre>        Declare a function as a processor for nodes with name *tag_name*.</pre></a>
+        
+<a name=35><pre>        May be used as a decorator or as a simple function call.</pre></a>
+        
+<a name=36><pre>&nbsp;</pre></a>
+        
+<a name=37><pre>        As a decorator:</pre></a>
+        
+<a name=38><pre>&nbsp;</pre></a>
+        
+<a name=39><pre>        ```py</pre></a>
+        
+<a name=40><pre>        @library.processor('Text')</pre></a>
+        
+<a name=41><pre>        def reverse_text(tree, node):</pre></a>
+        
+<a name=42><pre>            tree.replace_node(node, CWTextNode(node.text[::-1]))</pre></a>
+        
+<a name=43><pre>        ```</pre></a>
+        
+<a name=44><pre>&nbsp;</pre></a>
+        
+<a name=45><pre>        As a function:</pre></a>
+        
+<a name=46><pre>&nbsp;</pre></a>
+        
+<a name=47><pre>        ```py</pre></a>
+        
+<a name=48><pre>        def reverse_text(tree, node):</pre></a>
+        
+<a name=49><pre>            tree.replace_node(node, CWTextNode(node.text[::-1]))</pre></a>
+        
+<a name=50><pre>        library.processor('Text', reverse_text)</pre></a>
+        
+<a name=51><pre>        ```</pre></a>
+        
+<a name=52><pre>        """</pre></a>
+        
+<a name=53><pre>        if p is None:</pre></a>
+        
+<a name=54><pre>            def decorator(p2):</pre></a>
+        
+<a name=55><pre>                self._set_processor(tag_name, p2, before_others)</pre></a>
+        
+<a name=56><pre>                return p2</pre></a>
+        
+<a name=57><pre>            return decorator</pre></a>
+        
+<a name=58><pre>        else:</pre></a>
+        
+<a name=59><pre>            self._set_processor(tag_name, p, before_others)</pre></a>
+        
+<a name=60><pre>            return p</pre></a>
+        
+<a name=61><pre>&nbsp;</pre></a>
+        
+<a name=62><pre>    def get_processors(self, tag_name, strict=True):</pre></a>
+        
+<a name=63><pre>        yield from self.universal_processors</pre></a>
+        
+<a name=64><pre>        if strict:</pre></a>
+        
+<a name=65><pre>            try:</pre></a>
+        
+<a name=66><pre>                yield from self.tag_name_to_processors[tag_name]</pre></a>
+        
+<a name=67><pre>            except KeyError:</pre></a>
+        
+<a name=68><pre>                msg = (</pre></a>
+        
+<a name=69><pre>                    "No processors are defined for nodes with name {!r}."</pre></a>
+        
+<a name=70><pre>                ).format(tag_name)</pre></a>
+        
+<a name=71><pre>                raise UnknownNodeNameError(msg)</pre></a>
+        
+<a name=72><pre>        else:</pre></a>
+        
+<a name=73><pre>            yield from self.tag_name_to_processors.get(tag_name, [])</pre></a>
+        
+<a name=74><pre>&nbsp;</pre></a>
+        
+<a name=75><pre>    def get_allowed_tags(self):</pre></a>
+        
+<a name=76><pre>        return set(self.tag_name_to_processors.keys())</pre></a>
+        
+<a name=77><pre>&nbsp;</pre></a>
+        
+<a name=78><pre>    def run_processors(self, tree, node):</pre></a>
+        
+<a name=79><pre>        if tree.get_is_node_dirty(node):</pre></a>
+        
+<a name=80><pre>            raise ValueError(</pre></a>
+        
+<a name=81><pre>                "Nodes should be marked un-dirty before processing.")</pre></a>
+        
+<a name=82><pre>        for p in self.get_processors(node.name):</pre></a>
+        
+<a name=83><pre>            if tree.get_is_node_dirty(node):</pre></a>
+        
+<a name=84><pre>                raise UnhandledEdgeCaseError((</pre></a>
+        
+<a name=85><pre>                    "Node {!r} has multiple processors, but an earlier"</pre></a>
+        
+<a name=86><pre>                    " processor dirtied it before the later one could run."</pre></a>
+        
+<a name=87><pre>                    " I haven't decided if this is a problem or not, so for"</pre></a>
+        
+<a name=88><pre>                    " now this edge case simply throws an error.").format(</pre></a>
+        
+<a name=89><pre>                        node.name))</pre></a>
+        
+<a name=90><pre>            if tree.get_was_node_removed(node):</pre></a>
+        
+<a name=91><pre>                return</pre></a>
+        
+<a name=92><pre>                raise UnhandledEdgeCaseError((</pre></a>
+        
+<a name=93><pre>                    "Node {!r} has multiple processors, but an earlier"</pre></a>
+        
+<a name=94><pre>                    " processor removed it before the later one could run."</pre></a>
+        
+<a name=95><pre>                    " I haven't decided if this is a problem or not, so for"</pre></a>
+        
+<a name=96><pre>                    " now this edge case simply throws an error.").format(</pre></a>
+        
+<a name=97><pre>                        node.name))</pre></a>
+        
+<a name=98><pre>            p(tree, node)</pre></a>
+        
+    </body>
+</html>
