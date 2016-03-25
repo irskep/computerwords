@@ -128,6 +128,8 @@ def _get_symbol_at_path(t, parts):
 def get_symbol_at_path(root, path):
     parts = path.split('.')
     assert(parts[0] == root.name)
+    if len(parts) == 1:
+        return root
     return _get_symbol_at_path(root, parts[1:])
 
 

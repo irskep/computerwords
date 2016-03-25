@@ -19,6 +19,9 @@ Note: JSON cannot contain comments, so this isn't copy-pasteable.
   // Tag line or whatever
   "site_subtitle": "It's very cool.",
 
+  // Version string, if you want it to appear
+  "project_version": "1.0",
+
   // Your name
   "author": "Docs McGee",
 

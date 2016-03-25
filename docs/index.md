@@ -35,6 +35,7 @@ Hello world!
 {
   "site_title": "My Cool Project",
   "site_subtitle": "The coolest project ever",
+  "project_version": "1.0",
   "file_hierarchy": ["*.md"]
 }
 ```

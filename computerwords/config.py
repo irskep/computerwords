@@ -7,6 +7,7 @@ DEFAULT_CONFIG = {
     ],
     "site_title": "My Cool Web Site",
     "site_subtitle": "",
+    "project_version": None,
     "author": "Docs McGee",
     "output_dir": "./build",
     "plugins": [
