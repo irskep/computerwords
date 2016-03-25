@@ -3,6 +3,14 @@ class UnknownNodeNameError(Exception): pass
 
 
 class Library:
+    """
+    A collection of functions that can be applied to nodes. Each function is
+    called a *processor* and applies to nodes with the given *name*.
+
+    As a user of Computer Words, you really only need to know about the
+    `processor()` method.
+    """
+
     def __init__(self):
         super().__init__()
         self.tag_name_to_processors = {}
@@ -21,8 +29,27 @@ class Library:
             else:
                 self.tag_name_to_processors[tag_name].append(p)
 
-    # this is a decorator or a normal function
     def processor(self, tag_name, p=None, before_others=False):
+        """
+        Declare a function as a processor for nodes with name *tag_name*.
+        May be used as a decorator or as a simple function call.
+
+        As a decorator:
+
+        ```py
+        @library.processor('Text')
+        def reverse_text(tree, node):
+            tree.replace_node(node, CWTextNode(node.text[::-1]))
+        ```
+
+        As a function:
+
+        ```py
+        def reverse_text(tree, node):
+            tree.replace_node(node, CWTextNode(node.text[::-1]))
+        library.processor('Text', reverse_text)
+        ```
+        """
         if p is None:
             def decorator(p2):
                 self._set_processor(tag_name, p2, before_others)

@@ -1,9 +1,20 @@
 # How it works
 
-## Input
+## Read the config
 
-First, your files are parsed into a tree called the “Computer Words Document
-Object Model”, or `CWDOM`. So this:
+First, Computer Words reads your config file, which tells it which Markdown
+files you want to include, and in what order. See
+[Defining table of contents structure with file_hierarchy](configuration.html#Defining-table-of-contents-structure-with-file_hierarchy)
+for details
+
+## Parse the Markdown files
+
+Then, each file is parsed into a tree, with a `CWDocumentNode` as the root.
+These document nodes are then added to a global `CWRootNode`.
+
+Each node has a globally unique ID and a *name* (i.e. type, kind, label).
+
+So this:
 
 ```markdown filename=readme.md
 # Title
@@ -11,13 +22,15 @@ Object Model”, or `CWDOM`. So this:
 some text
 ```
 
+```markdown filename=part2.md
+# Part 2
+
+text of part 2
+```
+
 becomes this:
 
-```graphviz-dot-convert
-strict digraph {
-    rankdir="LR";
-    node [fontname="Helvetica" fontsize=10 shape="box"];
-
+```graphviz-simple
     Root [label="Root"]
     Document [label="Document(path='readme.md')"]
     TitleText [label="Text(text='Title')"]
@@ -28,29 +41,47 @@ strict digraph {
     h1 -> TitleText
     Document -> p
     p -> BodyText
-}
+
+    Document2 [label="Document(path='part2.md')"]
+    h1b [label="h1"]
+    TitleText2 [label="Text(text='Part 2')"]
+    p2 [label="p"]
+    BodyText2 [label="Text(text='text of part 2')"]
+
+    Root -> Document2
+    Document2 -> h1b
+    h1b -> TitleText2
+    Document2 -> p2
+    p2 -> BodyText2
 ```
+
+This is all stored in a `CWTree` object, which allows you to access and mutate
+the tree in the next step.
 
 ## Processing
 
 Then we apply a processor library to the graph. A *library* is a mapping of
-`node_name -> [processor]`. A *processor* is a function like this:
+`node_name -> [processor]`. A *processor* is a function `process(tree, node)`
+which mutates the `tree` in response to visiting `node`.
 
-```python
-@library.processor('xxx')  # operate on 'xxx' nodes
-def process_xxx(node_store, node)
-    # you can mutate the node, its children, or its
-    # ancestors (but not its siblings).
-    # In this case, we are swapping the node in place for
-    # another node, which will have the original node's
-    # parent and children.
-    node_store.replace_node(node, CWDOMNode('yyy'))
+For example, here's a processor that reverses all text:
+
+```py
+@library.processor('Text')
+def reverse_text(tree, node):
+    tree.replace_node(node, CWTextNode(node.text[::-1]))
 ```
 
-Each node will be processed at least once, in a *post-order tree traversal*
-(meaning that a node will be visited before its ancestors). If a node is
-mutated by another node's processor, that node will be marked *dirty* and
-its processors will be run again.
+The library is applied by traversing the tree in post-order (children before
+parents). That way, when a node is visited, its subtree is guaranteed to be
+complete.
+
+If a processor mutates a child of its node, that node is marked "dirty". After
+each post-order traversal of the whole tree, if any nodes are dirty, the tree
+is traversed again, and only the dirty nodes' processors will be run.
+
+Supported mutations are documented on
+[`CWTree`](API.html#computerwords.cwdom.CWTree.CWTree).
 
 ## Output
 

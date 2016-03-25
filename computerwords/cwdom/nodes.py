@@ -146,8 +146,12 @@ class CWNode:
 
 
 class CWRootNode(CWNode):
-    """The node at the root of a `CWTree`. Its immediate children should all
-    be instances of `CWDocumentNode`."""
+    """
+    name: `Root`
+
+    The node at the root of a `CWTree`. Its immediate children should all
+    be instances of `CWDocumentNode`.
+    """
 
     def __init__(self, children=None, document_id=None):
         super().__init__('Root', children, document_id=document_id)
@@ -160,8 +164,12 @@ class CWRootNode(CWNode):
 
 
 class CWDocumentNode(CWNode):
-    """A node representing a document. Its descendants can be anything but
-    `CWRootNode` and `CWDocumentNode`."""
+    """
+    name: `Document`
+
+    A node representing a document. Its descendants can be anything but
+    `CWRootNode` and `CWDocumentNode`.
+    """
 
     def __init__(self, path, children=None, document_id=None):
         """
@@ -185,7 +193,11 @@ class CWDocumentNode(CWNode):
 
 
 class CWTagNode(CWNode):
-    """A node that can be directly converted to valid HTML."""
+    """
+    name: arbitrary HTML tag name
+
+    A node that can be directly converted to valid HTML.
+    """
 
     def __init__(self, name, kwargs, children=None, document_id=None):
         """
@@ -225,7 +237,11 @@ class CWTagNode(CWNode):
 
 
 class CWTextNode(CWNode):
-    """A node that only contains text to be written to output."""
+    """
+    name: `Text`
+
+    A node that only contains text to be written to output.
+    """
 
     def __init__(self, text, document_id=None, escape=True):
         """
@@ -253,6 +269,8 @@ class CWTextNode(CWNode):
 
 class CWAnchorNode(CWTagNode):
     """
+    name: `Anchor`
+
     A node that can be linked to via its globally unique `ref_id`. Essentially
     a specialized version of `CWTagNode('a', {'name': ...})`.
     """
@@ -283,6 +301,8 @@ class CWAnchorNode(CWTagNode):
 
 class CWLinkNode(CWNode):
     """
+    name: `Link`
+
     A node that can link to the location of a `CWAnchorNode` to via its
     globally unique `ref_id`.
 
@@ -309,6 +329,8 @@ class CWLinkNode(CWNode):
 
 class CWDocumentLinkNode(CWNode):
     """
+    name: `DocumentLink`
+
     A node that can link to the location of a document without including any
     anchors inside the page.
     """
