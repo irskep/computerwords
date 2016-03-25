@@ -20,7 +20,7 @@ sure to read the parser caveats if you intend to really use it.</warning>
 brew install python3.5  # or whatever
 
 # then install Computer Words
-pip install -e git+https://github.com/irskep/computerwords.git@master#egg=computerwords
+pip install computerwords
 ```
 
 Now you're ready to run! You just need to write a Markdown file and a config.
