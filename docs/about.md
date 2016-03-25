@@ -12,7 +12,8 @@ release.
 
 1. Documentation authors are mostly library maintainers.
 2. Library maintainers don't want to invest lots of time in their documentation
-   system, because it is a distraction from their work.
+   system, because it is a distraction from their work. (See also
+   [Frequently Anticipated Criticisms](faq.html))
 3. Therefore, using Computer Words should mostly be obvious. Using it should
    not require authors to constantly refer to syntax references or other
    meta-documentation.
