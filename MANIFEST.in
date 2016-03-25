@@ -1,2 +1,3 @@
 recursive-include computerwords/_css *
 recursive-include computerwords/_html *
+include README.rst
