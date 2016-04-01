@@ -48,8 +48,8 @@ You can call out a note or a warning using—wait for it—`<note>` and
 text.
 
 <warning>If you want to put multiple paragraphs in an aside, you need to put
-the opening and closing tags in their own paragraphs. See the
-[parser bugs](computer_flavored_markdown.html#The-parser-has-bugs) section.
+the opening and closing tags in their own paragraphs. See
+<heading-link name="parser-bugs" />.
 </warning>
 
 ### Example 1

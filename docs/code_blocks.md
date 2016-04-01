@@ -52,7 +52,7 @@ console.log("Hello");
 If you set the language to `graphviz-dot-convert`, and you have
 [Graphviz](http://www.graphviz.org/) installed, then Computer Words will
 render the contents to an SVG and insert the result. This site's own
-[How it works](how_it_works.html) page uses it to show diagrams.
+<heading-link name="how-it-works" /> page uses it to show diagrams.
 
 
 ```graphviz-dot-convert
@@ -96,7 +96,7 @@ There's also a "simple" version that you can use like this:
     ```graphviz-simple
     A -> B -> C; B -> D;
     ```
-    
+
 ```graphviz-simple
 A -> B -> C; B -> D;
 ```

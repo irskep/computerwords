@@ -74,7 +74,6 @@ More importantly, you can use plugins other people have written!
 * Projects already invested in Sphinx or another non-Markdown system they are
   happy with.
 
-<a name="why-python-3.5" />
 ## Why Python 3.5?
 
 Most importantly, because it is a pleasure to write. Computer Words uses

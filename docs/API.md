@@ -12,6 +12,8 @@
     heading-level=2
     />
 
+<heading-alias name="cwtree" />
+
 <autodoc-python
     module="computerwords.cwdom.CWTree"
     include-children=True

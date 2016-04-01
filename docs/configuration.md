@@ -67,6 +67,8 @@ Note: JSON cannot contain comments, so this isn't copy-pasteable.
 }
 ```
 
+<heading-alias name="using-file-hierarchy" />
+
 ## Defining table of contents structure with `file_hierarchy`
 
 The `file_hierarchy` option, in addition to collecting input files, determines

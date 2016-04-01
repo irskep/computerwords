@@ -57,6 +57,8 @@ it will be transformed during compilation and rendered like this:
 
 The means by which this happens is described later.
 
+<heading-alias name="parser-bugs" />
+
 ## Parser caveats
 
 ### Bugs

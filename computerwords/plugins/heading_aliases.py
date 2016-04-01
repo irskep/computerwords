@@ -39,7 +39,7 @@ class HeadingAliasesPlugin(CWPlugin):
                     toc_node = maybe_h
                     break
 
-            # if we found one copy its TOC entry.
+            # if we found one, copy its TOC entry.
             if toc_node:
                 # replace self with relevant markup (i.e. nothing).
                 # incidentally guarantees that this node will never be

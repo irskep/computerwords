@@ -1,11 +1,12 @@
+<heading-alias name="how-it-works" />
+
 # How it works
 
 ## Read the config
 
 First, Computer Words reads your config file, which tells it which Markdown
 files you want to include, and in what order. See
-[Defining table of contents structure with file_hierarchy](configuration.html#Defining-table-of-contents-structure-with-file_hierarchy)
-for details
+<heading-link name="using-file-hierarchy" /> for details.
 
 ## Parse the Markdown files
 
@@ -80,8 +81,7 @@ If a processor mutates a child of its node, that node is marked "dirty". After
 each post-order traversal of the whole tree, if any nodes are dirty, the tree
 is traversed again, and only the dirty nodes' processors will be run.
 
-Supported mutations are documented on
-[`CWTree`](API.html#computerwords.cwdom.CWTree.CWTree).
+Supported mutations are documented on <heading-link name="cwtree" />.
 
 ## Output
 

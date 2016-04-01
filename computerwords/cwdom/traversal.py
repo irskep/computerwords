@@ -112,8 +112,7 @@ def visit_tree(tree, node_name_to_visitor, node=None):
     try:
         visitor = node_name_to_visitor[node.name]
     except KeyError:
-        raise MissingVisitorError(
-            "No visitor registered for {!r}".format(node.name))
+        raise MissingVisitorError(node)
     visitor.before_children(tree, node)
     for child in node.children:
         visit_tree(tree, node_name_to_visitor, child)
@@ -124,6 +123,16 @@ class MissingVisitorError(Exception):
     """
     Error thrown when trying to visit a node for which no visitor is available.
     """
+    def __init__(self, node):
+        super().__init__()
+        self.node = node
+
+    def __repr__(self):
+        return "MissingVisitorError(document_id={!r}, node={!r})".format(
+            self.node.document_id, self.node)
+
+    def __str__(self):
+        return repr(self)
 
 
 class CWTreeVisitor:
