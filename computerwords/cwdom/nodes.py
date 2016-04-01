@@ -163,6 +163,23 @@ class CWRootNode(CWNode):
         return '{}()'.format(self.name)
 
 
+class CWEmptyNode(CWNode):
+    """
+    name: `Empty`
+
+    A node with no content. May be used instead of removing a node.
+    """
+
+    def __init__(self, children=None, document_id=None):
+        super().__init__('Empty', [], document_id=document_id)
+
+    def copy(self):
+        return CWEmptyNode(document_id=self.document_id)
+
+    def shallow_repr(self):
+        return '{}()'.format(self.name)
+
+
 class CWDocumentNode(CWNode):
     """
     name: `Document`

@@ -5,17 +5,26 @@ Utilities for traversing `CWNode` trees.
 from collections import deque
 
 
-def preorder_traversal(node) -> "iterator(CWNode)":
+def preorder_traversal(node, start=None, end=None) -> "iterator(CWNode)":
     """
     Yields every node in the tree. Each node is yielded before its descendants.
     Mutation is disallowed.
+
+    - *start*: If specified, only yield nodes following (not including) this node.
+    - *end*: If specified, do not yield this node or nodes following it.
     """
     stack = deque([node])
+    has_started = start is None
     while len(stack) > 0:
         node = stack.pop()
-        yield node
+        if node is end:
+            return
+        has_started = has_started or start is node
+        if has_started:
+            yield node
         for child in reversed(node.children):
             stack.append(child)
+
 
 def postorder_traversal(node) -> "iterator(CWNode)":
     """

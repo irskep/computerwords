@@ -16,6 +16,7 @@ def get_tag_to_visitor(library, stream, options):
         for tag in library.HTML_TAGS | set(library.ALIAS_HTML_TAGS.keys())
     }
     tag_to_visitor['Root'] = CWTreeVisitor()  # no-op
+    tag_to_visitor['Empty'] = CWTreeVisitor()  # no-op
     tag_to_visitor['Document'] = DocumentVisitor(options, stream)
     tag_to_visitor['Text'] = TextVisitor(options, stream, 'Text')
     tag_to_visitor['Anchor'] = AnchorVisitor(options, stream)

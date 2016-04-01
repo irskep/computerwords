@@ -1,3 +1,5 @@
+<heading-alias name="faq" />
+
 # Frequently Anticipated Criticisms
 
 ## Markdown isn't a good language for documentation. People should learn reStructuredText and be happy.

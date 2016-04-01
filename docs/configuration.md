@@ -1,3 +1,5 @@
+<heading-alias name="configuration" />
+
 # Configuration
 
 All configuration lives in a JSON file that we'll call `conf.json`. Every

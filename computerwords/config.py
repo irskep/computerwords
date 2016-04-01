@@ -11,9 +11,10 @@ DEFAULT_CONFIG = {
     "author": "Docs McGee",
     "output_dir": "./build",
     "plugins": [
-        "computerwords.plugins.graphviz",
-        "computerwords.plugins.htmlwriter",
         "computerwords.plugins.callouts",
+        "computerwords.plugins.heading_aliases",
+        "computerwords.plugins.htmlwriter",
+        "computerwords.plugins.graphviz",
         "computerwords.plugins.pygments",
         "computerwords.plugins.python35",
     ],
