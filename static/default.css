@@ -123,11 +123,6 @@ code {
 
 /* fancy things */
 
-/* hide 'src' links in TOC */
-nav.table-of-contents .autodoc-source-link {
-  display: none;
-}
-
 .autodoc-function-docstring-body, .autodoc-class-docstring-body, .autodoc-method, .autodoc-class_var {
   margin-left: 2rem;
 }
@@ -141,10 +136,22 @@ nav.table-of-contents .autodoc-source-link {
 }
 
 .autodoc-source-link {
-  display: block;
+  /*display: block;*/
   float: right;
   font-size: 0.8rem;
   font-weight: normal;
+
+  display: none;
+}
+
+/* hide 'src' links everywhere but in their headings */
+h1 .autodoc-source-link,
+h2 .autodoc-source-link,
+h3 .autodoc-source-link,
+h4 .autodoc-source-link,
+h5 .autodoc-source-link,
+h6 .autodoc-source-link {
+  display: block;
 }
 
 /* notes plugin */

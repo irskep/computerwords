@@ -245,145 +245,163 @@
         
 <a name=114><pre>    except KeyError:</pre></a>
         
-<a name=115><pre>        raise MissingVisitorError(</pre></a>
+<a name=115><pre>        raise MissingVisitorError(node)</pre></a>
         
-<a name=116><pre>            "No visitor registered for {!r}".format(node.name))</pre></a>
+<a name=116><pre>    visitor.before_children(tree, node)</pre></a>
         
-<a name=117><pre>    visitor.before_children(tree, node)</pre></a>
+<a name=117><pre>    for child in node.children:</pre></a>
         
-<a name=118><pre>    for child in node.children:</pre></a>
+<a name=118><pre>        visit_tree(tree, node_name_to_visitor, child)</pre></a>
         
-<a name=119><pre>        visit_tree(tree, node_name_to_visitor, child)</pre></a>
+<a name=119><pre>    visitor.after_children(tree, node)</pre></a>
         
-<a name=120><pre>    visitor.after_children(tree, node)</pre></a>
+<a name=120><pre>&nbsp;</pre></a>
         
 <a name=121><pre>&nbsp;</pre></a>
         
-<a name=122><pre>&nbsp;</pre></a>
+<a name=122><pre>class MissingVisitorError(Exception):</pre></a>
         
-<a name=123><pre>class MissingVisitorError(Exception):</pre></a>
+<a name=123><pre>    """</pre></a>
         
-<a name=124><pre>    """</pre></a>
+<a name=124><pre>    Error thrown when trying to visit a node for which no visitor is available.</pre></a>
         
-<a name=125><pre>    Error thrown when trying to visit a node for which no visitor is available.</pre></a>
+<a name=125><pre>    """</pre></a>
         
-<a name=126><pre>    """</pre></a>
+<a name=126><pre>    def __init__(self, node):</pre></a>
         
-<a name=127><pre>&nbsp;</pre></a>
+<a name=127><pre>        super().__init__()</pre></a>
         
-<a name=128><pre>&nbsp;</pre></a>
+<a name=128><pre>        self.node = node</pre></a>
         
-<a name=129><pre>class CWTreeVisitor:</pre></a>
+<a name=129><pre>&nbsp;</pre></a>
         
-<a name=130><pre>    def before_children(self, tree, node):</pre></a>
+<a name=130><pre>    def __repr__(self):</pre></a>
         
-<a name=131><pre>        """Called before the node's children are visited."""</pre></a>
+<a name=131><pre>        return "MissingVisitorError(document_id={!r}, node={!r})".format(</pre></a>
         
-<a name=132><pre>&nbsp;</pre></a>
+<a name=132><pre>            self.node.document_id, self.node)</pre></a>
         
-<a name=133><pre>    def after_children(self, tree, node):</pre></a>
+<a name=133><pre>&nbsp;</pre></a>
         
-<a name=134><pre>        """Called after the node's children are visited."""</pre></a>
+<a name=134><pre>    def __str__(self):</pre></a>
         
-<a name=135><pre>&nbsp;</pre></a>
+<a name=135><pre>        return repr(self)</pre></a>
         
 <a name=136><pre>&nbsp;</pre></a>
         
-<a name=137><pre>class PostorderTraverser:</pre></a>
+<a name=137><pre>&nbsp;</pre></a>
         
-<a name=138><pre>    """</pre></a>
+<a name=138><pre>class CWTreeVisitor:</pre></a>
         
-<a name=139><pre>    A class that lets you iterate over a tree while mutating it.</pre></a>
+<a name=139><pre>    def before_children(self, tree, node):</pre></a>
         
-<a name=140><pre>&nbsp;</pre></a>
+<a name=140><pre>        """Called before the node's children are visited."""</pre></a>
         
-<a name=141><pre>    Keeps track of a *cursor* representing the last visited node. Each time</pre></a>
+<a name=141><pre>&nbsp;</pre></a>
         
-<a name=142><pre>    the next node is requested, the iterator looks at the cursor and walks</pre></a>
+<a name=142><pre>    def after_children(self, tree, node):</pre></a>
         
-<a name=143><pre>    up the tree to find the cursor's next sibling or parent.</pre></a>
+<a name=143><pre>        """Called after the node's children are visited."""</pre></a>
         
 <a name=144><pre>&nbsp;</pre></a>
         
-<a name=145><pre>    You may replace the cursor if you want to replace the node currently being</pre></a>
+<a name=145><pre>&nbsp;</pre></a>
         
-<a name=146><pre>    visited.</pre></a>
+<a name=146><pre>class PostorderTraverser:</pre></a>
         
-<a name=147><pre>&nbsp;</pre></a>
+<a name=147><pre>    """</pre></a>
         
-<a name=148><pre>    You may safely mutate the cursor's ancestors, since they haven't been</pre></a>
+<a name=148><pre>    A class that lets you iterate over a tree while mutating it.</pre></a>
         
-<a name=149><pre>    visited yet.</pre></a>
+<a name=149><pre>&nbsp;</pre></a>
         
-<a name=150><pre>    """</pre></a>
+<a name=150><pre>    Keeps track of a *cursor* representing the last visited node. Each time</pre></a>
         
-<a name=151><pre>&nbsp;</pre></a>
+<a name=151><pre>    the next node is requested, the iterator looks at the cursor and walks</pre></a>
         
-<a name=152><pre>    def __init__(self, node):</pre></a>
+<a name=152><pre>    up the tree to find the cursor's next sibling or parent.</pre></a>
         
-<a name=153><pre>        super().__init__()</pre></a>
+<a name=153><pre>&nbsp;</pre></a>
         
-<a name=154><pre>        self.cursor = node</pre></a>
+<a name=154><pre>    You may replace the cursor if you want to replace the node currently being</pre></a>
         
-<a name=155><pre>        self._is_first_result = True</pre></a>
+<a name=155><pre>    visited.</pre></a>
         
 <a name=156><pre>&nbsp;</pre></a>
         
-<a name=157><pre>    def replace_cursor(self, new_cursor):</pre></a>
+<a name=157><pre>    You may safely mutate the cursor's ancestors, since they haven't been</pre></a>
         
-<a name=158><pre>        """Only use this if you really know what you are doing."""</pre></a>
+<a name=158><pre>    visited yet.</pre></a>
         
-<a name=159><pre>        self.cursor = new_cursor</pre></a>
+<a name=159><pre>    """</pre></a>
         
 <a name=160><pre>&nbsp;</pre></a>
         
-<a name=161><pre>    def __iter__(self):</pre></a>
+<a name=161><pre>    def __init__(self, node):</pre></a>
         
-<a name=162><pre>        return self</pre></a>
+<a name=162><pre>        super().__init__()</pre></a>
         
-<a name=163><pre>&nbsp;</pre></a>
+<a name=163><pre>        self.cursor = node</pre></a>
         
-<a name=164><pre>    def __next__(self) -> "CWNode":</pre></a>
+<a name=164><pre>        self._is_first_result = True</pre></a>
         
-<a name=165><pre>        if self._is_first_result:</pre></a>
+<a name=165><pre>&nbsp;</pre></a>
         
-<a name=166><pre>            self._descend()</pre></a>
+<a name=166><pre>    def replace_cursor(self, new_cursor):</pre></a>
         
-<a name=167><pre>            self._is_first_result = False</pre></a>
+<a name=167><pre>        """Only use this if you really know what you are doing."""</pre></a>
         
-<a name=168><pre>        else:</pre></a>
+<a name=168><pre>        self.cursor = new_cursor</pre></a>
         
-<a name=169><pre>            parent = self.cursor.get_parent()</pre></a>
+<a name=169><pre>&nbsp;</pre></a>
         
-<a name=170><pre>            if not parent:</pre></a>
+<a name=170><pre>    def __iter__(self):</pre></a>
         
-<a name=171><pre>                raise StopIteration()</pre></a>
+<a name=171><pre>        return self</pre></a>
         
 <a name=172><pre>&nbsp;</pre></a>
         
-<a name=173><pre>            child_i = parent.children.index(self.cursor)</pre></a>
+<a name=173><pre>    def __next__(self) -> "CWNode":</pre></a>
         
-<a name=174><pre>            next_child_i = child_i + 1</pre></a>
+<a name=174><pre>        if self._is_first_result:</pre></a>
         
-<a name=175><pre>            if next_child_i >= len(parent.children):</pre></a>
+<a name=175><pre>            self._descend()</pre></a>
         
-<a name=176><pre>                self.cursor = parent</pre></a>
+<a name=176><pre>            self._is_first_result = False</pre></a>
         
-<a name=177><pre>            else:</pre></a>
+<a name=177><pre>        else:</pre></a>
         
-<a name=178><pre>                self.cursor = parent.children[next_child_i]</pre></a>
+<a name=178><pre>            parent = self.cursor.get_parent()</pre></a>
         
-<a name=179><pre>                self._descend()</pre></a>
+<a name=179><pre>            if not parent:</pre></a>
         
-<a name=180><pre>        return self.cursor</pre></a>
+<a name=180><pre>                raise StopIteration()</pre></a>
         
 <a name=181><pre>&nbsp;</pre></a>
         
-<a name=182><pre>    def _descend(self):</pre></a>
+<a name=182><pre>            child_i = parent.children.index(self.cursor)</pre></a>
         
-<a name=183><pre>        while self.cursor.children:</pre></a>
+<a name=183><pre>            next_child_i = child_i + 1</pre></a>
         
-<a name=184><pre>            self.cursor = self.cursor.children[0]</pre></a>
+<a name=184><pre>            if next_child_i >= len(parent.children):</pre></a>
+        
+<a name=185><pre>                self.cursor = parent</pre></a>
+        
+<a name=186><pre>            else:</pre></a>
+        
+<a name=187><pre>                self.cursor = parent.children[next_child_i]</pre></a>
+        
+<a name=188><pre>                self._descend()</pre></a>
+        
+<a name=189><pre>        return self.cursor</pre></a>
+        
+<a name=190><pre>&nbsp;</pre></a>
+        
+<a name=191><pre>    def _descend(self):</pre></a>
+        
+<a name=192><pre>        while self.cursor.children:</pre></a>
+        
+<a name=193><pre>            self.cursor = self.cursor.children[0]</pre></a>
         
     </body>
 </html>
