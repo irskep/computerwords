@@ -4,7 +4,8 @@
 
 Right now, the best way to leave feedback is to
 [open a ticket on GitHub](http://github.com/irskep/computerwords/issues)
-or comment on an existing thread. This project is in a “public preview” state
+or [subscribe to the mailing list](https://groups.google.com/forum/#!forum/computerwords).
+This project is in a “public preview” state
 because I want to find all the rough edges before committing to a proper
 release.
 
