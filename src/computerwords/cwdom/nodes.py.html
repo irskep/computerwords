@@ -347,385 +347,419 @@
         
 <a name=165><pre>&nbsp;</pre></a>
         
-<a name=166><pre>class CWDocumentNode(CWNode):</pre></a>
+<a name=166><pre>class CWEmptyNode(CWNode):</pre></a>
         
 <a name=167><pre>    """</pre></a>
         
-<a name=168><pre>    name: `Document`</pre></a>
+<a name=168><pre>    name: `Empty`</pre></a>
         
 <a name=169><pre>&nbsp;</pre></a>
         
-<a name=170><pre>    A node representing a document. Its descendants can be anything but</pre></a>
+<a name=170><pre>    A node with no content. May be used instead of removing a node.</pre></a>
         
-<a name=171><pre>    `CWRootNode` and `CWDocumentNode`.</pre></a>
+<a name=171><pre>    """</pre></a>
         
-<a name=172><pre>    """</pre></a>
+<a name=172><pre>&nbsp;</pre></a>
         
-<a name=173><pre>&nbsp;</pre></a>
+<a name=173><pre>    def __init__(self, children=None, document_id=None):</pre></a>
         
-<a name=174><pre>    def __init__(self, path, children=None, document_id=None):</pre></a>
+<a name=174><pre>        super().__init__('Empty', [], document_id=document_id)</pre></a>
         
-<a name=175><pre>        """</pre></a>
+<a name=175><pre>&nbsp;</pre></a>
         
-<a name=176><pre>        * `path`: Filesystem path to this document</pre></a>
+<a name=176><pre>    def copy(self):</pre></a>
         
-<a name=177><pre>        """</pre></a>
+<a name=177><pre>        return CWEmptyNode(document_id=self.document_id)</pre></a>
         
-<a name=178><pre>        super().__init__('Document', children, document_id=document_id)</pre></a>
+<a name=178><pre>&nbsp;</pre></a>
         
-<a name=179><pre>        self.path = path</pre></a>
+<a name=179><pre>    def shallow_repr(self):</pre></a>
         
-<a name=180><pre>&nbsp;</pre></a>
+<a name=180><pre>        return '{}()'.format(self.name)</pre></a>
         
-<a name=181><pre>    def get_args_string_for_test_comparison(self):</pre></a>
+<a name=181><pre>&nbsp;</pre></a>
         
-<a name=182><pre>        return 'path={!r}'.format(self.path)</pre></a>
+<a name=182><pre>&nbsp;</pre></a>
         
-<a name=183><pre>&nbsp;</pre></a>
+<a name=183><pre>class CWDocumentNode(CWNode):</pre></a>
         
-<a name=184><pre>    def __repr__(self):</pre></a>
+<a name=184><pre>    """</pre></a>
         
-<a name=185><pre>        return '{}(path={!r}, children={!r})'.format(</pre></a>
+<a name=185><pre>    name: `Document`</pre></a>
         
-<a name=186><pre>            self.name, self.path, self.children)</pre></a>
+<a name=186><pre>&nbsp;</pre></a>
         
-<a name=187><pre>&nbsp;</pre></a>
+<a name=187><pre>    A node representing a document. Its descendants can be anything but</pre></a>
         
-<a name=188><pre>    def shallow_repr(self):</pre></a>
+<a name=188><pre>    `CWRootNode` and `CWDocumentNode`.</pre></a>
         
-<a name=189><pre>        return '{}(path={!r})'.format(self.name, self.path)</pre></a>
+<a name=189><pre>    """</pre></a>
         
 <a name=190><pre>&nbsp;</pre></a>
         
-<a name=191><pre>    def copy(self):</pre></a>
+<a name=191><pre>    def __init__(self, path, children=None, document_id=None):</pre></a>
         
-<a name=192><pre>        return CWDocumentNode(self.path, document_id=document_id)</pre></a>
+<a name=192><pre>        """</pre></a>
         
-<a name=193><pre>&nbsp;</pre></a>
+<a name=193><pre>        * `path`: Filesystem path to this document</pre></a>
         
-<a name=194><pre>&nbsp;</pre></a>
+<a name=194><pre>        """</pre></a>
         
-<a name=195><pre>class CWTagNode(CWNode):</pre></a>
+<a name=195><pre>        super().__init__('Document', children, document_id=document_id)</pre></a>
         
-<a name=196><pre>    """</pre></a>
+<a name=196><pre>        self.path = path</pre></a>
         
-<a name=197><pre>    name: arbitrary HTML tag name</pre></a>
+<a name=197><pre>&nbsp;</pre></a>
         
-<a name=198><pre>&nbsp;</pre></a>
+<a name=198><pre>    def get_args_string_for_test_comparison(self):</pre></a>
         
-<a name=199><pre>    A node that can be directly converted to valid HTML.</pre></a>
+<a name=199><pre>        return 'path={!r}'.format(self.path)</pre></a>
         
-<a name=200><pre>    """</pre></a>
+<a name=200><pre>&nbsp;</pre></a>
         
-<a name=201><pre>&nbsp;</pre></a>
+<a name=201><pre>    def __repr__(self):</pre></a>
         
-<a name=202><pre>    def __init__(self, name, kwargs, children=None, document_id=None):</pre></a>
+<a name=202><pre>        return '{}(path={!r}, children={!r})'.format(</pre></a>
         
-<a name=203><pre>        """</pre></a>
+<a name=203><pre>            self.name, self.path, self.children)</pre></a>
         
-<a name=204><pre>        * `name`: Still the type/kind of node, but is also a valid HTML tag</pre></a>
+<a name=204><pre>&nbsp;</pre></a>
         
-<a name=205><pre>          name.</pre></a>
+<a name=205><pre>    def shallow_repr(self):</pre></a>
         
-<a name=206><pre>        * `kwargs`: Arguments/attributes parsed from the tag or inserted by</pre></a>
+<a name=206><pre>        return '{}(path={!r})'.format(self.name, self.path)</pre></a>
         
-<a name=207><pre>          processors.</pre></a>
+<a name=207><pre>&nbsp;</pre></a>
         
-<a name=208><pre>        """</pre></a>
+<a name=208><pre>    def copy(self):</pre></a>
         
-<a name=209><pre>        super().__init__(name, children, document_id=document_id)</pre></a>
+<a name=209><pre>        return CWDocumentNode(self.path, document_id=document_id)</pre></a>
         
-<a name=210><pre>        assert isinstance(kwargs, dict)</pre></a>
+<a name=210><pre>&nbsp;</pre></a>
         
-<a name=211><pre>        self.kwargs = kwargs</pre></a>
+<a name=211><pre>&nbsp;</pre></a>
         
-<a name=212><pre>&nbsp;</pre></a>
+<a name=212><pre>class CWTagNode(CWNode):</pre></a>
         
-<a name=213><pre>    def copy(self, name=None, kwargs=None):</pre></a>
+<a name=213><pre>    """</pre></a>
         
-<a name=214><pre>        return CWTagNode(</pre></a>
+<a name=214><pre>    name: arbitrary HTML tag name</pre></a>
         
-<a name=215><pre>            name=name or self.name,</pre></a>
+<a name=215><pre>&nbsp;</pre></a>
         
-<a name=216><pre>            kwargs=kwargs or self.kwargs,</pre></a>
+<a name=216><pre>    A node that can be directly converted to valid HTML.</pre></a>
         
-<a name=217><pre>            document_id=self.document_id)</pre></a>
+<a name=217><pre>    """</pre></a>
         
 <a name=218><pre>&nbsp;</pre></a>
         
-<a name=219><pre>    def get_args_string_for_test_comparison(self):</pre></a>
+<a name=219><pre>    def __init__(self, name, kwargs, children=None, document_id=None):</pre></a>
         
-<a name=220><pre>        return 'kwargs={!r}'.format(self.kwargs)</pre></a>
+<a name=220><pre>        """</pre></a>
         
-<a name=221><pre>&nbsp;</pre></a>
+<a name=221><pre>        * `name`: Still the type/kind of node, but is also a valid HTML tag</pre></a>
         
-<a name=222><pre>    def __repr__(self):</pre></a>
+<a name=222><pre>          name.</pre></a>
         
-<a name=223><pre>        return '{}(kwargs={!r}, children={!r})'.format(</pre></a>
+<a name=223><pre>        * `kwargs`: Arguments/attributes parsed from the tag or inserted by</pre></a>
         
-<a name=224><pre>            self.name, self.kwargs, self.children)</pre></a>
+<a name=224><pre>          processors.</pre></a>
         
-<a name=225><pre>&nbsp;</pre></a>
+<a name=225><pre>        """</pre></a>
         
-<a name=226><pre>    def shallow_repr(self):</pre></a>
+<a name=226><pre>        super().__init__(name, children, document_id=document_id)</pre></a>
         
-<a name=227><pre>        return '{}(kwargs={!r})'.format(self.name, self.kwargs)</pre></a>
+<a name=227><pre>        assert isinstance(kwargs, dict)</pre></a>
         
-<a name=228><pre>&nbsp;</pre></a>
+<a name=228><pre>        self.kwargs = kwargs</pre></a>
         
-<a name=229><pre>    def __eq__(self, other):</pre></a>
+<a name=229><pre>&nbsp;</pre></a>
         
-<a name=230><pre>        return super().__eq__(other) and self.kwargs == other.kwargs</pre></a>
+<a name=230><pre>    def copy(self, name=None, kwargs=None):</pre></a>
         
-<a name=231><pre>&nbsp;</pre></a>
+<a name=231><pre>        return CWTagNode(</pre></a>
         
-<a name=232><pre>    def __hash__(self):</pre></a>
+<a name=232><pre>            name=name or self.name,</pre></a>
         
-<a name=233><pre>        return hash(self.id)</pre></a>
+<a name=233><pre>            kwargs=kwargs or self.kwargs,</pre></a>
         
-<a name=234><pre>&nbsp;</pre></a>
+<a name=234><pre>            document_id=self.document_id)</pre></a>
         
-<a name=235><pre>    def get_arg(self, name):</pre></a>
+<a name=235><pre>&nbsp;</pre></a>
         
-<a name=236><pre>        return self.kwargs[name]</pre></a>
+<a name=236><pre>    def get_args_string_for_test_comparison(self):</pre></a>
         
-<a name=237><pre>&nbsp;</pre></a>
+<a name=237><pre>        return 'kwargs={!r}'.format(self.kwargs)</pre></a>
         
 <a name=238><pre>&nbsp;</pre></a>
         
-<a name=239><pre>class CWTextNode(CWNode):</pre></a>
+<a name=239><pre>    def __repr__(self):</pre></a>
         
-<a name=240><pre>    """</pre></a>
+<a name=240><pre>        return '{}(kwargs={!r}, children={!r})'.format(</pre></a>
         
-<a name=241><pre>    name: `Text`</pre></a>
+<a name=241><pre>            self.name, self.kwargs, self.children)</pre></a>
         
 <a name=242><pre>&nbsp;</pre></a>
         
-<a name=243><pre>    A node that only contains text to be written to output.</pre></a>
+<a name=243><pre>    def shallow_repr(self):</pre></a>
         
-<a name=244><pre>    """</pre></a>
+<a name=244><pre>        return '{}(kwargs={!r})'.format(self.name, self.kwargs)</pre></a>
         
 <a name=245><pre>&nbsp;</pre></a>
         
-<a name=246><pre>    def __init__(self, text, document_id=None, escape=True):</pre></a>
+<a name=246><pre>    def __eq__(self, other):</pre></a>
         
-<a name=247><pre>        """</pre></a>
+<a name=247><pre>        return super().__eq__(other) and self.kwargs == other.kwargs</pre></a>
         
-<a name=248><pre>        * `text`: The text</pre></a>
+<a name=248><pre>&nbsp;</pre></a>
         
-<a name=249><pre>        * `escape`: If `True`, output should be escaped in whatever the output</pre></a>
+<a name=249><pre>    def __hash__(self):</pre></a>
         
-<a name=250><pre>          language is. Defaults to `True`.</pre></a>
+<a name=250><pre>        return hash(self.id)</pre></a>
         
-<a name=251><pre>        """</pre></a>
+<a name=251><pre>&nbsp;</pre></a>
         
-<a name=252><pre>&nbsp;</pre></a>
+<a name=252><pre>    def get_arg(self, name):</pre></a>
         
-<a name=253><pre>        super().__init__('Text', [], document_id=document_id)</pre></a>
+<a name=253><pre>        return self.kwargs[name]</pre></a>
         
-<a name=254><pre>        self.escape = escape</pre></a>
+<a name=254><pre>&nbsp;</pre></a>
         
-<a name=255><pre>        self.text = text</pre></a>
+<a name=255><pre>&nbsp;</pre></a>
         
-<a name=256><pre>&nbsp;</pre></a>
+<a name=256><pre>class CWTextNode(CWNode):</pre></a>
         
-<a name=257><pre>    def get_string_for_test_comparison(self, inner_indentation=2):</pre></a>
+<a name=257><pre>    """</pre></a>
         
-<a name=258><pre>        return repr(self.text)</pre></a>
+<a name=258><pre>    name: `Text`</pre></a>
         
 <a name=259><pre>&nbsp;</pre></a>
         
-<a name=260><pre>    def copy(self):</pre></a>
+<a name=260><pre>    A node that only contains text to be written to output.</pre></a>
         
-<a name=261><pre>        return CWTextNode(self.text)</pre></a>
+<a name=261><pre>    """</pre></a>
         
 <a name=262><pre>&nbsp;</pre></a>
         
-<a name=263><pre>    def get_args_string_for_test_comparison(self):</pre></a>
+<a name=263><pre>    def __init__(self, text, document_id=None, escape=True):</pre></a>
         
-<a name=264><pre>        return repr(self.text)</pre></a>
+<a name=264><pre>        """</pre></a>
         
-<a name=265><pre>&nbsp;</pre></a>
+<a name=265><pre>        * `text`: The text</pre></a>
         
-<a name=266><pre>    def __repr__(self):</pre></a>
+<a name=266><pre>        * `escape`: If `True`, output should be escaped in whatever the output</pre></a>
         
-<a name=267><pre>        return "{}(text={!r})".format(self.name, self.text)</pre></a>
+<a name=267><pre>          language is. Defaults to `True`.</pre></a>
         
-<a name=268><pre>&nbsp;</pre></a>
+<a name=268><pre>        """</pre></a>
         
 <a name=269><pre>&nbsp;</pre></a>
         
-<a name=270><pre>class CWAnchorNode(CWTagNode):</pre></a>
+<a name=270><pre>        super().__init__('Text', [], document_id=document_id)</pre></a>
         
-<a name=271><pre>    """</pre></a>
+<a name=271><pre>        self.escape = escape</pre></a>
         
-<a name=272><pre>    name: `Anchor`</pre></a>
+<a name=272><pre>        self.text = text</pre></a>
         
 <a name=273><pre>&nbsp;</pre></a>
         
-<a name=274><pre>    A node that can be linked to via its globally unique `ref_id`. Essentially</pre></a>
+<a name=274><pre>    def get_string_for_test_comparison(self, inner_indentation=2):</pre></a>
         
-<a name=275><pre>    a specialized version of `CWTagNode('a', {'name': ...})`.</pre></a>
+<a name=275><pre>        return repr(self.text)</pre></a>
         
-<a name=276><pre>    """</pre></a>
+<a name=276><pre>&nbsp;</pre></a>
         
-<a name=277><pre>&nbsp;</pre></a>
+<a name=277><pre>    def copy(self):</pre></a>
         
-<a name=278><pre>    def __init__(self, ref_id, kwargs=None, children=None, document_id=None):</pre></a>
+<a name=278><pre>        return CWTextNode(self.text)</pre></a>
         
-<a name=279><pre>        """</pre></a>
+<a name=279><pre>&nbsp;</pre></a>
         
-<a name=280><pre>        * `ref_id`: Globally unique ID of this anchor</pre></a>
+<a name=280><pre>    def get_args_string_for_test_comparison(self):</pre></a>
         
-<a name=281><pre>        """</pre></a>
+<a name=281><pre>        return repr(self.text)</pre></a>
         
-<a name=282><pre>        super().__init__(</pre></a>
+<a name=282><pre>&nbsp;</pre></a>
         
-<a name=283><pre>            'Anchor', kwargs or {}, children, document_id=document_id)</pre></a>
+<a name=283><pre>    def __repr__(self):</pre></a>
         
-<a name=284><pre>        self.ref_id = ref_id</pre></a>
+<a name=284><pre>        return "{}(text={!r})".format(self.name, self.text)</pre></a>
         
 <a name=285><pre>&nbsp;</pre></a>
         
-<a name=286><pre>    def get_args_string_for_test_comparison(self):</pre></a>
+<a name=286><pre>&nbsp;</pre></a>
         
-<a name=287><pre>        return "ref_id={!r}, kwargs={!r}".format(self.ref_id, self.kwargs)</pre></a>
+<a name=287><pre>class CWAnchorNode(CWTagNode):</pre></a>
         
-<a name=288><pre>&nbsp;</pre></a>
+<a name=288><pre>    """</pre></a>
         
-<a name=289><pre>    def copy(self):</pre></a>
+<a name=289><pre>    name: `Anchor`</pre></a>
         
-<a name=290><pre>        return CWAnchorNode(</pre></a>
+<a name=290><pre>&nbsp;</pre></a>
         
-<a name=291><pre>            self.ref_id, self.kwargs, document_id=document_id)</pre></a>
+<a name=291><pre>    A node that can be linked to via its globally unique `ref_id`. Essentially</pre></a>
         
-<a name=292><pre>&nbsp;</pre></a>
+<a name=292><pre>    a specialized version of `CWTagNode('a', {'name': ...})`.</pre></a>
         
-<a name=293><pre>    def __repr__(self):</pre></a>
+<a name=293><pre>    """</pre></a>
         
-<a name=294><pre>        return "{}(ref_id={!r}, kwargs={!r}, children={!r})".format(</pre></a>
+<a name=294><pre>&nbsp;</pre></a>
         
-<a name=295><pre>            self.name, self.ref_id, self.kwargs, self.children)</pre></a>
+<a name=295><pre>    def __init__(self, ref_id, kwargs=None, children=None, document_id=None):</pre></a>
         
-<a name=296><pre>&nbsp;</pre></a>
+<a name=296><pre>        """</pre></a>
         
-<a name=297><pre>    def shallow_repr(self):</pre></a>
+<a name=297><pre>        * `ref_id`: Globally unique ID of this anchor</pre></a>
         
-<a name=298><pre>        return "{}(ref_id={!r}, kwargs={!r})".format(</pre></a>
+<a name=298><pre>        """</pre></a>
         
-<a name=299><pre>            self.name, self.ref_id, self.kwargs)</pre></a>
+<a name=299><pre>        super().__init__(</pre></a>
         
-<a name=300><pre>&nbsp;</pre></a>
+<a name=300><pre>            'Anchor', kwargs or {}, children, document_id=document_id)</pre></a>
         
-<a name=301><pre>&nbsp;</pre></a>
+<a name=301><pre>        self.ref_id = ref_id</pre></a>
         
-<a name=302><pre>class CWLinkNode(CWNode):</pre></a>
+<a name=302><pre>&nbsp;</pre></a>
         
-<a name=303><pre>    """</pre></a>
+<a name=303><pre>    def get_args_string_for_test_comparison(self):</pre></a>
         
-<a name=304><pre>    name: `Link`</pre></a>
+<a name=304><pre>        return "ref_id={!r}, kwargs={!r}".format(self.ref_id, self.kwargs)</pre></a>
         
 <a name=305><pre>&nbsp;</pre></a>
         
-<a name=306><pre>    A node that can link to the location of a `CWAnchorNode` to via its</pre></a>
+<a name=306><pre>    def copy(self):</pre></a>
         
-<a name=307><pre>    globally unique `ref_id`.</pre></a>
+<a name=307><pre>        return CWAnchorNode(</pre></a>
         
-<a name=308><pre>&nbsp;</pre></a>
+<a name=308><pre>            self.ref_id, self.kwargs, document_id=document_id)</pre></a>
         
-<a name=309><pre>    In the future, this may become a subclass of `CWTagNode`.</pre></a>
+<a name=309><pre>&nbsp;</pre></a>
         
-<a name=310><pre>    """</pre></a>
+<a name=310><pre>    def __repr__(self):</pre></a>
         
-<a name=311><pre>&nbsp;</pre></a>
+<a name=311><pre>        return "{}(ref_id={!r}, kwargs={!r}, children={!r})".format(</pre></a>
         
-<a name=312><pre>    def __init__(self, ref_id, children=None, document_id=None):</pre></a>
+<a name=312><pre>            self.name, self.ref_id, self.kwargs, self.children)</pre></a>
         
-<a name=313><pre>        super().__init__('Link', children, document_id=document_id)</pre></a>
+<a name=313><pre>&nbsp;</pre></a>
         
-<a name=314><pre>        self.ref_id = ref_id</pre></a>
+<a name=314><pre>    def shallow_repr(self):</pre></a>
         
-<a name=315><pre>&nbsp;</pre></a>
+<a name=315><pre>        return "{}(ref_id={!r}, kwargs={!r})".format(</pre></a>
         
-<a name=316><pre>    def get_args_string_for_test_comparison(self):</pre></a>
+<a name=316><pre>            self.name, self.ref_id, self.kwargs)</pre></a>
         
-<a name=317><pre>        return "ref_id={!r}".format(self.ref_id)</pre></a>
+<a name=317><pre>&nbsp;</pre></a>
         
 <a name=318><pre>&nbsp;</pre></a>
         
-<a name=319><pre>    def copy(self):</pre></a>
+<a name=319><pre>class CWLinkNode(CWNode):</pre></a>
         
-<a name=320><pre>        return CWLinkNode(self.ref_id, document_id=self.document_id)</pre></a>
+<a name=320><pre>    """</pre></a>
         
-<a name=321><pre>&nbsp;</pre></a>
+<a name=321><pre>    name: `Link`</pre></a>
         
-<a name=322><pre>    def __repr__(self):</pre></a>
+<a name=322><pre>&nbsp;</pre></a>
         
-<a name=323><pre>        return "{}(ref_id={!r}, children={!r})".format(</pre></a>
+<a name=323><pre>    A node that can link to the location of a `CWAnchorNode` to via its</pre></a>
         
-<a name=324><pre>            self.name, self.ref_id, self.children)</pre></a>
+<a name=324><pre>    globally unique `ref_id`.</pre></a>
         
 <a name=325><pre>&nbsp;</pre></a>
         
-<a name=326><pre>    def shallow_repr(self):</pre></a>
+<a name=326><pre>    In the future, this may become a subclass of `CWTagNode`.</pre></a>
         
-<a name=327><pre>        return "{}(ref_id={!r})".format(self.name, self.ref_id)</pre></a>
+<a name=327><pre>    """</pre></a>
         
 <a name=328><pre>&nbsp;</pre></a>
         
-<a name=329><pre>&nbsp;</pre></a>
+<a name=329><pre>    def __init__(self, ref_id, children=None, document_id=None):</pre></a>
         
-<a name=330><pre>class CWDocumentLinkNode(CWNode):</pre></a>
+<a name=330><pre>        super().__init__('Link', children, document_id=document_id)</pre></a>
         
-<a name=331><pre>    """</pre></a>
+<a name=331><pre>        self.ref_id = ref_id</pre></a>
         
-<a name=332><pre>    name: `DocumentLink`</pre></a>
+<a name=332><pre>&nbsp;</pre></a>
         
-<a name=333><pre>&nbsp;</pre></a>
+<a name=333><pre>    def get_args_string_for_test_comparison(self):</pre></a>
         
-<a name=334><pre>    A node that can link to the location of a document without including any</pre></a>
+<a name=334><pre>        return "ref_id={!r}".format(self.ref_id)</pre></a>
         
-<a name=335><pre>    anchors inside the page.</pre></a>
+<a name=335><pre>&nbsp;</pre></a>
         
-<a name=336><pre>    """</pre></a>
+<a name=336><pre>    def copy(self):</pre></a>
         
-<a name=337><pre>&nbsp;</pre></a>
+<a name=337><pre>        return CWLinkNode(self.ref_id, document_id=self.document_id)</pre></a>
         
-<a name=338><pre>    def __init__(self, target_document_id, children=None, document_id=None):</pre></a>
+<a name=338><pre>&nbsp;</pre></a>
         
-<a name=339><pre>        super().__init__('DocumentLink', children, document_id=document_id)</pre></a>
+<a name=339><pre>    def __repr__(self):</pre></a>
         
-<a name=340><pre>        self.target_document_id = target_document_id</pre></a>
+<a name=340><pre>        return "{}(ref_id={!r}, children={!r})".format(</pre></a>
         
-<a name=341><pre>&nbsp;</pre></a>
+<a name=341><pre>            self.name, self.ref_id, self.children)</pre></a>
         
-<a name=342><pre>    def get_args_string_for_test_comparison(self):</pre></a>
+<a name=342><pre>&nbsp;</pre></a>
         
-<a name=343><pre>        return "target_document_id={!r}".format(self.target_document_id)</pre></a>
+<a name=343><pre>    def shallow_repr(self):</pre></a>
         
-<a name=344><pre>&nbsp;</pre></a>
+<a name=344><pre>        return "{}(ref_id={!r})".format(self.name, self.ref_id)</pre></a>
         
-<a name=345><pre>    def copy(self):</pre></a>
+<a name=345><pre>&nbsp;</pre></a>
         
-<a name=346><pre>        return CWDocumentLinkNode(</pre></a>
+<a name=346><pre>&nbsp;</pre></a>
         
-<a name=347><pre>            self.target_document_id, document_id=self.document_id)</pre></a>
+<a name=347><pre>class CWDocumentLinkNode(CWNode):</pre></a>
         
-<a name=348><pre>&nbsp;</pre></a>
+<a name=348><pre>    """</pre></a>
         
-<a name=349><pre>    def __repr__(self):</pre></a>
+<a name=349><pre>    name: `DocumentLink`</pre></a>
         
-<a name=350><pre>        return "{}(target_document_id={!r}, children={!r})".format(</pre></a>
+<a name=350><pre>&nbsp;</pre></a>
         
-<a name=351><pre>            self.name, self.target_document_id, self.children)</pre></a>
+<a name=351><pre>    A node that can link to the location of a document without including any</pre></a>
         
-<a name=352><pre>&nbsp;</pre></a>
+<a name=352><pre>    anchors inside the page.</pre></a>
         
-<a name=353><pre>    def shallow_repr(self):</pre></a>
+<a name=353><pre>    """</pre></a>
         
-<a name=354><pre>        return "{}(target_document_id={!r})".format(</pre></a>
+<a name=354><pre>&nbsp;</pre></a>
         
-<a name=355><pre>            self.name, self.target_document_id)</pre></a>
+<a name=355><pre>    def __init__(self, target_document_id, children=None, document_id=None):</pre></a>
+        
+<a name=356><pre>        super().__init__('DocumentLink', children, document_id=document_id)</pre></a>
+        
+<a name=357><pre>        self.target_document_id = target_document_id</pre></a>
+        
+<a name=358><pre>&nbsp;</pre></a>
+        
+<a name=359><pre>    def get_args_string_for_test_comparison(self):</pre></a>
+        
+<a name=360><pre>        return "target_document_id={!r}".format(self.target_document_id)</pre></a>
+        
+<a name=361><pre>&nbsp;</pre></a>
+        
+<a name=362><pre>    def copy(self):</pre></a>
+        
+<a name=363><pre>        return CWDocumentLinkNode(</pre></a>
+        
+<a name=364><pre>            self.target_document_id, document_id=self.document_id)</pre></a>
+        
+<a name=365><pre>&nbsp;</pre></a>
+        
+<a name=366><pre>    def __repr__(self):</pre></a>
+        
+<a name=367><pre>        return "{}(target_document_id={!r}, children={!r})".format(</pre></a>
+        
+<a name=368><pre>            self.name, self.target_document_id, self.children)</pre></a>
+        
+<a name=369><pre>&nbsp;</pre></a>
+        
+<a name=370><pre>    def shallow_repr(self):</pre></a>
+        
+<a name=371><pre>        return "{}(target_document_id={!r})".format(</pre></a>
+        
+<a name=372><pre>            self.name, self.target_document_id)</pre></a>
         
     </body>
 </html>
