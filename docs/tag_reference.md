@@ -92,6 +92,29 @@ This is a multi-paragraph note with a custom first line.
 
 <warning>This is a warning.</warning>
 
+## Linking to sections
+
+You can define a "heading alias" like this:
+
+```html
+<heading-alias name="configuration" />
+# Configuring Foobar
+```
+
+You can then link to the section like this:
+
+```html
+Check out the <heading-link name="configuration" /> section.
+```
+
+This will automatically include the heading's contents and link to it:
+
+> Check out the [Configuring Foobar](#not-a-real-link) section.
+
+Be sure to use self-closing tags. The tag's contents will be replaced by
+the heading's contents. In the future, Computer Words will probably let you
+set custom link text.
+
 ## Python documentation
 
 Computer Words supports including documentation from *symbol files*. These
