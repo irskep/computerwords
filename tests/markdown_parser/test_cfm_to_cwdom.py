@@ -7,8 +7,12 @@ from computerwords.markdown_parser.cfm_to_cwdom import cfm_to_cwdom
 from tests.CWTestCase import CWTestCase
 
 
+DOC_ID = ('test.md',)
+DOC_PATH = 'test.md'
+
+
 TAGS = {'a', 'b', 'c', 'x', 'y', 'z'}
-CONFIG = CFMParserConfig(document_id=None, allowed_tags=TAGS)
+CONFIG = CFMParserConfig(document_id=DOC_ID, allowed_tags=TAGS)
 
 
 class IntegratedHTMLParsingTestCase(CWTestCase):

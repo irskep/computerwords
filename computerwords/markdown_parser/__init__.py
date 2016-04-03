@@ -13,11 +13,3 @@ class CFMParserConfig(CFMParserConfigBase):
         assert(isinstance(self.allowed_tags, set))
         assert(isinstance(self.document_id, tuple))
         return self
-
-
-def lex_and_parse_html(string, config):
-    return parse_html(list(lex_html(string)), allowed_tags=config.allowed_tags)
-
-
-def string_to_cwdom(string, config):
-    return parse_tree_to_cwdom(lex_and_parse_html(string, config.allowed_tags))

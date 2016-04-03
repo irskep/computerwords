@@ -7,6 +7,10 @@ from computerwords.markdown_parser import parser_support, CFMParserConfig
 from computerwords.markdown_parser.html_lexer import lex_html
 
 
+DOC_ID = ('test.md',)
+DOC_PATH = 'test.md'
+
+
 parse_funcs = parser_support.PARSE_FUNC_REGISTRY
 
 
@@ -20,7 +24,7 @@ def strip(s):
 
 def parse_production(
         name, tokens, i,
-        config=CFMParserConfig(document_id=None, allowed_tags={'abc'})):
+        config=CFMParserConfig(document_id=DOC_ID, allowed_tags={'abc'})):
     return parse_funcs[name](tokens, i, config)
 
 

@@ -35,11 +35,11 @@ class TableOfContentsTestCase(CWTestCase):
             CWDocumentNode('doc 2', [header2]),
         ]))
         tree.apply_library(self.library)
-        self.assertEqual(header1.get_parent().data, {
+        self.assertEqual(header1.data, {
             'toc_entry': TOCEntry(
                 level=1, heading_node=header1, ref_id='Header-1-text')
         })
-        self.assertEqual(header2.get_parent().data, {
+        self.assertEqual(header2.data, {
             'toc_entry': TOCEntry(
                 level=1, heading_node=header2, ref_id='Header-2-text')
         })
