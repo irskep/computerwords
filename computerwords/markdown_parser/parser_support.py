@@ -1,17 +1,19 @@
+from .exceptions import SourceException
+
+
 def log(text, *args, **kwargs):
     return
     # TODO: use logging
     print(text.format(*args, **kwargs))
 
 
-class ParseError(Exception):
+class ParseError(SourceException):
     def __init__(self, token, msg=None):
         if msg is None:
             msg = "Unable to parse token {}".format(token.name)
         self.token = token
         self.msg = msg
-        super().__init__("Line {} col {}: {}".format(
-            token.line, token.pos, msg))
+        super().__init__(token.loc, msg)
 
     def __eq__(self, other):
         return (

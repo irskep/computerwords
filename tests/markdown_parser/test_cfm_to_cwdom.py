@@ -12,7 +12,8 @@ DOC_PATH = 'test.md'
 
 
 TAGS = {'a', 'b', 'c', 'x', 'y', 'z'}
-CONFIG = CFMParserConfig(document_id=DOC_ID, allowed_tags=TAGS)
+CONFIG = CFMParserConfig(
+    document_id=DOC_ID, document_path=DOC_PATH, allowed_tags=TAGS)
 
 
 class IntegratedHTMLParsingTestCase(CWTestCase):

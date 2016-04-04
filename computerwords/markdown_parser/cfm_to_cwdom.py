@@ -6,6 +6,8 @@ import CommonMark
 
 from . import CFMParserConfig
 from computerwords.cwdom.nodes import *
+from .exceptions import SourceException
+from .src_loc import SourceRange, SourceLocation
 from .html_lexer import lex_html
 from .html_parser import (
     parse_open_tag,
@@ -19,7 +21,7 @@ from .html_parser import (
 from .html_parser import parse_html
 
 def lex_and_parse_html(string, config):
-    return parse_html(list(lex_html(string)), config=config)
+    return parse_html(list(lex_html(config, string)), config=config)
 
 
 def html_string_to_cwdom(string, config):
@@ -117,27 +119,27 @@ def post(name):
 
 
 @t('Text')
-def t_Text(ast_node, config):
+def t_Text(ast_node, config, loc):
     yield CWTextNode(ast_node.literal)
 
 @t('Document')
-def t_Document(ast_node, config):
+def t_Document(ast_node, config, loc):
     yield CWDocumentNode('PATH')
 
 @t('Heading')
-def t_Header(ast_node, config):
+def t_Header(ast_node, config, loc):
     yield CWTagNode('h{}'.format(ast_node.level), {})
 
 @t('Paragraph')
-def t_Paragraph(ast_node, config):
+def t_Paragraph(ast_node, config, loc):
     yield CWTagNode('p', {})
 
 @t('Link')
-def t_Link(ast_node, config):
+def t_Link(ast_node, config, loc):
     yield CWTagNode('a', {'href': ast_node.destination})
 
 @t('List')
-def t_List(ast_node, config):
+def t_List(ast_node, config, loc):
     if ast_node.list_data['type'] == 'Bullet':
         yield CWTagNode('ul', {})
     elif ast_node.list_data['type'] == 'Ordered': 
@@ -147,61 +149,62 @@ def t_List(ast_node, config):
             ast_node.list_data['type']))
 
 @t('Item')
-def t_Item(ast_node, config):
+def t_Item(ast_node, config, loc):
     yield CWTagNode('li', {})
 
 @t('HtmlBlock')
-def t_HtmlBlock(ast_node, config):
+def t_HtmlBlock(ast_node, config, loc):
     try:
+        config = config.copy_relative_to_loc(loc)
         items = list(html_string_to_cwdom(ast_node.literal, config))
         yield from items
     except ParseError:
-        yield from _do_your_best(ast_node.literal, config)
+        yield from _do_your_best(ast_node.literal, config, loc)
 
 @t('HtmlInline')
-def t_HtmlInline(ast_node, config):
-    yield from _do_your_best(ast_node.literal, config)
+def t_HtmlInline(ast_node, config, loc):
+    yield from _do_your_best(ast_node.literal, config, loc)
 
 @t('Emph')
-def t_Emph(ast_node, config):
+def t_Emph(ast_node, config, loc):
     yield CWTagNode('i', {})
 
 @t('Strong')
-def t_Strong(ast_node, config):
+def t_Strong(ast_node, config, loc):
     yield CWTagNode('strong', {})
 
 @t('BlockQuote')
-def t_BlockQuote(ast_node, config):
+def t_BlockQuote(ast_node, config, loc):
     yield CWTagNode('blockquote', {})
 
 @t('ThematicBreak')
-def t_ThematicBreak(ast_node, config):
+def t_ThematicBreak(ast_node, config, loc):
     yield CWTagNode('hr', {})
 
 @t('CodeBlock')
-def t_CodeBlock(ast_node, config):
+def t_CodeBlock(ast_node, config, loc):
     yield CWTagNode(
         'pre', {'language': ast_node.info}, [CWTextNode(ast_node.literal)])
 
 @t('Code')
-def t_Code(ast_node, config):
+def t_Code(ast_node, config, loc):
     yield CWTagNode('code', {}, [CWTextNode(ast_node.literal)])
 
 @t('Hardbreak')
-def t_Hardbreak(ast_node, config):
+def t_Hardbreak(ast_node, config, loc):
     yield CWTagNode('br', {})
 
 @t('Softbreak')
-def t_Softbreak(ast_node, config):
+def t_Softbreak(ast_node, config, loc):
     # optionally insert br here
     yield CWTextNode(' ')
 
 @t('Image')
-def t_Image(ast_node, config):
+def t_Image(ast_node, config, loc):
     yield CWTagNode('img', {'src': ast_node.destination})
 
 @post('Image')
-def post_Image(node, config):
+def post_Image(node, config, loc):
     if node.children:
         node.kwargs['alt'] = node.children[0].text
     node.set_children([])
@@ -210,29 +213,29 @@ def post_Image(node, config):
 class NonFatalParseError(Exception): pass
 
 
-def _do_your_best(literal, config):
+def _do_your_best(literal, config, loc):
     try:
-        result = maybe_parse_everything(literal, config)
+        result = maybe_parse_everything(literal, config, loc)
         if result:
             return result
     except NonFatalParseError:
         pass
 
     try:
-        yield from maybe_parse_self_closing_tag(literal, config)
+        yield from maybe_parse_self_closing_tag(literal, config, loc)
         return
     except NonFatalParseError:
         pass
 
     try:
-        yield from maybe_parse_open_tag(literal, config)
+        yield from maybe_parse_open_tag(literal, config, loc)
         return
     except NonFatalParseError:
         pass
 
 
     try:
-        yield from maybe_parse_close_tag(literal, config)
+        yield from maybe_parse_close_tag(literal, config, loc)
         return
     except NonFatalParseError:
         pass
@@ -243,18 +246,19 @@ def _do_your_best(literal, config):
 def _yield_nodes(literal, tokens, i, node):
     yield node
     if i < len(tokens) - 1:
-        yield CWTextNode(literal[tokens[i].pos:])
+        yield CWTextNode(literal[tokens[i].loc.start.char:])
 
 
-def maybe_parse_everything(literal, config):
+def maybe_parse_everything(literal, config, loc):
     try:
         result = html_string_to_cwdom(literal, config)
     except ParseError:
         raise NonFatalParseError()
 
 
-def maybe_parse_self_closing_tag(literal, config):
-    tokens = list(lex_html(literal))
+def maybe_parse_self_closing_tag(literal, config, loc):
+    config = config.copy_relative_to_loc(loc)
+    tokens = list(lex_html(config, literal))
     result = parse_self_closing_tag(tokens, config)
     if result:
         yield from _yield_nodes(literal, tokens, result[1], CWTagNode(
@@ -264,22 +268,26 @@ def maybe_parse_self_closing_tag(literal, config):
         raise NonFatalParseError()
 
 
-def maybe_parse_open_tag(literal, config):
-    tokens = list(lex_html(literal))
+def maybe_parse_open_tag(literal, config, loc):
+    config = config.copy_relative_to_loc(loc)
+    tokens = list(lex_html(config, literal))
     result = parse_open_tag(tokens, config)
     if result:
         yield from _yield_nodes(
-            literal, tokens, result[1], UnparsedOpenTagNode(result[0], literal))
+            literal, tokens, result[1],
+            UnparsedOpenTagNode(result[0], literal))
     else:
         raise NonFatalParseError()
 
 
-def maybe_parse_close_tag(literal, config):
-    tokens = list(lex_html(literal))
+def maybe_parse_close_tag(literal, config, loc):
+    config = config.copy_relative_to_loc(loc)
+    tokens = list(lex_html(config, literal))
     result = parse_close_tag(tokens, config)
     if result:
         yield from _yield_nodes(
-            literal, tokens, result[1], UnparsedCloseTagNode(result[0], literal))
+            literal, tokens, result[1],
+            UnparsedCloseTagNode(result[0], literal))
     else:
         raise NonFatalParseError()
 
@@ -314,16 +322,16 @@ def fix_ignored_html(node, strict=False):
             if isinstance(child, UnparsedCloseTagNode):
                 tag_name = child.parse_tree.bbword.value
                 if tag_name != new_tag.name:
-                    raise NoMatchingTagError("Mismatched closing tag: {} vs {}".format(
+                    fmt = "Mismatched closing tag: {} vs {}"
+                    raise NoMatchingTagError(fmt.format(
                         new_tag.name, tag_name))
                 right_i = i
                 break
 
         if abort:
             literal = children[left_i].literal
-            log.warning(
-                "Error parsing {!r} in {}; emitting escaped text instead".format(
-                    literal, node.document_id))
+            msg_fmt = "Error parsing {!r} in {}; emitting escaped text instead"
+            log.warning(msg_fmt.format(literal, node.document_id))
             node.replace_child(left_i, CWTextNode(literal))
         else:
             sub_children = children[left_i+1:right_i]
@@ -334,26 +342,22 @@ def fix_ignored_html(node, strict=False):
 
     for child in node.children:
         fix_ignored_html(child)
-    #i = 0
-    #while i < len(node.children):
-    #    try:
-    #        fix_ignored_html(node.children[i])
-    #        i += 1
-    #    except NoMatchingTagError as e:
-    #        # this may have been caused by a tag being split across multiple
-    #        # paragraphs. Fix by just concatenating paragraphs together until
-    #        # it works.
-    #        # TODO: then serialize and re-parse
-    #        if i + 1 < len(node.children):
-    #            node.children[i + 1].children = node.children[i].children + node.children[i + 1].children
-    #            node.children.pop(i)
-    #            node.children[i].claim_children()
-    #        else:
-    #            raise e
 
 
 def _ast_node_to_cwdom(ast_node, config):
-    for cwdom_node in AST_TYPE_TO_CW[ast_node.t](ast_node, config):
+    if ast_node.sourcepos:
+        ((start_line, start_col), (end_line, end_col)) = ast_node.sourcepos
+    elif ast_node.parent and ast_node.parent.sourcepos:
+        ((start_line, start_col), (end_line, end_col)) = ast_node.parent.sourcepos
+    else:
+        # shouldn't happen
+        ((start_line, start_col), (end_line, end_col)) = ((1, 1), (1, 1))
+
+    loc = SourceRange(
+        SourceLocation(start_line - 1, start_col - 1, None),
+        SourceLocation(end_line - 1, end_col - 1, None))
+
+    for cwdom_node in AST_TYPE_TO_CW[ast_node.t](ast_node, config, loc):
         children = []
         ast_child = ast_node.first_child
         while ast_child:

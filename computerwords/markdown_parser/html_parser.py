@@ -35,32 +35,33 @@ import logging
 from collections import namedtuple
 from .ast import *
 from .parser_support import *
+from .exceptions import SourceException
+from .src_loc import SourceRange
 
 log = logging.getLogger(__name__)
 
 
-class TagMismatchError(ParseError):
+class TagMismatchError(SourceException):
     def __init__(self, token1, token2):
+        self.token1 = token1
         self.token2 = token2
         msg_fmt = (
             "Tag mismatch:" +
-            " {tag1} (line {line1}, col {col1}) and" +
-            " {tag2} (line {line2}, col {col2})." +
+            " {tag1} ({range1}) and" +
+            " {tag2} ({range2})." +
             " Did you forget to close your <{tag1}> tag?")
         msg = msg_fmt.format(
             tag1 = token1.value,
             tag2 = token2.value,
-            line1 = token1.line,
-            line2 = token2.line,
-            col1 = token1.pos,
-            col2 = token2.pos)
-        super().__init__(token1, msg)
+            range1 = token1.loc.short_str,
+            range2 = token2.loc.short_str)
+        super().__init__(SourceRange(token1.loc.start, token2.loc.end), msg)
 
 
-class UnknownTagError(ParseError):
+class UnknownTagError(SourceException):
     def __init__(self, tag_name_token):
         super().__init__(
-            tag_name_token,
+            tag_name_token.loc,
             "Unknown tag: {}".format(tag_name_token.value))
 
 
@@ -172,7 +173,11 @@ rule('arg_value',
 
 
 def parse_html(tokens, config):
-    return call_parse_function('stmts_b', tokens, 0, config)[0]
+    try:
+        return call_parse_function('stmts_b', tokens, 0, config)[0]
+    except SourceException as e:
+        e.apply_config(config)
+        raise e
 
 
 def parser_shortcut(name):

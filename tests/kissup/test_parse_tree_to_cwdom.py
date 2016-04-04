@@ -11,13 +11,16 @@ from computerwords.cwdom.CWTree import CWTree
 
 
 DOC_ID = ('test.md',)
+DOC_PATH = 'test.md'
 
 
 class TestParseTreeToCW(CWTestCase):
     def test_basic(self):
         parse_tree = lex_and_parse_html(
             "outer text <abc x=y>inner text</abc>",
-            config=CFMParserConfig(document_id=DOC_ID, allowed_tags={'abc'}))
+            config=CFMParserConfig(
+                document_id=DOC_ID, document_path=DOC_PATH,
+                allowed_tags={'abc'}))
         tree = CWTree(CWDocumentNode('test.md', parse_tree_to_cwdom(parse_tree)))
 
         self.assertEqual(tree.root.get_string_for_test_comparison(), self.strip("""
@@ -31,7 +34,9 @@ class TestParseTreeToCW(CWTestCase):
         with self.assertRaises(DuplicateArgumentsError):
             parse_tree = lex_and_parse_html(
                 "outer text <abc x=y x=z>inner text</abc>",
-                config=CFMParserConfig(document_id=DOC_ID, allowed_tags={'abc'}))
+                config=CFMParserConfig(
+                    document_id=DOC_ID, document_path=DOC_PATH,
+                    allowed_tags={'abc'}))
             dom = parse_tree_to_cwdom(parse_tree)
 
 

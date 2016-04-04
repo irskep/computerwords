@@ -55,6 +55,7 @@ class Python35Plugin(CWPlugin):
 
         parser_config = CFMParserConfig(
             document_id=(symbol_path,),
+            document_path=symbol_path,
             allowed_tags=self.library.get_allowed_tags())
 
         symbol = get_symbol_at_path(symbol_tree, symbol_path)

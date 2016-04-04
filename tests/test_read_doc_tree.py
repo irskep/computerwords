@@ -11,7 +11,7 @@ from computerwords.read_doc_tree import (
 )
 
 
-_empty = lambda subtree, doc_id: []
+_empty = lambda subtree, doc_id, doc_path: []
 
 
 def _print_doc_tree(doc_tree):

@@ -9,8 +9,13 @@ DOC_ID = ('test.md',)
 DOC_PATH = 'test.md'
 
 
-def lex(s):
-    return list(lex_html(s))
+def get_config(allowed_tags):
+    return CFMParserConfig(
+        document_id=DOC_ID, document_path=DOC_PATH, allowed_tags=allowed_tags)
+
+
+def lex(config, s):
+    return list(lex_html(config, s))
 
 
 def strip(s):
@@ -20,32 +25,35 @@ def strip(s):
 class TestParseErrors(unittest.TestCase):
 
     def test_trailing_garbage(self):
-        tokens = lex('text<abc /><')
-        config = CFMParserConfig(document_id=DOC_ID, allowed_tags={'abc'})
-        with self.assertRaisesRegex(
+        config = get_config({'abc'})
+        tokens = lex(config, 'text<abc /><')
+        with self.assertRaises(
                 html_parser.ParseError,
-                r"Line 0 col 11: Unable to parse token \<"):
+                msg="0:11-12: Unable to parse token <"):
             html_parser.parse_html(tokens, config=config)
 
     def test_mismatched_tags(self):
-        tokens = lex('<abc>inner</xyz>')
-        msg_re = r"Line 0 col 1: Tag mismatch: abc \(line 0, col 1\) and xyz \(line 0, col 12\). Did you forget to close your \<abc\> tag\?"
-        config = CFMParserConfig(document_id=DOC_ID, allowed_tags={'abc', 'xyz'})
-        with self.assertRaisesRegex(html_parser.TagMismatchError, msg_re):
+        config = get_config({'abc', 'xyz'})
+        tokens = lex(config, '<abc>inner</xyz>')
+        msg = (
+            "'test.md':0:1-15: Tag mismatch: " +
+            "abc (0:1-4) and xyz (0:12-15). " +
+            "Did you forget to close your <abc> tag?")
+        with self.assertRaises(html_parser.TagMismatchError, msg=msg):
             html_parser.parse_html(tokens, config=config)
 
     def test_disallowed_tags_1(self):
-        tokens = lex('text <foo></foo>')
-        msg_re = r"Line 0 col 6: Unknown tag: foo"
-        config = CFMParserConfig(document_id=DOC_ID, allowed_tags={'abc', 'xyz'})
-        with self.assertRaisesRegex(html_parser.UnknownTagError, msg_re):
+        config = get_config({'abc', 'xyz'})
+        tokens = lex(config, 'text <foo></foo>')
+        msg = "'test.md':0:6-9: Unknown tag: foo"
+        with self.assertRaises(html_parser.UnknownTagError, msg=msg):
             html_parser.parse_html(tokens, config=config)
 
     def test_disallowed_tags_2(self):
-        tokens = lex('text <foo />')
-        msg_re = r"Line 0 col 6: Unknown tag: foo"
-        config = CFMParserConfig(document_id=DOC_ID, allowed_tags={'abc', 'xyz'})
-        with self.assertRaisesRegex(html_parser.UnknownTagError, msg_re):
+        config = get_config({'abc', 'xyz'})
+        tokens = lex(config, 'text <foo />')
+        msg = "'test.md':0:6-9: Unknown tag: foo"
+        with self.assertRaisesRegex(html_parser.UnknownTagError, msg):
             html_parser.parse_html(tokens, config=config)
 
 

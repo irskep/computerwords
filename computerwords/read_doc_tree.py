@@ -95,17 +95,18 @@ def _conf_entry_to_doc_subtree(files_root, entry):
         raise ValueError("Unsupported file_hierarchy value: {}".format(entry))
 
 
-def doc_subtree_to_cwdom(subtree, get_doc_cwdom, doc_id):
+def doc_subtree_to_cwdom(subtree, get_doc_cwdom, doc):
     """
     `get_doc_cwdom(subtree, document_id)`
     """
     doc_node = CWDocumentNode(
-        str(subtree.root_path), get_doc_cwdom(subtree, doc_id))
+        str(subtree.root_path),
+        get_doc_cwdom(subtree, doc.document_id, str(doc.root_path)))
     doc_node.deep_set_document_id(subtree.document_id)
 
     yield doc_node
     for child in subtree.children:
-        yield from doc_subtree_to_cwdom(child, get_doc_cwdom, doc_id)
+        yield from doc_subtree_to_cwdom(child, get_doc_cwdom, doc)
 
 
 def read_doc_tree(root_path, file_hierarchy_conf, get_doc_cwdom):
@@ -114,6 +115,6 @@ def read_doc_tree(root_path, file_hierarchy_conf, get_doc_cwdom):
         for entry in file_hierarchy_conf
     ]))
     document_nodes = chain_list(
-        [doc_subtree_to_cwdom(doc, get_doc_cwdom, doc.document_id)
+        [doc_subtree_to_cwdom(doc, get_doc_cwdom, doc)
         for doc in doc_tree])
     return doc_tree, document_nodes

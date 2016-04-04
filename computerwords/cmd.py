@@ -32,9 +32,11 @@ def _get_plugins(plugin_names):
 
 
 def _get_cfm_reader(lib):
-    def _read_doc_tree(toc_entry, doc_id):
+    def _read_doc_tree(toc_entry, doc_id, doc_path):
         config = CFMParserConfig(
-            allowed_tags=lib.get_allowed_tags(), document_id=doc_id)
+            allowed_tags=lib.get_allowed_tags(),
+            document_id=doc_id,
+            document_path=doc_path)
         with toc_entry.root_path.open() as f:
             return cfm_to_cwdom(f.read(), config)
     return _read_doc_tree
