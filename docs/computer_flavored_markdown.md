@@ -131,7 +131,3 @@ If you have a good example of this, please open a ticket on GitHub.
 Any time you use a tag, it needs to either be of the form
 `<my-tag>contents</my-tag>` or `<my-tag />`. Using `<my-tag>` by itself
 will result in an error.
-
-### The error messages are crap
-
-Computer Words doesn't know how to tell you what file your problem is in yet.

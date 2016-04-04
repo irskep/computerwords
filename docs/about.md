@@ -70,7 +70,7 @@ More importantly, you can use plugins other people have written!
 
 ## Who should *not* use this?
 
-* Anyone who wants a robust, battle-tested system with good error messages.
+* Anyone who wants a robust, battle-tested system.
 * Projects already invested in Sphinx or another non-Markdown system they are
   happy with.
 
