@@ -78,7 +78,11 @@ class HeadingAliasesPlugin(CWPlugin):
             if node.kwargs['name'] in tree.processor_data['heading_aliases']:
                 toc_entry =  tree.processor_data['heading_aliases'][node.kwargs['name']]
                 link_node = CWLinkNode(toc_entry.ref_id)
-                link_node.deepcopy_children_from(toc_entry.heading_node)
+                # if user did not provide children, use TOC entry
+                if node.children:
+                    link_node.deepcopy_children_from(node)
+                else:
+                    link_node.deepcopy_children_from(toc_entry.heading_node)
                 tree.replace_subtree(node, link_node)
             else:
                 # otherwise, keep a reference to this node so that a

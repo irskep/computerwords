@@ -111,9 +111,14 @@ This will automatically include the heading's contents and link to it:
 
 > Check out the [Configuring Foobar](#not-a-real-link) section.
 
-Be sure to use self-closing tags. The tag's contents will be replaced by
-the heading's contents. In the future, Computer Words will probably let you
-set custom link text.
+You can set custom link text by just using the non-self-closing version:
+
+```html
+Check out the
+<heading-link name="configuration">Configuration</heading-link>
+```
+
+> Check out the [Configuration](#not-a-real-link) section.
 
 ## Python documentation
 
