@@ -29,14 +29,14 @@ class TestParseErrors(unittest.TestCase):
         tokens = lex(config, 'text<abc /><')
         with self.assertRaises(
                 html_parser.ParseError,
-                msg="0:11-12: Unable to parse token <"):
+                msg="1:12-13: Unable to parse token <"):
             html_parser.parse_html(tokens, config=config)
 
     def test_mismatched_tags(self):
         config = get_config({'abc', 'xyz'})
         tokens = lex(config, '<abc>inner</xyz>')
         msg = (
-            "'test.md':0:1-15: Tag mismatch: " +
+            "'test.md':1:2-16: Tag mismatch: " +
             "abc (0:1-4) and xyz (0:12-15). " +
             "Did you forget to close your <abc> tag?")
         with self.assertRaises(html_parser.TagMismatchError, msg=msg):
@@ -45,14 +45,14 @@ class TestParseErrors(unittest.TestCase):
     def test_disallowed_tags_1(self):
         config = get_config({'abc', 'xyz'})
         tokens = lex(config, 'text <foo></foo>')
-        msg = "'test.md':0:6-9: Unknown tag: foo"
+        msg = "'test.md':1:7-10: Unknown tag: foo"
         with self.assertRaises(html_parser.UnknownTagError, msg=msg):
             html_parser.parse_html(tokens, config=config)
 
     def test_disallowed_tags_2(self):
         config = get_config({'abc', 'xyz'})
         tokens = lex(config, 'text <foo />')
-        msg = "'test.md':0:6-9: Unknown tag: foo"
+        msg = "'test.md':1:7-10: Unknown tag: foo"
         with self.assertRaisesRegex(html_parser.UnknownTagError, msg):
             html_parser.parse_html(tokens, config=config)
 
