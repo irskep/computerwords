@@ -1,7 +1,7 @@
 {
     "site_title": "Computer Words",
     "site_subtitle": "A system for writing and publishing documentation",
-    "project_version": "v1.0a6",
+    "project_version": "v1.0a7",
     "html": {
         "css_files": ["style.css"],
         "single_page": false,
@@ -18,7 +18,8 @@
         "how_it_works.md",
         "API.md",
         "related_work.md",
-        "faq.md"
+        "faq.md",
+        "changes.md"
     ],
     "python3.5": {
         "symbols_path": "./build/symbols.json"
