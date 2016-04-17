@@ -53,3 +53,23 @@ The built docs are now in `docs/build/`.
 <h1 skip_toc=True>Table of Contents</h1>
 
 <table-of-contents maxdepth=2 />
+
+# Contributing
+
+## Ideas
+
+Send feature requests, syntax suggestions, and large-scale architecture
+proposals to the mailing list. What you see on this site is the result of
+one person's ideas about how a tool like this should work. We need more
+people's input to make something really great.
+
+## Bug reports
+
+There are a lot of known bad cases, but we need to know which ones people
+actually hit. Send these to
+[GitHub](http://github.com/irskep/computerwords/issues).
+
+## Code
+
+If this sounds fun to work on, good, because literally everything needs work.
+Either email the list or just dive in!
