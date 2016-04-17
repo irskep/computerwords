@@ -139,21 +139,26 @@ this:
 (Remember, all paths in the config file are relative to the config file's
 directory.)
 
-Now you can use the `<autodoc-python />` tag to include module docs in your
+Now you can use the `<autodoc-python />` tag to include source docs in your
 Markdown files:
 
 ```html
 <autodoc-python 
     module="my.module"
     include-children=True
+    render-absolute-path=True
     heading-level=2 />
 ```
 
 ### Attributes
 
-* `module`: name of the module to be included
+* `module`/`class`/`method`/`function`: path to the symbol to be included
 * `include-children`: If `True`, also show definitions and docstrings of all
   classes and functions in the module
+* `render-absolute-path`: If `True` (default), show the fully qualified path
+  for the symbol (e.g. `computerwords.plugin.CWPlugin` rather than just
+  `CWPlugin`). Children, if included, will be rendered with this value as
+  `False`.
 * `heading-level`: If you don't want the module's name to be a top-level
   heading, set this to 2 to use `h2`, 3 to use `h3`, etc.
 

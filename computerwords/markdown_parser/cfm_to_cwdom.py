@@ -302,6 +302,8 @@ class NoMatchingTagError(Exception): pass
 
 
 def fix_ignored_html(node, strict=False):
+    
+
     children = node.children
     new_children = []
 
