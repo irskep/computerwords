@@ -1,3 +1,4 @@
+import logging
 import re
 
 from collections import OrderedDict
@@ -15,6 +16,10 @@ from .html_parser import (
     parse_self_closing_tag,
     parse_tag,
 )
+
+
+log = logging.getLogger(__name__)
+
 
 ### begin __init__.py ###
 
@@ -240,7 +245,8 @@ def _do_your_best(literal, config, loc):
     except NonFatalParseError:
         pass
 
-    raise ValueError("HTML parser can't handle {!r}".format(literal))
+    log.warn("HTML parser can't handle {!r} at {}".format(literal, loc))
+    yield CWTextNode(literal, escape=False)
 
 
 def _yield_nodes(literal, tokens, i, node):
@@ -331,7 +337,7 @@ def fix_ignored_html(node, strict=False):
         if abort:
             literal = children[left_i].literal
             msg_fmt = "Error parsing {!r} in {}; emitting escaped text instead"
-            log.warning(msg_fmt.format(literal, node.document_id))
+            log.warn(msg_fmt.format(literal, node.document_id))
             node.replace_child(left_i, CWTextNode(literal))
         else:
             sub_children = children[left_i+1:right_i]
