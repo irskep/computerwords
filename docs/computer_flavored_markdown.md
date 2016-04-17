@@ -68,7 +68,7 @@ tags must be in their own lines.
 
 **This works:** 
 
-```markdown
+```html
 <warning>
 
 First paragraph of warning.
@@ -80,7 +80,7 @@ Second paragraph of warning.
 
 **This does not work:** 
 
-```markdown
+```html
 <warning>
 First paragraph of warning.
 
@@ -90,7 +90,7 @@ Second paragraph of warning.
 
 There are also more bugs. This works:
 
-```markdown
+```html
 <x>
 Blah blah blah
 </x>
@@ -98,7 +98,7 @@ Blah blah blah
 
 **This does not work:**
 
-```markdown
+```html
 <x>
 
 Blah blah blah
@@ -107,7 +107,7 @@ Blah blah blah
 
 **This also does not work:**
 
-```markdown
+```html
 <x>
 
 Blah blah blah</x>

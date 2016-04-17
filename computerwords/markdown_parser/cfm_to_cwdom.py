@@ -1,7 +1,7 @@
 import logging
 import re
 
-from collections import OrderedDict
+from collections import OrderedDict, deque
 
 import CommonMark
 
@@ -245,7 +245,7 @@ def _do_your_best(literal, config, loc):
     except NonFatalParseError:
         pass
 
-    log.warn("HTML parser can't handle {!r} at {}".format(literal, loc))
+    log.warning("HTML parser can't handle {!r} at {}".format(literal, loc))
     yield CWTextNode(literal, escape=False)
 
 
@@ -303,51 +303,45 @@ class NoMatchingTagError(Exception): pass
 
 def fix_ignored_html(node, strict=False):
     children = node.children
-    left_i = None
-    new_tag = None
+    new_children = []
 
-    for i, child in enumerate(children):
+    tag_stack = deque()
+    children_stack = deque()
+    children_stack.append(new_children)
+
+    for child in children:
         if isinstance(child, UnparsedOpenTagNode):
             new_tag = CWTagNode(
                 child.parse_tree.tag_contents.bbword.value,
                 tag_args_to_dict(child.parse_tree.tag_contents.tag_args))
-            left_i = i
-            break
-
-    if new_tag is not None:
-        right_i = None
-        abort = False
-        for i, child in reversed(list(enumerate(children))):
-            if i <= left_i:
+            children_stack.append(new_tag.children)
+            tag_stack.append(new_tag)
+        elif isinstance(child, UnparsedCloseTagNode):
+            close_name = child.parse_tree.bbword.value
+            if tag_stack and close_name == tag_stack[-1].name:
+                children_stack.pop()
+                closed_tag = tag_stack.pop()
+                closed_tag.claim_children()
+                children_stack[-1].append(closed_tag)
+            else:
                 if strict:
                     raise NoMatchingTagError(
-                        "Matching tag not found for {}".format(new_tag.name))
+                        "Closing tag {} does not match opening tag {}".format(
+                            child.name, new_tag.name))
                 else:
-                    abort = True
-                break
-            if isinstance(child, UnparsedCloseTagNode):
-                tag_name = child.parse_tree.bbword.value
-                if tag_name != new_tag.name:
-                    fmt = "Mismatched closing tag: {} vs {}"
-                    raise NoMatchingTagError(fmt.format(
-                        new_tag.name, tag_name))
-                right_i = i
-                break
-
-        if abort:
-            literal = children[left_i].literal
-            msg_fmt = "Error parsing {!r} in {}; emitting escaped text instead"
-            log.warn(msg_fmt.format(literal, node.document_id))
-            node.replace_child(left_i, CWTextNode(literal))
+                    log.warning("Ignoring unmatched closing tag {}".format(
+                        child.name))
         else:
-            sub_children = children[left_i+1:right_i]
-            del node.children[left_i+1:right_i+1]
-            node.children[left_i] = new_tag
-            new_tag.set_children(sub_children)
-            node.claim_children()
+            fix_ignored_html(child, strict=strict)
+            children_stack[-1].append(child)
 
-    for child in node.children:
-        fix_ignored_html(child)
+    while tag_stack:
+        unclosed_tag = tag_stack.pop()
+        children_stack.pop()
+        children_stack[-1].append(unclosed_tag)
+        log.warning("Force-closing unclosed tag {}".format(unclosed_tag))
+
+    node.set_children(new_children)
 
 
 def _ast_node_to_cwdom(ast_node, config):

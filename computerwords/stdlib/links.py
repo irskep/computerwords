@@ -15,6 +15,6 @@ def add_links(library):
         ref_id_to_anchor = tree.processor_data['ref_id_to_anchor']
         if node.ref_id in ref_id_to_anchor:
             # TODO: find a way to report error location
-            log.warn("Ignoring duplicate ref ID {}".format(node.ref_id))
+            log.warning("Ignoring duplicate ref ID {}".format(node.ref_id))
         else:
             ref_id_to_anchor[node.ref_id] = node
