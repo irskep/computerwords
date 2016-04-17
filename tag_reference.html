@@ -11,7 +11,7 @@
     </head>
     <body>
         <header id="pageheader">
-            <a class="header-link" href="index.html"><h1>Computer Words <span class="project-version">v1.0a6</span></h1></a>
+            <a class="header-link" href="index.html"><h1>Computer Words <span class="project-version">v1.0a7</span></h1></a>
             <h2>A system for writing and publishing documentation</h2>
             <div id="navheader"><nav class='previous-page'><a href="configuration.html">&larr; Configuration</a></nav><nav class='next-page'><a href="code_blocks.html">Code Blocks &rarr;</a></nav><div style="clear: both;"></div></div>
             <hr>
@@ -51,7 +51,10 @@ This is a multi-paragraph note with a custom first line.
 </pre></div>
 </figure><p>You can then link to the section like this:</p><figure class='code'><div class="highlight"><pre><span></span>Check out the <span class="p">&lt;</span><span class="nt">heading-link</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;configuration&quot;</span> <span class="p">/&gt;</span> section.
 </pre></div>
-</figure><p>This will automatically include the heading&#x27;s contents and link to it:</p><blockquote><p>Check out the <a href='#not-a-real-link'>Configuring Foobar</a> section.</p></blockquote><p>Be sure to use self-closing tags. The tag&#x27;s contents will be replaced by the heading&#x27;s contents. In the future, Computer Words will probably let you set custom link text.</p><a href="#Python-documentation" name="Python-documentation" class='header-anchor'><h2>Python documentation</h2></a><p>Computer Words supports including documentation from <i>symbol files</i>. These can be generated for Python 3.5 like this:</p><figure class='code'><div class="highlight"><pre><span></span>python3 -m computerwords.source_parsers.python35 . mymodule <span class="se">\</span>
+</figure><p>This will automatically include the heading&#x27;s contents and link to it:</p><blockquote><p>Check out the <a href='#not-a-real-link'>Configuring Foobar</a> section.</p></blockquote><p>You can set custom link text by just using the non-self-closing version:</p><figure class='code'><div class="highlight"><pre><span></span>Check out the
+<span class="p">&lt;</span><span class="nt">heading-link</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;configuration&quot;</span><span class="p">&gt;</span>Configuration<span class="p">&lt;/</span><span class="nt">heading-link</span><span class="p">&gt;</span>
+</pre></div>
+</figure><blockquote><p>Check out the <a href='#not-a-real-link'>Configuration</a> section.</p></blockquote><a href="#Python-documentation" name="Python-documentation" class='header-anchor'><h2>Python documentation</h2></a><p>Computer Words supports including documentation from <i>symbol files</i>. These can be generated for Python 3.5 like this:</p><figure class='code'><div class="highlight"><pre><span></span>python3 -m computerwords.source_parsers.python35 . mymodule <span class="se">\</span>
   &gt; docs/symbols.json
 </pre></div>
 </figure><p>Then tell Computer Words where to find the symbol file in your config like this:</p><figure class='code'><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -60,12 +63,13 @@ This is a multi-paragraph note with a custom first line.
     <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
-</figure><p>(Remember, all paths in the config file are relative to the config file&#x27;s directory.)</p><p>Now you can use the <code>&lt;autodoc-python /&gt;</code> tag to include module docs in your Markdown files:</p><figure class='code'><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">autodoc-python</span> 
+</figure><p>(Remember, all paths in the config file are relative to the config file&#x27;s directory.)</p><p>Now you can use the <code>&lt;autodoc-python /&gt;</code> tag to include source docs in your Markdown files:</p><figure class='code'><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">autodoc-python</span> 
     <span class="na">module</span><span class="o">=</span><span class="s">&quot;my.module&quot;</span>
     <span class="na">include-children</span><span class="o">=</span><span class="s">True</span>
+    <span class="na">render-absolute-path</span><span class="o">=</span><span class="s">True</span>
     <span class="na">heading-level</span><span class="o">=</span><span class="s">2</span> <span class="p">/&gt;</span>
 </pre></div>
-</figure><a href="#Attributes" name="Attributes" class='header-anchor'><h3>Attributes</h3></a><ul><li><p><code>module</code>: name of the module to be included</p></li><li><p><code>include-children</code>: If <code>True</code>, also show definitions and docstrings of all classes and functions in the module</p></li><li><p><code>heading-level</code>: If you don&#x27;t want the module&#x27;s name to be a top-level heading, set this to 2 to use <code>h2</code>, 3 to use <code>h3</code>, etc.</p></li></ul><a href="#Missing-features" name="Missing-features" class='header-anchor'><h3>Missing features</h3></a><ul><li><p>Including individual classes and functions</p></li><li><p>Convenient linking to symbols</p></li></ul><a href="#Why-the-intermediate-JSON-step-" name="Why-the-intermediate-JSON-step-" class='header-anchor'><h3>Why the intermediate JSON step?</h3></a><p>Because the general interface with source parsers needs to work for languages besides Python. Languages tend to have parsers for themselves in their standard libraries; Computer Words should make use of them.</p></article></main>
+</figure><a href="#Attributes" name="Attributes" class='header-anchor'><h3>Attributes</h3></a><ul><li><p><code>module</code>/<code>class</code>/<code>method</code>/<code>function</code>: path to the symbol to be included</p></li><li><p><code>include-children</code>: If <code>True</code>, also show definitions and docstrings of all classes and functions in the module</p></li><li><p><code>render-absolute-path</code>: If <code>True</code> (default), show the fully qualified path for the symbol (e.g. <code>computerwords.plugin.CWPlugin</code> rather than just <code>CWPlugin</code>). Children, if included, will be rendered with this value as <code>False</code>.</p></li><li><p><code>heading-level</code>: If you don&#x27;t want the module&#x27;s name to be a top-level heading, set this to 2 to use <code>h2</code>, 3 to use <code>h3</code>, etc.</p></li></ul><a href="#Missing-features" name="Missing-features" class='header-anchor'><h3>Missing features</h3></a><ul><li><p>Including individual classes and functions</p></li><li><p>Convenient linking to symbols</p></li></ul><a href="#Why-the-intermediate-JSON-step-" name="Why-the-intermediate-JSON-step-" class='header-anchor'><h3>Why the intermediate JSON step?</h3></a><p>Because the general interface with source parsers needs to work for languages besides Python. Languages tend to have parsers for themselves in their standard libraries; Computer Words should make use of them.</p></article></main>
         <footer id="pagefooter"><nav class='previous-page'><a href="configuration.html">&larr; Configuration</a></nav><nav class='next-page'><a href="code_blocks.html">Code Blocks &rarr;</a></nav><div style="clear: both;"></div></footer>
     </body>
 </html>

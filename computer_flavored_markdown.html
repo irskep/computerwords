@@ -11,7 +11,7 @@
     </head>
     <body>
         <header id="pageheader">
-            <a class="header-link" href="index.html"><h1>Computer Words <span class="project-version">v1.0a6</span></h1></a>
+            <a class="header-link" href="index.html"><h1>Computer Words <span class="project-version">v1.0a7</span></h1></a>
             <h2>A system for writing and publishing documentation</h2>
             <div id="navheader"><nav class='previous-page'><a href="about.html">&larr; About</a></nav><nav class='next-page'><a href="configuration.html">Configuration &rarr;</a></nav><div style="clear: both;"></div></div>
             <hr>
@@ -46,34 +46,34 @@ This is a [paragraph](https://en.wikipedia.org/wiki/Paragraph)
 <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Heading 1<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span>Subheading 1<span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
 </pre></div>
-</figure><p>The means by which this happens is described later.</p><a href="#Parser-caveats" name="Parser-caveats" class='header-anchor'><h2>Parser caveats</h2></a><a href="#Bugs" name="Bugs" class='header-anchor'><h3>Bugs</h3></a><p>If you want to put multiple paragraphs inside a tag, the opening and closing tags must be in their own lines.</p><p><strong>This works:</strong></p><figure class='code'><div class="highlight"><pre><span></span><span class="cp">&lt;warning&gt;</span>
+</figure><p>The means by which this happens is described later.</p><a href="#Parser-caveats" name="Parser-caveats" class='header-anchor'><h2>Parser caveats</h2></a><a href="#Bugs" name="Bugs" class='header-anchor'><h3>Bugs</h3></a><p>If you want to put multiple paragraphs inside a tag, the opening and closing tags must be in their own lines.</p><p><strong>This works:</strong></p><figure class='code'><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">warning</span><span class="p">&gt;</span>
 
-<span class="cp">First paragraph of warning.</span>
+First paragraph of warning.
 
-<span class="cp">Second paragraph of warning.</span>
+Second paragraph of warning.
 
-<span class="cp">&lt;/warning&gt;</span>
+<span class="p">&lt;/</span><span class="nt">warning</span><span class="p">&gt;</span>
 </pre></div>
-</figure><p><strong>This does not work:</strong></p><figure class='code'><div class="highlight"><pre><span></span><span class="cp">&lt;warning&gt;</span>
-<span class="cp">First paragraph of warning.</span>
+</figure><p><strong>This does not work:</strong></p><figure class='code'><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">warning</span><span class="p">&gt;</span>
+First paragraph of warning.
 
-<span class="cp">Second paragraph of warning.</span>
-<span class="cp">&lt;/warning&gt;</span>
+Second paragraph of warning.
+<span class="p">&lt;/</span><span class="nt">warning</span><span class="p">&gt;</span>
 </pre></div>
-</figure><p>There are also more bugs. This works:</p><figure class='code'><div class="highlight"><pre><span></span><span class="cp">&lt;x&gt;</span>
-<span class="cp">Blah blah blah</span>
-<span class="cp">&lt;/x&gt;</span>
+</figure><p>There are also more bugs. This works:</p><figure class='code'><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">x</span><span class="p">&gt;</span>
+Blah blah blah
+<span class="p">&lt;/</span><span class="nt">x</span><span class="p">&gt;</span>
 </pre></div>
-</figure><p><strong>This does not work:</strong></p><figure class='code'><div class="highlight"><pre><span></span><span class="cp">&lt;x&gt;</span>
+</figure><p><strong>This does not work:</strong></p><figure class='code'><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">x</span><span class="p">&gt;</span>
 
-<span class="cp">Blah blah blah</span>
-<span class="cp">&lt;/x&gt;</span>
+Blah blah blah
+<span class="p">&lt;/</span><span class="nt">x</span><span class="p">&gt;</span>
 </pre></div>
-</figure><p><strong>This also does not work:</strong></p><figure class='code'><div class="highlight"><pre><span></span><span class="cp">&lt;x&gt;</span>
+</figure><p><strong>This also does not work:</strong></p><figure class='code'><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">x</span><span class="p">&gt;</span>
 
-<span class="cp">Blah blah blah&lt;/x&gt;</span>
+Blah blah blah<span class="p">&lt;/</span><span class="nt">x</span><span class="p">&gt;</span>
 </pre></div>
-</figure><p>This is because I have bolted a CommonMark parser, which doesn&#x27;t really understand HTML, to an HTML parser of my own design. I&#x27;m still working out the bugs. You should still be able to express anything if you mess with the line breaks a little.</p><a href="#The-parser-is-too-picky" name="The-parser-is-too-picky" class='header-anchor'><h3>The parser is too picky</h3></a><p>If you try to use your Github Flavored Markdown files, a lot of them won&#x27;t work because Computer Flavored Markdown throws errors in too many cases instead of passing strings through verbatim when it can&#x27;t parse them.</p><p>If you have a good example of this, please open a ticket on GitHub.</p><a href="#Tags-must-have-explicit-open-close-or-be-self-closing" name="Tags-must-have-explicit-open-close-or-be-self-closing" class='header-anchor'><h3>Tags must have explicit open/close or be self-closing</h3></a><p>Any time you use a tag, it needs to either be of the form <code>&lt;my-tag&gt;contents&lt;/my-tag&gt;</code> or <code>&lt;my-tag /&gt;</code>. Using <code>&lt;my-tag&gt;</code> by itself will result in an error.</p><a href="#The-error-messages-are-crap" name="The-error-messages-are-crap" class='header-anchor'><h3>The error messages are crap</h3></a><p>Computer Words doesn&#x27;t know how to tell you what file your problem is in yet.</p></article></main>
+</figure><p>This is because I have bolted a CommonMark parser, which doesn&#x27;t really understand HTML, to an HTML parser of my own design. I&#x27;m still working out the bugs. You should still be able to express anything if you mess with the line breaks a little.</p><a href="#The-parser-is-too-picky" name="The-parser-is-too-picky" class='header-anchor'><h3>The parser is too picky</h3></a><p>If you try to use your Github Flavored Markdown files, a lot of them won&#x27;t work because Computer Flavored Markdown throws errors in too many cases instead of passing strings through verbatim when it can&#x27;t parse them.</p><p>If you have a good example of this, please open a ticket on GitHub.</p><a href="#Tags-must-have-explicit-open-close-or-be-self-closing" name="Tags-must-have-explicit-open-close-or-be-self-closing" class='header-anchor'><h3>Tags must have explicit open/close or be self-closing</h3></a><p>Any time you use a tag, it needs to either be of the form <code>&lt;my-tag&gt;contents&lt;/my-tag&gt;</code> or <code>&lt;my-tag /&gt;</code>. Using <code>&lt;my-tag&gt;</code> by itself will result in an error.</p></article></main>
         <footer id="pagefooter"><nav class='previous-page'><a href="about.html">&larr; About</a></nav><nav class='next-page'><a href="configuration.html">Configuration &rarr;</a></nav><div style="clear: both;"></div></footer>
     </body>
 </html>
