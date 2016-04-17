@@ -10,6 +10,10 @@ from computerwords.markdown_parser import CFMParserConfig
 from computerwords.markdown_parser.cfm_to_cwdom import cfm_to_cwdom
 
 
+class AutodocPythonException(Exception): pass
+class _AutodocPythonSymbolNotFoundInternalException(Exception): pass
+
+
 class Python35Plugin(CWPlugin):
 
     CONFIG_NAMESPACE = "python3.5"
@@ -29,11 +33,11 @@ class Python35Plugin(CWPlugin):
         library.processor('autodoc-python', self.process_autodoc_module)
 
     def process_autodoc_module(self, tree, node):
-        if 'autodoc_symbols' not in tree.processor_data:
+        # load symbol tree
+        if 'autodoc_symbol_tree' not in tree.processor_data:
             config = tree.env['config']
             with config['python3.5']['resolved_symbols_path'].open() as f:
                 symbol_defs = [json.loads(line) for line in f]
-                tree.processor_data['autodoc_symbols'] = symbol_defs
                 symbol_tree = _create_symbol_tree(symbol_defs)
                 tree.processor_data['autodoc_symbol_tree'] = symbol_tree
 
@@ -43,6 +47,8 @@ class Python35Plugin(CWPlugin):
         output_dir = tree.env['output_dir'] / 'src'
         output_url = tree.env['config']['html']['site_url'] + "src/"
 
+        # figure out what we're showing
+
         symbol = None
         symbol_node = None
         symbol_path = None
@@ -50,19 +56,41 @@ class Python35Plugin(CWPlugin):
         if 'module' in node.kwargs:
             symbol_path = node.kwargs['module']
             h_level = int(node.kwargs.get('heading-level', "1"))
+        elif 'class' in node.kwargs:
+            symbol_path = node.kwargs['class']
+            h_level = int(node.kwargs.get('heading-level', "2"))
+        elif 'method' in node.kwargs:
+            symbol_path = node.kwargs['method']
+            h_level = int(node.kwargs.get('heading-level', "3"))
+        elif 'function' in node.kwargs:
+            symbol_path = node.kwargs['function']
+            h_level = int(node.kwargs.get('heading-level', "2"))
         else:
-            return
+            raise AutodocPythonException(
+                "No content specified (module|class|method|function)")
+
+        render_absolute_path = (
+            node.kwargs.get('render-absolute-path', 'true').lower() == 'true')
+
+        # prepare to parse. in the future, we should probably shell out to
+        # computerwords or something rather than assuming the same config.
 
         parser_config = CFMParserConfig(
             document_id=(symbol_path,),
             document_path=symbol_path,
             allowed_tags=self.library.get_allowed_tags())
 
+        # replace cursor with symbol contents
+
         symbol = get_symbol_at_path(symbol_tree, symbol_path)
         all_symbols.add(symbol)
         symbol_node = _get_symbol_node(
-            parser_config, output_url, symbol_path, symbol, h_level=h_level)
+            parser_config, output_url, symbol_path, symbol, h_level=h_level,
+            full_path=render_absolute_path)
         tree.replace_subtree(node, symbol_node)
+
+        # optionally, add children ahead of cursor (avoid creating deeply
+        # nested markup)
 
         if (    node.kwargs.get('include-children', 'false').lower() == 'true'
                 and symbol.children):
@@ -72,6 +100,8 @@ class Python35Plugin(CWPlugin):
                     parser_config, output_url, symbol_path, child, h_level + 1,
                     all_symbols))
             tree.add_siblings_ahead(new_siblings)
+
+        # write source files (hacky, will fix)
 
         src_paths = set(
             (symbol.source_file_path, symbol.relative_path)
@@ -119,7 +149,10 @@ def _debug_print_tree(t, i=0):
 
 
 def _get_symbol_at_path(t, parts):
-    next_symbol = [s for s in t.children if s.name == parts[0]][0]
+    matching_children = [s for s in t.children if s.name == parts[0]]
+    if not matching_children:
+        raise _AutodocPythonSymbolNotFoundInternalException()
+    next_symbol = matching_children[0]
     if len(parts) == 1:
         return next_symbol
     else:
@@ -131,7 +164,10 @@ def get_symbol_at_path(root, path):
     assert(parts[0] == root.name)
     if len(parts) == 1:
         return root
-    return _get_symbol_at_path(root, parts[1:])
+    try:
+        return _get_symbol_at_path(root, parts[1:])
+    except _AutodocPythonSymbolNotFoundInternalException as e:
+        raise AutodocPythonException("Symbol not found: {}".format(path))
 
 
 def _get_symbol_node(parser_config, output_url, path, symbol, h_level=2, full_path=True):
