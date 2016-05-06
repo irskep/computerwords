@@ -1,6 +1,4 @@
-import json
 import pathlib
-from collections import namedtuple
 
 from computerwords.plugin import CWPlugin
 
@@ -8,10 +6,10 @@ from computerwords.cwdom.nodes import CWTagNode, CWTextNode
 from computerwords.cwdom.traversal import find_ancestor
 from computerwords.markdown_parser import CFMParserConfig
 from computerwords.markdown_parser.cfm_to_cwdom import cfm_to_cwdom
+from computerwords.symbol_tree import SymbolTree
 
 
 class AutodocPythonException(Exception): pass
-class _AutodocPythonSymbolNotFoundInternalException(Exception): pass
 
 
 class Python35Plugin(CWPlugin):
@@ -37,9 +35,7 @@ class Python35Plugin(CWPlugin):
         if 'autodoc_symbol_tree' not in tree.processor_data:
             config = tree.env['config']
             with config['python3.5']['resolved_symbols_path'].open() as f:
-                symbol_defs = [json.loads(line) for line in f]
-                symbol_tree = _create_symbol_tree(symbol_defs)
-                tree.processor_data['autodoc_symbol_tree'] = symbol_tree
+                tree.processor_data['autodoc_symbol_tree'] = SymbolTree(f)
 
         symbol_tree = tree.processor_data['autodoc_symbol_tree']
 
@@ -82,7 +78,12 @@ class Python35Plugin(CWPlugin):
 
         # replace cursor with symbol contents
 
-        symbol = get_symbol_at_path(symbol_tree, symbol_path)
+        try:
+            symbol = symbol_tree.lookup(symbol_path)
+        except KeyError as e:
+            raise AutodocPythonException(
+                "Symbol not found: {}".format(symbol_path))
+
         all_symbols.add(symbol)
         symbol_node = _get_symbol_node(
             parser_config, output_url, symbol_path, symbol, h_level=h_level,
@@ -113,61 +114,6 @@ class Python35Plugin(CWPlugin):
             with open(src, 'r') as src_f:
                 with abs_dest.open('w') as dest_f:
                     _write_linkable_src(src_f, dest_f, rel_dest)
-
-
-SymbolDefBase = namedtuple(
-    'SymbolDef',
-    ['id', 'parent_id', 'type', 'name', 'docstring',
-     'string_inside_parens', 'return_value', 'source_file_path', 'line_number',
-     'relative_path', 'children'])
-
-
-class SymbolDef(SymbolDefBase):
-    def __hash__(self):
-        return hash(self.id)
-
-
-def _create_symbol_tree(symbol_defs):
-    nodes_by_id = {}
-    for symbol in symbol_defs:
-        nodes_by_id[symbol['id']] = SymbolDef(children=[], **symbol)
-
-    roots = []
-    for symbol in nodes_by_id.values():
-        if symbol.parent_id:
-            nodes_by_id[symbol.parent_id].children.append(symbol)
-        else:
-            roots.append(symbol)
-    assert(len(roots) == 1)
-    return roots[0]
-
-
-def _debug_print_tree(t, i=0):
-    print("{}SymbolDef({}, {}, {})".format(" " * i, t.id, t.type, t.name))
-    for child in t.children:
-        _debug_print_tree(child, i + 2)
-
-
-def _get_symbol_at_path(t, parts):
-    matching_children = [s for s in t.children if s.name == parts[0]]
-    if not matching_children:
-        raise _AutodocPythonSymbolNotFoundInternalException()
-    next_symbol = matching_children[0]
-    if len(parts) == 1:
-        return next_symbol
-    else:
-        return _get_symbol_at_path(next_symbol, parts[1:])
-
-
-def get_symbol_at_path(root, path):
-    parts = path.split('.')
-    assert(parts[0] == root.name)
-    if len(parts) == 1:
-        return root
-    try:
-        return _get_symbol_at_path(root, parts[1:])
-    except _AutodocPythonSymbolNotFoundInternalException as e:
-        raise AutodocPythonException("Symbol not found: {}".format(path))
 
 
 def _get_symbol_node(parser_config, output_url, path, symbol, h_level=2, full_path=True):
@@ -233,6 +179,7 @@ def _get_symbol_nodes_recursive(parser_config, output_url, parent_path, symbol, 
     for child in symbol.children:
         yield from _get_symbol_nodes_recursive(
             parser_config, output_url, path, child, h_level + 1, all_symbols)
+
 
 
 def _write_linkable_src(src_f, dest_f, name):
