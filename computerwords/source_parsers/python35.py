@@ -217,18 +217,24 @@ def _read_maybe_docstring(node):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument('root', default=None, action='store', help=(
-        'Directory in which to search for the module'))
-    p.add_argument('module', default=None, action='store', help=(
-        'Name of the module to parse'))
+        'Directory in which to search for the module, or a path to a single file'))
+    p.add_argument('module', nargs='?', default=None, action='store', help=(
+        'Name of the module to parse (only if root is a directory)'))
     args = p.parse_args()
 
     root_path = pathlib.Path(args.root).resolve()
-    module_root = root_path / args.module
 
-    for py_file_path in module_root.glob('**/*.py'):
-        for item in list(parse_data(root_path, py_file_path)):
+    if root_path.is_file():
+        for item in list(parse_data(root_path.parent, root_path)):
             sys.stdout.write(json.dumps(item))
             sys.stdout.write('\n')
+    else:
+        module_root = root_path / args.module
+
+        for py_file_path in module_root.glob('**/*.py'):
+            for item in list(parse_data(root_path, py_file_path)):
+                sys.stdout.write(json.dumps(item))
+                sys.stdout.write('\n')
 
 
 if __name__ == '__main__':
