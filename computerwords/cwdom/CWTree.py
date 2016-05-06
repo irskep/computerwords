@@ -45,6 +45,13 @@ class CWTree:
 
     ### general utilities ###
 
+    def get_document_path(self, document_id):
+        """Returns the path of the source document matching *document_id*"""
+        for doc in self.root.children:
+            if doc.document_id == document_id:
+                return doc.path
+        return None
+
     def preorder_traversal(self, node=None):
         """Shortcut for `computerwords.cwdom.traversal.preorder_traversal()`
         using the root"""
@@ -86,7 +93,7 @@ class CWTree:
 
         # keep re-processing current node as long as it keeps replacing
         # itself
-        if self._replacement_node: 
+        if self._replacement_node:
             self._process_node_for_first_pass(library, self._replacement_node)
 
     def _second_pass(self, library):
@@ -110,7 +117,7 @@ class CWTree:
         self._active_node = node
         self._replacement_node = None
         library.run_processors(self, self._active_node)
-        while self._replacement_node: 
+        while self._replacement_node:
             self._process_node_for_second_pass(library, self._replacement_node)
 
     def _replace_cursor(self, new_node):
@@ -311,7 +318,7 @@ class CWTree:
             sibling.set_parent(parent)
             sibling.deep_set_document_id(parent.document_id)
             self._mark_subtree_dirty(sibling)
-            
+
 
     def replace_node(self, old_node, new_node):
         """

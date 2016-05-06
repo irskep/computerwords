@@ -47,7 +47,7 @@ class Python35Plugin(CWPlugin):
 
         symbol_path, h_level = _get_symbol_path_and_h_level(node)
 
-        render_absolute_path = (
+        should_render_absolute_path = (
             node.kwargs.get('render-absolute-path', 'true').lower() == 'true')
 
         # prepare to parse. in the future, we should probably shell out to
@@ -64,12 +64,13 @@ class Python35Plugin(CWPlugin):
             symbol = symbol_tree.lookup(symbol_path)
         except KeyError as e:
             raise AutodocPythonException(
-                "Symbol not found: {}".format(symbol_path))
+                "Symbol not found: {} (somewhere in {})".format(
+                    symbol_path, tree.get_document_path(node.document_id)))
 
         all_symbols = {symbol}
         symbol_node = _get_symbol_node(
             parser_config, src_url_fmt, symbol_path, symbol,
-            h_level=h_level, full_path=render_absolute_path)
+            h_level=h_level, full_path=should_render_absolute_path)
         tree.replace_subtree(node, symbol_node)
 
         # optionally, add children ahead of cursor (avoid creating deeply
