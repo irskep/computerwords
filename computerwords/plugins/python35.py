@@ -19,6 +19,7 @@ class Python35Plugin(CWPlugin):
     def get_default_config(self):
         return {
             "symbols_path": "symbols.json",
+            "source_code_url_format": None,
         }
 
     def postprocess_config(self, config):
@@ -40,7 +41,7 @@ class Python35Plugin(CWPlugin):
         symbol_tree = tree.processor_data['autodoc_symbol_tree']
 
         output_dir = tree.env['output_dir'] / 'src'
-        output_url = tree.env['config']['html']['site_url'] + "src/"
+        src_url_fmt = tree.env['config']['python3.5']['source_code_url_format']
 
         # figure out what we're showing
 
@@ -67,8 +68,8 @@ class Python35Plugin(CWPlugin):
 
         all_symbols = {symbol}
         symbol_node = _get_symbol_node(
-            parser_config, output_url, symbol_path, symbol, h_level=h_level,
-            full_path=render_absolute_path)
+            parser_config, src_url_fmt, symbol_path, symbol,
+            h_level=h_level, full_path=render_absolute_path)
         tree.replace_subtree(node, symbol_node)
 
         # optionally, add children ahead of cursor (avoid creating deeply
@@ -79,22 +80,9 @@ class Python35Plugin(CWPlugin):
             new_siblings = []
             for child in symbol.children:
                 new_siblings += list(_get_symbol_nodes_recursive(
-                    parser_config, output_url, symbol_path, child, h_level + 1,
-                    all_symbols))
+                    parser_config, src_url_fmt, symbol_path, child,
+                    h_level + 1, all_symbols))
             tree.add_siblings_ahead(new_siblings)
-
-        # write source files (hacky, will fix)
-
-        src_paths = set(
-            (symbol.source_file_path, symbol.relative_path)
-            for symbol in all_symbols)
-
-        for src, rel_dest in src_paths:
-            abs_dest = output_dir / (rel_dest + ".html")
-            abs_dest.parent.mkdir(parents=True, exist_ok=True)
-            with open(src, 'r') as src_f:
-                with abs_dest.open('w') as dest_f:
-                    _write_linkable_src(src_f, dest_f, rel_dest)
 
 
 def _get_symbol_path_and_h_level(node):
@@ -118,23 +106,33 @@ def _get_symbol_path_and_h_level(node):
     return symbol_path, h_level
 
 
-def _get_symbol_nodes_recursive(parser_config, output_url, parent_path, symbol, h_level, all_symbols):
+def _get_symbol_nodes_recursive(
+        parser_config, src_url_fmt, parent_path, symbol, h_level, all_symbols):
     if symbol.name.startswith('_') and symbol.name != '__init__':
         return
     if not symbol.docstring:
         return
     path = parent_path + '.' + symbol.name
     all_symbols.add(symbol)
-    yield _get_symbol_node(parser_config, output_url, path, symbol, h_level, full_path=False)
+    yield _get_symbol_node(
+        parser_config, src_url_fmt, path, symbol, h_level, full_path=False)
     for child in symbol.children:
         yield from _get_symbol_nodes_recursive(
-            parser_config, output_url, path, child, h_level + 1, all_symbols)
+            parser_config, src_url_fmt, path, child, h_level + 1, all_symbols)
 
 
-def _get_symbol_node(parser_config, output_url, path, symbol, h_level=2, full_path=True):
-    output_path = output_url + symbol.relative_path + ".html"
-    if symbol.line_number:
-        output_path += '#{}'.format(symbol.line_number)
+def _get_symbol_node(
+        parser_config, src_url_fmt, path, symbol, h_level=2, full_path=True):
+    src_link_nodes = []
+
+    if src_url_fmt:
+        output_url = src_url_fmt.format(
+            relative_path=symbol.relative_path,
+            line_number=symbol.line_number)
+        link =  CWTagNode(
+            'a', {'href': output_url, 'class': 'autodoc-source-link'},
+            [CWTextNode('src')])
+        src_link_nodes = [link]
 
     name_nodes = []
 
@@ -162,12 +160,10 @@ def _get_symbol_node(parser_config, output_url, path, symbol, h_level=2, full_pa
                 CWTextNode(symbol.return_value)
             ]))
 
-    heading_node = CWTagNode('h{}'.format(h_level), {}, [
-        CWTagNode('code', {}, name_nodes),
-        CWTagNode('a', {'href': output_path, 'class': 'autodoc-source-link'}, [
-            CWTextNode('src')
-        ])
-    ])
+    heading_node = CWTagNode(
+        'h{}'.format(h_level), {},
+        [CWTagNode('code', {}, name_nodes)] + src_link_nodes
+    )
     heading_node.data['ref_id_override'] = path
 
     children = [heading_node]
@@ -181,41 +177,6 @@ def _get_symbol_node(parser_config, output_url, path, symbol, h_level=2, full_pa
         'section', kwargs={'class': 'autodoc-{}'.format(symbol.type)},
         children=children)
     return node
-
-
-
-def _write_linkable_src(src_f, dest_f, name):
-    """Pretty hacky for now but it works"""
-
-    dest_f.write("""<!doctype html>
-<html>
-    <head>
-        <title>{name}</title>""".format(name=name))
-    dest_f.write("""
-        <style>
-            pre {
-                margin: 0;
-                line-height: 120%;
-            }
-            a {
-                display: block;
-            }
-            a:target {
-                background-color: #cdf;
-            }
-        </style>
-    </head>
-    <body class="autodoc-source">
-""")
-
-    for i, line in enumerate(src_f):
-        dest_f.write("""
-<a name={i}><pre>{line}</pre></a>
-        """.format(i=i + 1, line=line.rstrip() or '&nbsp;'))
-
-    dest_f.write("""
-    </body>
-</html>""")
 
 
 __all__ = ['Python35Plugin']

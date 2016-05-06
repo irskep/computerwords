@@ -22,6 +22,7 @@
         "changes.md"
     ],
     "python3.5": {
-        "symbols_path": "./build/symbols.json"
+        "symbols_path": "./build/symbols.json",
+        "source_code_url_format": "https://github.com/irskep/computerwords/blob/master/{relative_path}#L{line_number}"
     }
 }
