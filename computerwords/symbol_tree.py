@@ -10,6 +10,7 @@ SymbolDefBase = namedtuple(
 
 
 class SymbolDef(SymbolDefBase):
+    """Represents a single line of a symbol file."""
     def __hash__(self):
         return hash(self.id)
 

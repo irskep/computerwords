@@ -39,31 +39,12 @@ class Python35Plugin(CWPlugin):
 
         symbol_tree = tree.processor_data['autodoc_symbol_tree']
 
-        all_symbols = set()
         output_dir = tree.env['output_dir'] / 'src'
         output_url = tree.env['config']['html']['site_url'] + "src/"
 
         # figure out what we're showing
 
-        symbol = None
-        symbol_node = None
-        symbol_path = None
-        h_level = 2
-        if 'module' in node.kwargs:
-            symbol_path = node.kwargs['module']
-            h_level = int(node.kwargs.get('heading-level', "1"))
-        elif 'class' in node.kwargs:
-            symbol_path = node.kwargs['class']
-            h_level = int(node.kwargs.get('heading-level', "2"))
-        elif 'method' in node.kwargs:
-            symbol_path = node.kwargs['method']
-            h_level = int(node.kwargs.get('heading-level', "3"))
-        elif 'function' in node.kwargs:
-            symbol_path = node.kwargs['function']
-            h_level = int(node.kwargs.get('heading-level', "2"))
-        else:
-            raise AutodocPythonException(
-                "No content specified (module|class|method|function)")
+        symbol_path, h_level = _get_symbol_path_and_h_level(node)
 
         render_absolute_path = (
             node.kwargs.get('render-absolute-path', 'true').lower() == 'true')
@@ -84,7 +65,7 @@ class Python35Plugin(CWPlugin):
             raise AutodocPythonException(
                 "Symbol not found: {}".format(symbol_path))
 
-        all_symbols.add(symbol)
+        all_symbols = {symbol}
         symbol_node = _get_symbol_node(
             parser_config, output_url, symbol_path, symbol, h_level=h_level,
             full_path=render_absolute_path)
@@ -114,6 +95,40 @@ class Python35Plugin(CWPlugin):
             with open(src, 'r') as src_f:
                 with abs_dest.open('w') as dest_f:
                     _write_linkable_src(src_f, dest_f, rel_dest)
+
+
+def _get_symbol_path_and_h_level(node):
+    symbol_path = None
+    h_level = 2
+    if 'module' in node.kwargs:
+        symbol_path = node.kwargs['module']
+        h_level = int(node.kwargs.get('heading-level', "1"))
+    elif 'class' in node.kwargs:
+        symbol_path = node.kwargs['class']
+        h_level = int(node.kwargs.get('heading-level', "2"))
+    elif 'method' in node.kwargs:
+        symbol_path = node.kwargs['method']
+        h_level = int(node.kwargs.get('heading-level', "3"))
+    elif 'function' in node.kwargs:
+        symbol_path = node.kwargs['function']
+        h_level = int(node.kwargs.get('heading-level', "2"))
+    else:
+        raise AutodocPythonException(
+            "No content specified (module|class|method|function)")
+    return symbol_path, h_level
+
+
+def _get_symbol_nodes_recursive(parser_config, output_url, parent_path, symbol, h_level, all_symbols):
+    if symbol.name.startswith('_') and symbol.name != '__init__':
+        return
+    if not symbol.docstring:
+        return
+    path = parent_path + '.' + symbol.name
+    all_symbols.add(symbol)
+    yield _get_symbol_node(parser_config, output_url, path, symbol, h_level, full_path=False)
+    for child in symbol.children:
+        yield from _get_symbol_nodes_recursive(
+            parser_config, output_url, path, child, h_level + 1, all_symbols)
 
 
 def _get_symbol_node(parser_config, output_url, path, symbol, h_level=2, full_path=True):
@@ -166,19 +181,6 @@ def _get_symbol_node(parser_config, output_url, path, symbol, h_level=2, full_pa
         'section', kwargs={'class': 'autodoc-{}'.format(symbol.type)},
         children=children)
     return node
-
-
-def _get_symbol_nodes_recursive(parser_config, output_url, parent_path, symbol, h_level, all_symbols):
-    if symbol.name.startswith('_') and symbol.name != '__init__':
-        return
-    if not symbol.docstring:
-        return
-    path = parent_path + '.' + symbol.name
-    all_symbols.add(symbol)
-    yield _get_symbol_node(parser_config, output_url, path, symbol, h_level, full_path=False)
-    for child in symbol.children:
-        yield from _get_symbol_nodes_recursive(
-            parser_config, output_url, path, child, h_level + 1, all_symbols)
 
 
 
