@@ -8,6 +8,8 @@ with Computer Words.
 
 [Computer Words on GitHub](https://github.com/irskep/computerwords)
 
+[Computer Words on PyPI](https://pypi.python.org/pypi/computerwords/)
+
 [Source code for this page](https://github.com/irskep/computerwords/tree/master/docs)
 
 Subscribe to the mailing list by emailing
