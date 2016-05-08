@@ -14,9 +14,6 @@ Subscribe to the mailing list by emailing
 [computerwords+subscribe@googlegroups.com](mailto:computerwords+subscribe@googlegroups.com)
 or by visiting [the web interface](https://groups.google.com/forum/#!forum/computerwords).
 
-<warning>This is alpha-quality software. Most of it works very well, but be
-sure to read the parser caveats if you intend to really use it.</warning>
-
 # Basics
 
 ```sh
