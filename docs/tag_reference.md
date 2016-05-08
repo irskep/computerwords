@@ -130,6 +130,15 @@ python3 -m computerwords.source_parsers.python35 . mymodule \
   > docs/symbols.json
 ```
 
+<note>
+Computer words currently supports *only* Python 3.5 for source parsing. Adding
+support for more parsers is probably one of the easier things to contribute,
+though! To add a new Python source parser, just copy
+[this file](https://github.com/irskep/computerwords/blob/master/computerwords/source_parsers/python35.py),
+make the necessary tweaks for the version you want to support, and send a
+pull request.
+</note>
+
 Then tell Computer Words where to find the symbol file in your config like
 this:
 

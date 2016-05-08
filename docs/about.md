@@ -73,18 +73,3 @@ More importantly, you can use plugins other people have written!
 * Anyone who wants a robust, battle-tested system.
 * Projects already invested in Sphinx or another non-Markdown system they are
   happy with.
-
-## Why Python 3.5?
-
-Most importantly, because it is a pleasure to write. Computer Words uses
-`pathlib` and `yield from` extensively.
-
-But also, it forces us to treat earlier versions of Python as a *separate
-language*, which makes us more likely to write a better API to support
-non-Python-3.5 languages! And since the primary interface to Computer Words
-is an executable, it doesn't need to be maximally source-compatible with
-old versions of the language.
-
-I suspect the project runs fine under Python 3.4. But since few people even
-run Python 3, it might as well be written in OCaml, except where plugin
-authors are concerned.

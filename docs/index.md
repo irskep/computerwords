@@ -20,7 +20,7 @@ sure to read the parser caveats if you intend to really use it.</warning>
 # Basics
 
 ```sh
-# if necessary, install Python 3.5:
+# if necessary, install a version of Python ≥ 3.3:
 brew install python3.5  # or whatever
 
 # then install Computer Words
