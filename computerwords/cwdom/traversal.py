@@ -79,7 +79,7 @@ def find_ancestor(node, predicate):
             return ancestor
 
 
-def visit_tree(tree, node_name_to_visitor, node=None):
+def visit_tree(tree, node_name_to_visitor, node=None, handle_error=None):
     """
     Recursively call the `CWTreeVisitor` for each node. If a node
     is encountered that has no corresponding visitor, `MissingVisitorError` is
@@ -109,14 +109,24 @@ def visit_tree(tree, node_name_to_visitor, node=None):
     ```
     """
     node = node or tree.root
+    visitor = None
     try:
         visitor = node_name_to_visitor[node.name]
     except KeyError:
-        raise MissingVisitorError(node)
-    visitor.before_children(tree, node)
+        if handle_error is None:
+            raise MissingVisitorError(node)
+        else:
+            handle_error(node)
+
+    if visitor is not None:
+        visitor.before_children(tree, node)
+
     for child in node.children:
-        visit_tree(tree, node_name_to_visitor, child)
-    visitor.after_children(tree, node)
+        visit_tree(
+            tree, node_name_to_visitor, node=child, handle_error=handle_error)
+
+    if visitor is not None:
+        visitor.after_children(tree, node)
 
 
 class MissingVisitorError(Exception):

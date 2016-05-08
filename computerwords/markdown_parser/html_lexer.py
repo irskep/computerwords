@@ -58,10 +58,11 @@ def _match_text(s, i, num_brackets, start_loc, get_loc_at):
                     num_brackets)
             else:
                 return None
-        elif s[i] == RIGHT_ANGLE_BRACKET:
-            raise LexError(
-                get_loc_at(i).as_range,
-                "The character '>' must be escaped when used in text")
+        # elif s[i] == RIGHT_ANGLE_BRACKET:
+            # meh, just give 'em text
+            # raise LexError(
+            #     get_loc_at(i).as_range,
+            #     "The character '>' must be escaped when used in text")
         elif s[i] == '\\':
             if next_char in TEXT_BACKSLASH_CHARS:
                 chars.append(next_char)
@@ -203,7 +204,10 @@ def lex_html_no_catch(s):
                 yield token
                 break
         if j == i:
-            raise LexError(loc, "Could not match character {}".format(s[i]))
+            # meh, just yield text
+            yield tokens.TextToken(loc.as_range, s[i])
+            i += 1
+            #raise LexError(loc, "Could not match character {}".format(s[i]))
 
     while line_indexes[line] < - i:
         line += 1

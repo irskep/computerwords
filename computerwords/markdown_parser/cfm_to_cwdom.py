@@ -6,24 +6,26 @@ from collections import OrderedDict, deque
 import CommonMark
 
 from . import CFMParserConfig
+from computerwords.cwdom.CWTree import CWTree
 from computerwords.cwdom.nodes import *
+from .ast import StmtsNode, TagArgsNode
 from .exceptions import SourceException
 from .src_loc import SourceRange, SourceLocation
 from .html_lexer import lex_html
 from .html_parser import (
+    parse_html,
     parse_open_tag,
     parse_close_tag,
     parse_self_closing_tag,
     parse_tag,
+    ParseError,
 )
+from .parse_tree_to_cwdom_util import *
 
 
 log = logging.getLogger(__name__)
 
-
-### begin __init__.py ###
-
-from .html_parser import parse_html
+### top level stuff ###
 
 def lex_and_parse_html(string, config):
     return parse_html(list(lex_html(config, string)), config=config)
@@ -33,16 +35,7 @@ def html_string_to_cwdom(string, config):
     return parse_tree_to_cwdom(
         lex_and_parse_html(string, config), config)
 
-### end __init__.py ###
-
-### begin parse_tree_to_cwdom ###
-
-from .ast import StmtsNode, TagArgsNode
-from .html_parser import ParseError
-from computerwords.cwdom.nodes import *
-from computerwords.cwdom.CWTree import CWTree
-from .parse_tree_to_cwdom_util import *
-
+### utilities ###
 
 def parse_tree_to_cwdom(root, config):
     return list(stmts_to_list(root, config))

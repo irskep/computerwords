@@ -1,3 +1,4 @@
+import logging
 import pathlib
 from io import StringIO
 
@@ -17,9 +18,23 @@ from .util import (
 )
 
 
+log = logging.getLogger(__name__)
+
+
+def _handle_visit_error(node):
+    log.error((
+        "Output writer hit a node it can't handle. This is likely because " +
+        "some plugin couldn't resolve a link, or because you're working on " +
+        "a plugin but haven't put your nodes in a writeable format yet. The " +
+        "node is: {!r}"
+        ).format(node))
+
+
 def _get_subtree_html(config, options, library, tree, node=None):
     stream = StringIO()
-    visit_tree(tree, get_tag_to_visitor(library, stream, options), node)
+    visit_tree(
+        tree, get_tag_to_visitor(library, stream, options),
+        node=node, handle_error=_handle_visit_error)
     return stream.getvalue()
 
 
