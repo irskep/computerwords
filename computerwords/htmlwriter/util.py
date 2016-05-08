@@ -90,7 +90,8 @@ def read_htmlwriter_options(config, input_dir, output_dir):
     html_config = config.get('html', {})
 
     static_dir = output_dir / html_config.get('static_dir_name', 'static')
-    static_dir.mkdir(exist_ok=True)
+    if not static_dir.exists():
+        static_dir.mkdir()
 
     css_theme = html_config.get('css_theme', 'default') + ".css"
     css_files = [

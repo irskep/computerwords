@@ -91,8 +91,7 @@ def write_document(config, options, output_dir, library, tree, document_node):
                 body=body,
                 nav_html=nav_html,
                 html_options=options,
-                **ctx,
-            ))
+                **ctx))
 
 
 def write_multi_page(config, options, output_dir, library, tree):
@@ -119,8 +118,7 @@ def write_single_page(config, options, output_dir, library, tree):
                 stylesheet_tags="".join(options.stylesheet_tag_strings),
                 body=body,
                 html_options=options,
-                **ctx,
-            ))
+                **ctx))
 
 
 def write(config, input_dir, output_dir, library, tree):

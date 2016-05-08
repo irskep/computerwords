@@ -64,7 +64,8 @@ def run():
     files_root = pathlib.Path(args.conf.name).parent.resolve()
     config['root_dir'] = files_root
     output_root = pathlib.Path(files_root) / pathlib.Path(config['output_dir'])
-    output_root.mkdir(exist_ok=True)
+    if not output_root.exists():
+        output_root.mkdir()
 
     for plugin in plugins:
         plugin.postprocess_config(config)
