@@ -1,5 +1,11 @@
 # Release history
 
+### 1.0b1
+
+* Python 3.3 and 3.4 are supported
+* Fewer `LexError`s
+* Missing visitors at write time are non-fatal
+
 ### 1.0a8
 
 * Python 3.5 source parser can handle single files

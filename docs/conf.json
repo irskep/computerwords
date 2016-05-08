@@ -1,7 +1,7 @@
 {
     "site_title": "Computer Words",
     "site_subtitle": "A system for writing and publishing documentation",
-    "project_version": "v1.0a8",
+    "project_version": "v1.0b1",
     "html": {
         "css_files": ["style.css"],
         "single_page": false,
