@@ -4,7 +4,7 @@ import sys
 from setuptools import setup, find_packages
 
 
-VERSION = '1.0b1'
+VERSION = '1.0b2'
 
 
 def readme():

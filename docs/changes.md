@@ -1,5 +1,10 @@
 # Release history
 
+### 1.0b2 (unreleased)
+
+* `<table-of-contents />` automatically inserts a "Table of Contents" heading.
+  Still need to allow opt-out or override.
+
 ### 1.0b1
 
 * Python 3.3 and 3.4 are supported

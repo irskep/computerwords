@@ -142,6 +142,8 @@ def add_table_of_contents(library):
     def process_header(tree, node):
         if node.kwargs.get('skip_toc', '').lower() == 'true':
             return
+        if 'table-of-contents-title' in node.kwargs.get('class', ''):
+            return
         _add_toc_data_if_not_exists(tree)
         tree.processor_data['toc_heading_nodes'].append(node)
         entry = _node_to_toc_entry(tree, node)
@@ -216,9 +218,14 @@ def add_table_of_contents(library):
             assert(max_depth > 0)
 
             node_to_replace = toc_node.data.get('node_in_tree', toc_node)
-            replacement = CWTagNode('nav', {'class': 'table-of-contents'}, [
-                _nested_list_to_node(
-                    entry_to_number, top_level_entries, max_depth),
+            replacement = CWTagNode('div', {'class': 'table-of-contents-wrapper'}, [
+                CWTagNode('h1', {'class': 'table-of-contents-title'}, [
+                    CWTextNode('Table of Contents')
+                ]),
+                CWTagNode('nav', {'class': 'table-of-contents'}, [
+                    _nested_list_to_node(
+                        entry_to_number, top_level_entries, max_depth),
+                ])
             ])
             toc_node.data['node_in_tree'] = replacement
 

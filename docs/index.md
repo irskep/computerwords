@@ -49,8 +49,6 @@ Hello world!
 
 The built docs are now in `docs/build/`.
 
-<h1 skip_toc=True>Table of Contents</h1>
-
 <table-of-contents maxdepth=2 />
 
 # Contributing
