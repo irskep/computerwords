@@ -4,7 +4,7 @@ import sys
 from setuptools import setup, find_packages
 
 
-VERSION = '1.0b2'
+VERSION = '1.0b3'
 
 
 def readme():
@@ -32,7 +32,7 @@ setup(
     packages=find_packages(exclude=['tests.*']),
     include_package_data=True,
     install_requires=[
-        "CommonMark>=0.6.4,<0.7",
+        "CommonMark==0.6.4",
         "Pygments>=2.1,<3.0",
     ] + legacy_requirements,
 

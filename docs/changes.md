@@ -1,5 +1,9 @@
 # Release history
 
+### 1.0b3
+
+* Support CommonMark 0.6.4 and only CommonMark 0.6.4
+
 ### 1.0b2
 
 * `<table-of-contents />` automatically inserts a customizable "Table of
