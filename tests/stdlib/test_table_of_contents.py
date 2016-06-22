@@ -94,21 +94,24 @@ class TableOfContentsTestCase(CWTestCase):
         self.assertEqual(tree.root.get_string_for_test_comparison(), self.strip("""
             Root()
               Document(path='doc 1')
-                nav(kwargs={'class': 'table-of-contents'})
-                  ol(kwargs={})
-                    li(kwargs={})
-                      Link(ref_id='Header-1-text')
-                        'Header 1 text'
-                      ol(kwargs={})
-                        li(kwargs={})
-                          Link(ref_id='Subheader-1-text')
-                            'Subheader 1 text'
-                        li(kwargs={})
-                          Link(ref_id='Subheader-2-text')
-                            'Subheader 2 text'
-                    li(kwargs={})
-                      Link(ref_id='Header-2-text')
-                        'Header 2 text'
+                div(kwargs={'class': 'table-of-contents-wrapper'})
+                  h1(kwargs={'class': 'table-of-contents-title'})
+                    'Table of Contents'
+                  nav(kwargs={'class': 'table-of-contents'})
+                    ol(kwargs={})
+                      li(kwargs={})
+                        Link(ref_id='Header-1-text')
+                          'Header 1 text'
+                        ol(kwargs={})
+                          li(kwargs={})
+                            Link(ref_id='Subheader-1-text')
+                              'Subheader 1 text'
+                          li(kwargs={})
+                            Link(ref_id='Subheader-2-text')
+                              'Subheader 2 text'
+                      li(kwargs={})
+                        Link(ref_id='Header-2-text')
+                          'Header 2 text'
                 Anchor(ref_id='Header-1-text', kwargs={'class': 'header-anchor'})
                   h1(kwargs={})
                     'Header 1 text'

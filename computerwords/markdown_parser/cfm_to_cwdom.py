@@ -116,41 +116,41 @@ def post(name):
     return dec
 
 
-@t('Text')
+@t('text')
 def t_Text(ast_node, config, loc):
     yield CWTextNode(ast_node.literal)
 
-@t('Document')
+@t('document')
 def t_Document(ast_node, config, loc):
     yield CWDocumentNode('PATH')
 
-@t('Heading')
+@t('heading')
 def t_Header(ast_node, config, loc):
     yield CWTagNode('h{}'.format(ast_node.level), {})
 
-@t('Paragraph')
+@t('paragraph')
 def t_Paragraph(ast_node, config, loc):
     yield CWTagNode('p', {})
 
-@t('Link')
+@t('link')
 def t_Link(ast_node, config, loc):
     yield CWTagNode('a', {'href': ast_node.destination})
 
-@t('List')
+@t('list')
 def t_List(ast_node, config, loc):
-    if ast_node.list_data['type'] == 'Bullet':
+    if ast_node.list_data['type'] == 'bullet':
         yield CWTagNode('ul', {})
-    elif ast_node.list_data['type'] == 'Ordered': 
+    elif ast_node.list_data['type'] == 'ordered':
         yield CWTagNode('ol', {})
     else:
         raise ValueError("Unknown list type: {}".format(
             ast_node.list_data['type']))
 
-@t('Item')
+@t('item')
 def t_Item(ast_node, config, loc):
     yield CWTagNode('li', {})
 
-@t('HtmlBlock')
+@t('html_block')
 def t_HtmlBlock(ast_node, config, loc):
     try:
         config = config.copy_relative_to_loc(loc)
@@ -159,49 +159,49 @@ def t_HtmlBlock(ast_node, config, loc):
     except ParseError:
         yield from _do_your_best(ast_node.literal, config, loc)
 
-@t('HtmlInline')
+@t('html_inline')
 def t_HtmlInline(ast_node, config, loc):
     yield from _do_your_best(ast_node.literal, config, loc)
 
-@t('Emph')
+@t('emph')
 def t_Emph(ast_node, config, loc):
     yield CWTagNode('i', {})
 
-@t('Strong')
+@t('strong')
 def t_Strong(ast_node, config, loc):
     yield CWTagNode('strong', {})
 
-@t('BlockQuote')
+@t('block_quote')
 def t_BlockQuote(ast_node, config, loc):
     yield CWTagNode('blockquote', {})
 
-@t('ThematicBreak')
+@t('thematic_break')
 def t_ThematicBreak(ast_node, config, loc):
     yield CWTagNode('hr', {})
 
-@t('CodeBlock')
+@t('code_block')
 def t_CodeBlock(ast_node, config, loc):
     yield CWTagNode(
         'pre', {'language': ast_node.info}, [CWTextNode(ast_node.literal)])
 
-@t('Code')
+@t('code')
 def t_Code(ast_node, config, loc):
     yield CWTagNode('code', {}, [CWTextNode(ast_node.literal)])
 
-@t('Hardbreak')
+@t('hardbreak')
 def t_Hardbreak(ast_node, config, loc):
     yield CWTagNode('br', {})
 
-@t('Softbreak')
+@t('softbreak')
 def t_Softbreak(ast_node, config, loc):
     # optionally insert br here
     yield CWTextNode(' ')
 
-@t('Image')
+@t('image')
 def t_Image(ast_node, config, loc):
     yield CWTagNode('img', {'src': ast_node.destination})
 
-@post('Image')
+@post('image')
 def post_Image(node, config, loc):
     if node.children:
         node.kwargs['alt'] = node.children[0].text
@@ -295,8 +295,6 @@ class NoMatchingTagError(Exception): pass
 
 
 def fix_ignored_html(node, strict=False):
-    
-
     children = node.children
     new_children = []
 
