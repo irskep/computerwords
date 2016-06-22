@@ -1,9 +1,10 @@
 # Release history
 
-### 1.0b2 (unreleased)
+### 1.0b2
 
-* `<table-of-contents />` automatically inserts a "Table of Contents" heading.
-  Still need to allow opt-out or override.
+* `<table-of-contents />` automatically inserts a customizable "Table of
+  Contents" heading, which can be disabled using `include-heading=false` or
+  customized by adding content to the tag.
 
 ### 1.0b1
 

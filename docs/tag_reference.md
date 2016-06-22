@@ -10,13 +10,12 @@ Attributes are passed through verbatim and not checked.
 
 ## Table of contents
 
-The Table of Contents plugin introduces one new tag: `<table-of-contents />`.
-It accepts a `maxdepth` attribute which can set a maximum number of levels
-to output.
+The Table of Contents plugin introduces one new tag:
 
 ```html
-<!-- only show 2 levels deep -->
-<table-of-contents maxdepth=2 />
+<table-of-contents
+  max-depth=3
+  include-heading=true />
 ```
 
 The table of contents takes the top level of its hierarchy from your config
@@ -29,6 +28,7 @@ The titles and intra-document structure are taken from the heading nodes.
 The output looks like this:
 
 ```html
+<h1>Table of Contents</h1>
 <nav class="table-of-contents">
   <ol>
     <li>
@@ -39,6 +39,13 @@ The output looks like this:
     </li>
   </ol>
 </nav>
+```
+
+You can optionally customize the text of the title ("Table of Contents") by
+adding content to the tag:
+
+```
+<table-of-contents>Table of Comp-Tents</table-of-contents>
 ```
 
 ## Callouts

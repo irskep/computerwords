@@ -22,6 +22,16 @@ TOCEntry = namedtuple('TOCEntry', ['level', 'heading_node', 'ref_id'])
 ### helpers ###
 
 
+def _boolish_string(s):
+    if s.lower() in {"true", "yes", "1"}:
+        return True
+    elif s.lower() in {"false", "no", "0"}:
+        return False
+    elif s:
+        log.error("Unknown truthy/falsey value: {}".format(s))
+    return None
+
+
 def _debug_print(entry_and_children, i=0):
     (entry, children) = entry_and_children
     print('  ' * i, entry.level, entry.heading_node)
@@ -140,7 +150,7 @@ def add_table_of_contents(library):
     @library.processor('h5')
     @library.processor('h6')
     def process_header(tree, node):
-        if node.kwargs.get('skip_toc', '').lower() == 'true':
+        if _boolish_string(node.kwargs.get('skip_toc', '')):
             return
         if 'table-of-contents-title' in node.kwargs.get('class', ''):
             return
@@ -217,16 +227,27 @@ def add_table_of_contents(library):
                 pass
             assert(max_depth > 0)
 
+            replacement_prefix = []
+
+            if _boolish_string(toc_node.kwargs.get('include-heading', 'true')) != False:
+                title_children = [CWTextNode('Table of Contents')]
+                if toc_node.children:
+                    title_children = toc_node.deepcopy().children
+                replacement_prefix = [
+                    CWTagNode('h1', {'class': 'table-of-contents-title'}, title_children),
+                ]
+
             node_to_replace = toc_node.data.get('node_in_tree', toc_node)
-            replacement = CWTagNode('div', {'class': 'table-of-contents-wrapper'}, [
-                CWTagNode('h1', {'class': 'table-of-contents-title'}, [
-                    CWTextNode('Table of Contents')
-                ]),
-                CWTagNode('nav', {'class': 'table-of-contents'}, [
-                    _nested_list_to_node(
-                        entry_to_number, top_level_entries, max_depth),
-                ])
-            ])
+            replacement = CWTagNode(
+                'div',
+                {'class': 'table-of-contents-wrapper'},
+                replacement_prefix + [
+                    CWTagNode('nav', {'class': 'table-of-contents'}, [
+                        _nested_list_to_node(
+                            entry_to_number, top_level_entries, max_depth),
+                    ])
+                ]
+            )
             toc_node.data['node_in_tree'] = replacement
 
             tree.replace_subtree(node_to_replace, replacement)
