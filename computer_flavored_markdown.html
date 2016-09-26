@@ -16,22 +16,24 @@
             <div id="navheader"><nav class='previous-page'><a href="about.html">&larr; About</a></nav><nav class='next-page'><a href="configuration.html">Configuration &rarr;</a></nav><div style="clear: both;"></div></div>
             <hr>
         </header>
-        <main id="pagebody"><article><a name='computer-flavored-markdown'></a><a href="#Computer-Flavored-Markdown" name="Computer-Flavored-Markdown" class='header-anchor'><h1>Computer Flavored Markdown</h1></a><a href="#CommonMark" name="CommonMark" class='header-anchor'><h2>CommonMark</h2></a><p>The biggest part of Computer Flavored Markdown is Markdown. Specifically, CFM is mostly just <a href='http://commonmark.org/help/'>CommonMark</a>. So this all works:</p><pre language='markdown'># Title
+        <main id="pagebody"><article><a name='computer-flavored-markdown'></a><a href="#Computer-Flavored-Markdown" name="Computer-Flavored-Markdown" class='header-anchor'><h1>Computer Flavored Markdown</h1></a><a href="#CommonMark" name="CommonMark" class='header-anchor'><h2>CommonMark</h2></a><p>The biggest part of Computer Flavored Markdown is Markdown. Specifically, CFM is mostly just <a href='http://commonmark.org/help/'>CommonMark</a>. So this all works:</p><figure class='code'><div class="highlight"><pre><span></span><span class="k"># </span><span class="gh">Title</span>
 
 This is a [paragraph](https://en.wikipedia.org/wiki/Paragraph)
 
-* un-numbered list
-* more list
-  1. numbered nested list
+<span class="k">* </span>un-numbered list
+<span class="k">* </span>more list
+<span class="k">  1. </span>numbered nested list
 
-&gt; blockquote
-&gt; blah blah
-</pre><a href="#Extensible-HTML-tags" name="Extensible-HTML-tags" class='header-anchor'><h2>Extensible HTML tags</h2></a><p>In normal Markdown, whenever you write inline HTML, it&#x27;s passed through to the output verbatim. But in Computer Flavored Markdown, it&#x27;s parsed and can be transformed during compilation.</p><p>Let&#x27;s use the <code>&lt;table-of-contents /&gt;</code> tag as an example. This is not an HTML tag, but it has meaning in Computer Words because of the <code>table_of_contents</code> plugin. If you write this:</p><pre language='markdown'>&lt;table-of-contents /&gt;
+<span class="k">&gt; </span>blockquote
+<span class="k">&gt; </span>blah blah
+</pre></div>
+</figure><a href="#Extensible-HTML-tags" name="Extensible-HTML-tags" class='header-anchor'><h2>Extensible HTML tags</h2></a><p>In normal Markdown, whenever you write inline HTML, it&#x27;s passed through to the output verbatim. But in Computer Flavored Markdown, it&#x27;s parsed and can be transformed during compilation.</p><p>Let&#x27;s use the <code>&lt;table-of-contents /&gt;</code> tag as an example. This is not an HTML tag, but it has meaning in Computer Words because of the <code>table_of_contents</code> plugin. If you write this:</p><figure class='code'><div class="highlight"><pre><span></span><span class="cp">&lt;table-of-contents /&gt;</span>
 
-# Heading 1
+<span class="cp"># Heading 1</span>
 
-## Subheading 1
-</pre><p>it will be transformed during compilation and rendered like this:</p><figure class='code'><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">nav</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;table-of-contents&quot;</span><span class="p">&gt;</span>
+<span class="cp">## Subheading 1</span>
+</pre></div>
+</figure><p>it will be transformed during compilation and rendered like this:</p><figure class='code'><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">nav</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;table-of-contents&quot;</span><span class="p">&gt;</span>
   <span class="p">&lt;</span><span class="nt">ol</span><span class="p">&gt;</span>
     <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>
       Heading 1
