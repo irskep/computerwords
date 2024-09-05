@@ -1,4 +1,4 @@
-The ideas from this project were rolled into `Djockey <https://steveasleep.com/djockey/>`.
+The ideas from this project were rolled into `Djockey <https://steveasleep.com/djockey/>`_.
 
 Computer Words
 ==============
