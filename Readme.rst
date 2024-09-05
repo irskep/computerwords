@@ -1,3 +1,5 @@
+The ideas from this project were rolled into `Djockey <https://steveasleep.com/djockey/>`.
+
 Computer Words
 ==============
 
